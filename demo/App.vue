@@ -1,0 +1,805 @@
+<script setup>
+import {ref, computed, provide, watch} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import {Ctrl_ColorPicker} from 'riz-ui'
+
+const route = useRoute()
+const router = useRouter()
+
+const themeColor = ref('#66ccff')
+provide('themeColor', themeColor)
+
+/* ── 分类 & 组件（仅用于导航） ── */
+const categories = [
+  {
+    id: 'container', name: '容器样式', comps: [
+      {route: '/demo/cntr-card', zhName: '卡片', deprecated: false},
+      {route: '/demo/cntr-cfgrow', zhName: '配置行', deprecated: false}
+    ]
+  },
+  {
+    id: 'ioput', name: '开关控制', comps: [
+      {route: '/demo/ctrl-switch', zhName: '开关', deprecated: false},
+      {route: '/demo/ctrl-slider', zhName: '滑条', deprecated: false},
+      {route: '/demo/ctrl-dropdown', zhName: '下拉', deprecated: false},
+      {route: '/demo/ctrl-color-picker', zhName: '取色器', deprecated: false},
+      {route: '/demo/ctrl-timeline', zhName: '时间轴', deprecated: false}
+    ]
+  },
+  {
+    id: 'input', name: '输入组件', comps: [
+      {route: '/demo/inpt', zhName: '文本输入', deprecated: false}
+    ]
+  },
+  {
+    id: 'old', name: '旧组件', comps: [
+      {route: '/demo/ui-card', zhName: 'UiCard', deprecated: true},
+      {route: '/demo/ui-config-row', zhName: 'UiConfigRow', deprecated: true},
+      {route: '/demo/ui-switch', zhName: 'UiSwitch', deprecated: true},
+      {route: '/demo/ui-slider', zhName: 'UiSlider', deprecated: true},
+      {route: '/demo/ui-dropdown', zhName: 'UiDropdown', deprecated: true},
+      {route: '/demo/ui-color-picker', zhName: 'UiColorPicker', deprecated: true},
+      {route: '/demo/ui-timeline', zhName: 'UiTimeline', deprecated: true},
+      {route: '/demo/ui-dialog', zhName: 'UiDialog', deprecated: true},
+      {route: '/demo/not-ready-overlay', zhName: 'NotReadyOverlay', deprecated: true}
+    ]
+  }
+]
+
+const activeCatId = ref('container')
+const activeCategory = computed(() => categories.find(c => c.id === activeCatId.value))
+const isDemoPage = computed(() => route.path.startsWith('/demo/'))
+
+/* 路由变化时自动同步 activeCatId */
+watch(() => route.path, (path) => {
+  for (const cat of categories) {
+    if (cat.comps.some(c => path === c.route)) {
+      activeCatId.value = cat.id
+      return
+    }
+  }
+})
+
+function selectCat(catId) {
+  activeCatId.value = catId
+  const cat = categories.find(c => c.id === catId)
+  if (cat?.comps.length) router.push(cat.comps[0].route)
+}
+
+function goHome() {
+  activeCatId.value = 'container';
+  router.push('/')
+}
+
+function goPricing() {
+  router.push('/pricing')
+}
+</script>
+
+<template>
+  <div class="app">
+    <!-- 背景浮动泡泡（仅 demo 装饰） -->
+    <div class="demo-bubbles" aria-hidden="true">
+      <span class="demo-bub b1"></span><span class="demo-bub b2"></span>
+      <span class="demo-bub b3"></span><span class="demo-bub b4"></span>
+      <span class="demo-bub b5"></span><span class="demo-bub b6"></span>
+      <span class="demo-bub b7"></span><span class="demo-bub b8"></span>
+      <span class="demo-bub b9"></span><span class="demo-bub b10"></span>
+    </div>
+
+    <!-- ═══ 上顶栏（全宽） ═══ -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <span class="topbar-home" @click="goHome()">RizUI</span>
+          <Ctrl_ColorPicker v-model="themeColor" :color="themeColor"/>
+        </div>
+        <nav v-if="isDemoPage" class="topbar-cats">
+          <button v-for="cat in categories" :key="cat.id"
+                  class="topbar-cat" :class="{ active: activeCatId===cat.id }"
+                  :style="activeCatId===cat.id ? { color:themeColor, borderColor:themeColor } : {}"
+                  @click="selectCat(cat.id)"
+          >{{ cat.name }}
+          </button>
+        </nav>
+        <div class="topbar-right">
+          <span class="topbar-price" @click="goPricing()">AGPLv3 · 许可</span>
+          <a class="topbar-gh" href="https://github.com/YunHydrogen/riz-ui" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                  d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.604-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12 24 5.37 18.63 0 12 0z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══ 下顶栏（组件页 + 水平滚动） ═══ -->
+    <nav v-if="isDemoPage" class="subbar">
+      <div class="subbar-inner">
+        <router-link
+            v-for="comp in activeCategory?.comps" :key="comp.route"
+            :to="comp.route"
+            class="subbar-item"
+            :class="{ deprecated: comp.deprecated }"
+            active-class="active"
+            :style="route.path===comp.route ? { color:themeColor, borderColor:themeColor } : {}"
+        >{{ comp.zhName }}<span v-if="comp.deprecated" class="depr-tag">旧</span></router-link>
+      </div>
+    </nav>
+
+    <router-view/>
+  </div>
+</template>
+
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+  'Microsoft YaHei', sans-serif;
+  background: #f3f5f8;
+  color: #334;
+  isolation: isolate;
+}
+
+code {
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+  font-size: 12px;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── 上顶栏（全宽） ── */
+.topbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #e8ecf2;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  gap: 14px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.topbar-home {
+  font-size: 28px;
+  font-weight: 800;
+  color: #334;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+  margin-right: 12px;
+}
+
+.topbar-home:hover {
+  color: v-bind(themeColor);
+}
+
+.topbar-cats {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.topbar-cat {
+  padding: 5px 14px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  color: #778;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.topbar-cat:hover {
+  color: #334;
+  background: #f5f5f8;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.topbar-price {
+  font-size: 12px;
+  color: #99a;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.topbar-price:hover {
+  color: #334;
+}
+
+.topbar-gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #667;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.topbar-gh:hover {
+  color: #334;
+}
+
+/* ── 下顶栏（水平滚动） ── */
+.subbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #e8ecf2;
+}
+
+.subbar-inner {
+  display: flex;
+  gap: 0;
+  padding: 0 24px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.subbar-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.subbar-item {
+  padding: 8px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  color: #778;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.subbar-item:hover {
+  color: #334;
+}
+
+.subbar-item.deprecated {
+  opacity: 0.6;
+}
+
+.depr-tag {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+
+/* ── 主内容区 ── */
+.main {
+  flex: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 20px 60px;
+}
+
+/* ── 首页 ── */
+.home-hero {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+
+.home-logo {
+  font-size: 40px;
+  font-weight: 800;
+  color: #222;
+  margin-bottom: 12px;
+}
+
+.home-desc {
+  font-size: 16px;
+  color: #99a;
+  margin-bottom: 28px;
+}
+
+.home-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.home-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.home-btn:hover {
+  opacity: 0.85;
+}
+
+.home-btn-primary {
+  color: #fff;
+}
+
+.home-btn-ghost {
+  background: #fff;
+  color: #667;
+  border: 1.5px solid #e0e4ea;
+}
+
+.home-btn-ghost:hover {
+  background: #f5f5f8;
+  opacity: 1;
+}
+
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.home-feat {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e8ecf2;
+  text-align: center;
+}
+
+.home-feat-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: v-bind(themeColor);
+}
+
+.home-feat h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334;
+  margin-bottom: 6px;
+}
+
+.home-feat p,
+.home-feat code {
+  font-size: 12px;
+  color: #99a;
+  line-height: 1.6;
+}
+
+.home-quick h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #334;
+}
+
+/* ── 许可页 ── */
+.pricing-page .sec-header {
+  margin-bottom: 24px;
+}
+
+.pricing-list {
+  margin-top: 8px;
+}
+
+.pricing-row {
+  font-size: 13px;
+  color: #556;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pricing-row span {
+  flex-shrink: 0;
+}
+
+/* ── 组件页 Sections ── */
+.sec-header {
+  margin-bottom: 24px;
+}
+
+.sec-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sec-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #222;
+}
+
+.sec-tag {
+  display: inline-block;
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: #e8ecf2;
+  font-size: 11px;
+  color: #667;
+}
+
+.sec-deprecated {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sec-desc {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #667;
+  line-height: 1.6;
+}
+
+.sec-demo,
+.sec-props,
+.sec-slots,
+.sec-events,
+.sec-usage {
+  margin-bottom: 28px;
+}
+
+.sec-demo h3,
+.sec-props h3,
+.sec-slots h3,
+.sec-events h3,
+.sec-usage h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #334;
+}
+
+.sec-demo h3 .fa-solid,
+.sec-props h3 .fa-solid,
+.sec-slots h3 .fa-solid,
+.sec-events h3 .fa-solid,
+.sec-usage h3 .fa-solid {
+  margin-right: 6px;
+  color: v-bind(themeColor);
+}
+
+/* ── Props 表格 ── */
+.props-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8ecf2;
+}
+
+.props-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: #f8f9fb;
+  font-weight: 600;
+  color: #667;
+  border-bottom: 1px solid #e8ecf2;
+}
+
+.props-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f5f5f5;
+  color: #445;
+}
+
+.props-table tr:last-child td {
+  border-bottom: none;
+}
+
+.props-table code {
+  background: #f0f2f5;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.sec-slots ul,
+.sec-events ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sec-slots li,
+.sec-events li {
+  background: #f0f2f5;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.code-block {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 16px 18px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.demo-echo {
+  font-size: 12px;
+  color: #99a;
+  padding-top: 4px;
+}
+
+.demo-echo code {
+  background: #f0f2f5;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #556;
+}
+
+.demo-btn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+
+.demo-btn:hover {
+  opacity: 0.85;
+}
+
+.demo-btn-ghost {
+  background: #f0f2f5;
+  color: #667;
+}
+
+.demo-btn-ghost:hover {
+  background: #e5e8ed;
+  opacity: 1;
+}
+
+.demo-check {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.demo-check:hover {
+  opacity: 0.85;
+}
+
+.cp-preview {
+  margin-top: 8px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+}
+
+.nro-demo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #fafbfc;
+}
+
+/* ── 背景泡泡（仅 demo 装饰） ── */
+.demo-bubbles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: -1;
+  filter: blur(10px);
+  background: rgb(255, 255, 255);
+}
+
+.demo-bub {
+  position: absolute;
+  border-radius: 50%;
+  background: v-bind(themeColor);
+  opacity: 0;
+  animation: db-float var(--dur, 12s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.b1 {
+  width: 190px;
+  height: 190px;
+  top: 5%;
+  left: 5%;
+  --dur: 38s;
+  --delay: 0s;
+  opacity: 0.10;
+}
+
+.b2 {
+  width: 180px;
+  height: 180px;
+  top: 55%;
+  left: 75%;
+  --dur: 35s;
+  --delay: -5s;
+  opacity: 0.16;
+}
+
+.b3 {
+  width: 200px;
+  height: 200px;
+  top: 72%;
+  left: 8%;
+  --dur: 40s;
+  --delay: -10s;
+  opacity: 0.15;
+}
+
+.b4 {
+  width: 185px;
+  height: 185px;
+  top: 20%;
+  left: 60%;
+  --dur: 36s;
+  --delay: -15s;
+  opacity: 0.16;
+}
+
+.b5 {
+  width: 195px;
+  height: 195px;
+  top: 38%;
+  left: 35%;
+  --dur: 42s;
+  --delay: -7s;
+  opacity: 0.15;
+}
+
+.b6 {
+  width: 190px;
+  height: 190px;
+  top: 82%;
+  left: 48%;
+  --dur: 34s;
+  --delay: -12s;
+  opacity: 0.16;
+}
+
+.b7 {
+  width: 180px;
+  height: 180px;
+  top: 15%;
+  left: 85%;
+  --dur: 38s;
+  --delay: -3s;
+  opacity: 0.16;
+}
+
+.b8 {
+  width: 200px;
+  height: 200px;
+  top: 48%;
+  left: 15%;
+  --dur: 41s;
+  --delay: -9s;
+  opacity: 0.15;
+}
+
+.b9 {
+  width: 185px;
+  height: 185px;
+  top: 60%;
+  left: 52%;
+  --dur: 37s;
+  --delay: -14s;
+  opacity: 0.16;
+}
+
+.b10 {
+  width: 195px;
+  height: 195px;
+  top: 30%;
+  left: 78%;
+  --dur: 39s;
+  --delay: -6s;
+  opacity: 0.16;
+}
+
+@keyframes db-float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(100px, -80px) scale(1.1);
+  }
+  40% {
+    transform: translate(-70px, 90px) scale(0.9);
+  }
+  60% {
+    transform: translate(-110px, -40px) scale(1.08);
+  }
+  80% {
+    transform: translate(50px, 60px) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+</style>
+
+

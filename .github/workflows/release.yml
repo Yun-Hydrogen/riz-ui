@@ -1,0 +1,56 @@
+name: Auto Tag & Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 读取 package.json 版本号
+        id: pkg
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 检查远端 tag 是否已存在
+        id: check
+        run: |
+          if git ls-remote --tags origin "refs/tags/${{ steps.pkg.outputs.version }}" | grep -q .; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⏭️  tag ${{ steps.pkg.outputs.version }} 已存在，跳过"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "🚀 将创建 ${{ steps.pkg.outputs.version }}"
+          fi
+
+      - name: 创建 Tag
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git tag ${{ steps.pkg.outputs.version }}
+          git push origin ${{ steps.pkg.outputs.version }}
+
+      - name: 创建 GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.pkg.outputs.version }}
+          name: ${{ steps.pkg.outputs.version }}
+          body: |
+            ## 📦 安装
+
+            ```bash
+            npm install github:YunHydrogen/riz-ui#${{ steps.pkg.outputs.version }}
+            ```
+
+            ## ✨ 组件
+
+            UiCard · UiConfigRow · UiSwitch · UiSlider · UiTimeline
+            UiDropdown · UiColorPicker · UiDialog · NotReadyOverlay
+          files: dist/*
