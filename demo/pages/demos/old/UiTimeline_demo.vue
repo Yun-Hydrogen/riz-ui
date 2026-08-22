@@ -9,7 +9,7 @@ const props = [
   { name:'min',        type:'Number', default:'0',   desc:'最小值（秒）' },
   { name:'max',        type:'Number', default:'120', desc:'最大值（秒）' },
   { name:'step',       type:'Number', default:'1',   desc:'步长（秒）' },
-  { name:'color',      type:'String', default:'"#39c5bb"', desc:'主题色' }
+  { name:'color',      type:'String', default:'""', desc:'主题色，空时跟随 --rizui_themecolor' }
 ]
 const events = ['update:modelValue']
 const usage = `<UiTimeline v-model="time" :min="0" :max="120" :color="theme" />`
@@ -21,10 +21,10 @@ const usage = `<UiTimeline v-model="time" :min="0" :max="120" :color="theme" />`
       <div class="sec-title-row"><h2>时间轴</h2><p class="sec-tag">UiTimeline</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">带刻度线的时间轴控件。填充进度条 + 三角指示器 + 当前时间标签 + 底部时间刻度。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="基础用法" desc="">
         <UiConfigRow label="播放进度" hint="点击或拖拽轨道设定时间">
-          <div style="flex:1;min-width:0"><UiTimeline v-model="timelineVal" :min="0" :max="120" :color="themeColor"/></div>
+          <div style="flex:1;min-width:0"><UiTimeline v-model="timelineVal" :min="0" :max="120"/></div>
         </UiConfigRow>
         <div class="demo-echo">时间：{{ Math.floor(timelineVal/60) }}:{{ String(Math.floor(timelineVal%60)).padStart(2,'0') }}</div>
       </UiCard>

@@ -21,7 +21,7 @@ const props = defineProps({
   min:          { type: Number, default: 0 },
   max:          { type: Number, default: 100 },
   step:         { type: Number, default: 1 },
-  color:        { type: String, default: '#39c5bb' },
+  color:        { type: String, default: '' },
   display:      { type: String, default: '' },
   displayValue: { type: String, default: '' }
 })
@@ -30,6 +30,9 @@ const emit = defineEmits(['update:modelValue'])
 
 const rootRef = ref(null)
 
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
+
 const fillPct = computed(() => {
   const range = props.max - props.min
   if (range <= 0) return 0
@@ -37,8 +40,8 @@ const fillPct = computed(() => {
 })
 
 const rootStyle = computed(() => ({
-  background: `linear-gradient(to right, ${props.color}33 ${fillPct.value}%, transparent ${fillPct.value}%)`,
-  borderColor: props.color
+  background: `linear-gradient(to right, color-mix(in srgb, ${cssColor.value} 20%, transparent) ${fillPct.value}%, transparent ${fillPct.value}%)`,
+  borderColor: cssColor.value
 }))
 
 function parseNum(v) {

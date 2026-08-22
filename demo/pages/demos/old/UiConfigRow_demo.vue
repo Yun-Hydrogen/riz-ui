@@ -29,10 +29,10 @@ const usage = `<UiConfigRow label="持续置顶" hint="窗口将始终位于最�
       <div class="sec-title-row"><h2>配置行</h2><p class="sec-tag">UiConfigRow</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">标准配置行组件，左侧标签 + 提示 + 右侧控件区。支持 stack 竖向布局和 notReady 遮罩。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="横向模式（默认）" desc="">
-        <UiConfigRow label="开启功能" hint="使用 v-model 双向绑定"><UiSwitch v-model="switchOn" :color="themeColor"/></UiConfigRow>
-        <UiConfigRow label="禁用示例" hint="设置 disabled 属性"><UiSwitch :model-value="true" :color="themeColor" disabled/></UiConfigRow>
+        <UiConfigRow label="开启功能" hint="使用 v-model 双向绑定"><UiSwitch v-model="switchOn"/></UiConfigRow>
+        <UiConfigRow label="禁用示例" hint="设置 disabled 属性"><UiSwitch :model-value="true" disabled/></UiConfigRow>
       </UiCard>
       <UiCard title="Stack 竖向模式" desc="">
         <UiConfigRow label="自定义输入" hint="stack 模式下控件在标签下方" stack>

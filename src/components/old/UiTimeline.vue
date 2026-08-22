@@ -15,7 +15,7 @@
       ></div>
       <div class="uxt-indicator" :style="indicatorStyle">
         <svg class="uxt-arrow" viewBox="0 0 12 6" width="10" height="5">
-          <path d="M0 0l6 6 6-6z" :fill="props.color" />
+          <path d="M0 0l6 6 6-6z" :fill="cssColor" />
         </svg>
         <span class="uxt-label">{{ displayTime }}</span>
       </div>
@@ -39,13 +39,16 @@ const props = defineProps({
   min:        { type: Number, default: 0 },
   max:        { type: Number, default: 120 },
   step:       { type: Number, default: 1 },
-  color:      { type: String, default: '#39c5bb' }
+  color:      { type: String, default: '' }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const trackRef = ref(null)
 const isDragging = ref(false)
+
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
 
 const ticks = computed(() => {
   const arr = []
@@ -79,7 +82,7 @@ const fillPct = computed(() => {
 
 const fillStyle = computed(() => ({
   width: fillPct.value + '%',
-  background: props.color + '33'
+  background: `color-mix(in srgb, ${cssColor.value} 20%, transparent)`
 }))
 
 const indicatorStyle = computed(() => ({

@@ -6,12 +6,12 @@ const switchOn = ref(true)
 const deprecated = true
 const props = [
   { name:'modelValue', type:'Boolean', default:'false', desc:'v-model 绑定的开关状态' },
-  { name:'color',      type:'String',  default:'"#39c5bb"', desc:'选中态轨道颜色' },
+  { name:'color',      type:'String',  default:'""', desc:'主题色，空时跟随 --rizui_themecolor' },
   { name:'disabled',   type:'Boolean', default:'false', desc:'是否禁用' }
 ]
 const events = ['update:modelValue']
-const usage = `<UiSwitch v-model="enabled" :color="themeColor" />
-<UiSwitch v-model="enabled" :color="themeColor" disabled />`
+const usage = `<UiSwitch v-model="enabled" />
+<UiSwitch v-model="enabled" disabled />`
 </script>
 
 <template>
@@ -20,14 +20,14 @@ const usage = `<UiSwitch v-model="enabled" :color="themeColor" />
       <div class="sec-title-row"><h2>开关</h2><p class="sec-tag">UiSwitch</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">纯 CSS 开关组件，替代原生 checkbox。支持 v-model 绑定、主题色、禁用态。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="基础用法" desc="">
-        <UiConfigRow label="开关状态" hint="点击切换"><UiSwitch v-model="switchOn" :color="themeColor"/></UiConfigRow>
+        <UiConfigRow label="开关状态" hint="点击切换"><UiSwitch v-model="switchOn"/></UiConfigRow>
         <div class="demo-echo">当前值：<code>{{ switchOn }}</code></div>
       </UiCard>
       <UiCard title="禁用状态" desc="">
-        <UiConfigRow label="始终开启（禁用）"><UiSwitch :model-value="true" :color="themeColor" disabled/></UiConfigRow>
-        <UiConfigRow label="始终关闭（禁用）"><UiSwitch :model-value="false" :color="themeColor" disabled/></UiConfigRow>
+        <UiConfigRow label="始终开启（禁用）"><UiSwitch :model-value="true" disabled/></UiConfigRow>
+        <UiConfigRow label="始终关闭（禁用）"><UiSwitch :model-value="false" disabled/></UiConfigRow>
       </UiCard>
     </section>
     <section class="sec-props"><h3><i class="fa-solid fa-list-check"></i> Props</h3>

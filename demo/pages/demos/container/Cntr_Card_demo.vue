@@ -5,9 +5,9 @@ const themeColor = inject('themeColor')
 const switchOn = ref(true)
 
 const props = [
-  { name:'title',        type:'String', default:'""', desc:'卡片标题（可选）' },
+  { name:'title',        type:'String', default:'""', desc:'标题文字' },
   { name:'titleInstyle', type:'Object', default:'{}', desc:'标题内联样式覆盖' },
-  { name:'desc',         type:'String', default:'""', desc:'描述文字（可选）' },
+  { name:'desc',         type:'String', default:'""', desc:'描述文字' },
   { name:'descInstyle',  type:'Object', default:'{}', desc:'描述内联样式覆盖' },
   { name:'icon',         type:'String', default:'""', desc:'FA 图标类名' },
   { name:'iconInstyle',  type:'Object', default:'{}', desc:'图标内联样式覆盖' }

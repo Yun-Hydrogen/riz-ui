@@ -8,7 +8,7 @@ const demoBtnStyle = computed(() => ({ background: themeColor.value }))
 const props = [
   { name:'show',     type:'Boolean', default:'false', desc:'v-model:show 控制显隐' },
   { name:'title',    type:'String',  default:'""',    desc:'标题文字' },
-  { name:'color',    type:'String',  default:'"#39c5bb"', desc:'主题色' },
+  { name:'color',    type:'String',  default:'""',    desc:'主题色，空时跟随 --rizui_themecolor' },
   { name:'teleport', type:'String',  default:'"body"', desc:'挂载目标选择器' },
   { name:'width',    type:'String',  default:'"auto"', desc:'对话框宽度' }
 ]
@@ -16,7 +16,7 @@ const slots = ['default — 主体内容', 'footer — 底部按钮区（可选�
 const events = ['update:show']
 const usage = `const show = ref(false)
 
-<UiDialog v-model:show="show" title="确认" color="#39c5bb" width="320px">
+<UiDialog v-model:show="show" title="确认" width="320px">
   <p>确定要执行此操作吗？</p>
   <template #footer>
     <button @click="show = false">取消</button>
@@ -31,11 +31,11 @@ const usage = `const show = ref(false)
       <div class="sec-title-row"><h2>对话框</h2><p class="sec-tag">UiDialog</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">居中弹出对话框，支持 Teleport 指定挂载容器、Transition 动画、遮罩层点击关闭。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="基础用法" desc="">
         <UiConfigRow label="示例对话框"><button class="demo-btn" :style="demoBtnStyle" @click="showDialog=true">打开对话框</button></UiConfigRow>
       </UiCard>
-      <UiDialog v-model:show="showDialog" title="对话框示例" :color="themeColor" width="360px">
+      <UiDialog v-model:show="showDialog" title="对话框示例" width="360px">
         <p style="margin-bottom:8px">这是 <strong>UiDialog</strong> 组件。</p>
         <p style="margin-bottom:8px">支持 Teleport 挂载、Transition 动画、遮罩关闭。</p>
         <p>当前主题色：<code>{{ themeColor }}</code></p>

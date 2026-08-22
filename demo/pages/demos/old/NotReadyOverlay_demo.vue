@@ -23,7 +23,7 @@ const usage = `<div style="position: relative">
       <div class="sec-title-row"><h2>未就绪遮罩</h2><p class="sec-tag">NotReadyOverlay</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">半透明毛玻璃遮罩 + 居中徽章，用于标记"功能暂不可用"的 UI 区域。父容器需 position: relative。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="基础用法" desc="">
         <div class="nro-demo">
           <UiConfigRow label="联动播报" hint="功能尚未实现"><UiSwitch :model-value="false" disabled/></UiConfigRow>

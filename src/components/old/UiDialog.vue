@@ -32,7 +32,7 @@ import { computed } from 'vue'
 const props = defineProps({
   show:     { type: Boolean, default: false },
   title:    { type: String, default: '' },
-  color:    { type: String, default: '#39c5bb' },
+  color:    { type: String, default: '' },
   teleport: { type: String, default: 'body' },
   width:    { type: String, default: 'auto' }
 })
@@ -41,9 +41,12 @@ defineEmits(['update:show'])
 
 const isAnchored = computed(() => props.teleport !== 'body')
 
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
+
 const boxStyle = computed(() => ({
   width: props.width,
-  '--uid-color': props.color
+  '--uid-color': cssColor.value
 }))
 </script>
 

@@ -9,7 +9,7 @@ const props = [
   { name:'min',          type:'Number', default:'0',   desc:'最小值' },
   { name:'max',          type:'Number', default:'100', desc:'最大值' },
   { name:'step',         type:'Number', default:'1',   desc:'步长' },
-  { name:'color',        type:'String', default:'"#39c5bb"', desc:'主题色' },
+  { name:'color',        type:'String', default:'""', desc:'主题色，空时跟随 --rizui_themecolor' },
   { name:'display',      type:'String', default:'""',  desc:'显示后缀，如 "%" "px"' },
   { name:'displayValue', type:'String', default:'""',  desc:'完全自定义显示文本' }
 ]
@@ -24,10 +24,10 @@ const usage = `<UiSlider v-model="vol" :min="0" :max="100" :color="c" display="%
       <div class="sec-title-row"><h2>步进滑条</h2><p class="sec-tag">UiSlider</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">圆角矩形步进器，支持拖拽设定值 / 点击 ± 按钮 / 长按快速连续增减。背景色随数值比例填充。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="基础用法" desc="">
-        <UiConfigRow label="百分比" hint="0~100 步长 1"><UiSlider v-model="sliderVal" :min="0" :max="100" :color="themeColor" display="%"/></UiConfigRow>
-        <UiConfigRow label="像素值" hint="50~200 步长 5"><UiSlider v-model="sliderVal" :min="50" :max="200" :step="5" :color="themeColor" display="px"/></UiConfigRow>
+        <UiConfigRow label="百分比" hint="0~100 步长 1"><UiSlider v-model="sliderVal" :min="0" :max="100" display="%"/></UiConfigRow>
+        <UiConfigRow label="像素值" hint="50~200 步长 5"><UiSlider v-model="sliderVal" :min="50" :max="200" :step="5" display="px"/></UiConfigRow>
         <div class="demo-echo">sliderVal = <code>{{ sliderVal }}</code></div>
       </UiCard>
     </section>

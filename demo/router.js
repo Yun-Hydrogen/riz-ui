@@ -5,12 +5,16 @@ import PricingPage    from './pages/PricingPage.vue'
 
 import Cntr_Card_demo   from './pages/demos/container/Cntr_Card_demo.vue'
 import Cntr_Cfgrow_demo from './pages/demos/container/Cntr_Cfgrow_demo.vue'
+import Cntr_Infobox_demo from './pages/demos/container/Cntr_Infobox_demo.vue'
+import Ctnr_Dialog_demo from './pages/demos/container/Ctnr_Dialog_demo.vue'
 import Ctrl_Switch_demo from './pages/demos/control/Ctrl_Switch_demo.vue'
 import Ctrl_Slider_demo from './pages/demos/control/Ctrl_Slider_demo.vue'
 import Ctrl_Dropdown_demo from './pages/demos/control/Ctrl_Dropdown_demo.vue'
 import Ctrl_ColorPicker_demo from './pages/demos/control/Ctrl_ColorPicker_demo.vue'
 import Ctrl_Timeline_demo from './pages/demos/control/Ctrl_Timeline_demo.vue'
+import Ctrl_Button_demo from './pages/demos/control/Ctrl_Button_demo.vue'
 import Inpt_demo from './pages/demos/input/Inpt_Text_demo.vue'
+import Inpt_mdeditor_demo from './pages/demos/input/Inpt_mdeditor_demo.vue'
 import UiCard_demo    from './pages/demos/old/UiCard_demo.vue'
 import UiConfigRow_demo from './pages/demos/old/UiConfigRow_demo.vue'
 import UiSwitch_demo  from './pages/demos/old/UiSwitch_demo.vue'
@@ -26,12 +30,16 @@ const routes = [
   { path: '/pricing',                  name: 'pricing',           component: PricingPage },
   { path: '/demo/cntr-card',           name: 'Cntr_Card',         component: Cntr_Card_demo },
   { path: '/demo/cntr-cfgrow',        name: 'Cntr_Cfgrow',      component: Cntr_Cfgrow_demo },
+  { path: '/demo/cntr-infobox',       name: 'Cntr_Infobox',     component: Cntr_Infobox_demo },
+  { path: '/demo/cntr-dialog',        name: 'Ctnr_Dialog',       component: Ctnr_Dialog_demo },
   { path: '/demo/ctrl-switch',        name: 'Ctrl_Switch',      component: Ctrl_Switch_demo },
   { path: '/demo/ctrl-slider',        name: 'Ctrl_Slider',      component: Ctrl_Slider_demo },
   { path: '/demo/ctrl-dropdown',      name: 'Ctrl_Dropdown',    component: Ctrl_Dropdown_demo },
   { path: '/demo/ctrl-color-picker',  name: 'Ctrl_ColorPicker', component: Ctrl_ColorPicker_demo },
   { path: '/demo/ctrl-timeline',      name: 'Ctrl_Timeline',   component: Ctrl_Timeline_demo },
+  { path: '/demo/ctrl-button',        name: 'Ctrl_Button',     component: Ctrl_Button_demo },
   { path: '/demo/inpt',               name: 'Inpt',            component: Inpt_demo },
+  { path: '/demo/inpt-mdeditor',      name: 'Inpt_mdeditor',   component: Inpt_mdeditor_demo },
   { path: '/demo/ui-card',             name: 'UiCard',            component: UiCard_demo },
   { path: '/demo/ui-config-row',       name: 'UiConfigRow',       component: UiConfigRow_demo },
   { path: '/demo/ui-switch',           name: 'UiSwitch',          component: UiSwitch_demo },

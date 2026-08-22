@@ -30,7 +30,7 @@ const props = defineProps({
   modelValue:   { type: [String, Number], default: '' },
   type:         { type: String,  default: 'text' },
   placeholder:  { type: String,  default: '' },
-  color:        { type: String,  default: '#39c5bb' },
+  color:        { type: String,  default: '' },
   plaintext:    { type: Boolean, default: false },
   disabled:     { type: Boolean, default: false },
   readonly:     { type: Boolean, default: false }
@@ -38,8 +38,9 @@ const props = defineProps({
 
 defineEmits(['update:modelValue'])
 
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
 const rootStyle = computed(() => ({
-  '--inpt-color': props.color
+  '--inpt-color': props.color || 'var(--rizui_themecolor)'
 }))
 </script>
 
@@ -59,7 +60,7 @@ const rootStyle = computed(() => ({
 }
 
 .inpt-root:focus {
-  border-color: var(--inpt-color, #39c5bb);
+  border-color: var(--inpt-color);
 }
 
 .inpt-root::placeholder {
@@ -98,5 +99,29 @@ const rootStyle = computed(() => ({
   resize: vertical;
   min-height: 80px;
   padding: 8px 12px;
+}
+
+/* ── 滚动条：主题色半透明 ── */
+.inpt-root::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.inpt-root::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.inpt-root::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--inpt-color) 28%, transparent);
+  border-radius: 999px;
+}
+
+.inpt-root::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--inpt-color) 48%, transparent);
+}
+
+.inpt-root {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--inpt-color) 28%, transparent) transparent;
 }
 </style>

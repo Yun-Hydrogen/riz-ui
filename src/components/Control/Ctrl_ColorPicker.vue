@@ -66,13 +66,16 @@ import Inpt_Text from '../Input/Inpt_Text.vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '#ffffff' },
-  color:      { type: String, default: '#39c5bb' },
+  color:      { type: String, default: '' },
   teleport:   { type: String, default: 'body' }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const isAnchored = computed(() => props.teleport !== 'body')
+
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
 
 const show = ref(false)
 const tempColor = ref('#ffffff')
@@ -91,8 +94,8 @@ const svBg = computed(() => {
 })
 
 const confirmStyle = computed(() => ({
-  background: props.color,
-  borderColor: props.color
+  background: cssColor.value,
+  borderColor: cssColor.value
 }))
 
 function hslToHex(h, s, l) {
@@ -237,7 +240,7 @@ onBeforeUnmount(() => {
 }
 
 .ccp-swatch:hover {
-  border-color: v-bind('props.color');
+  border-color: v-bind('cssColor');
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
 }
 
@@ -252,7 +255,7 @@ onBeforeUnmount(() => {
 .ccp-swatch-hex {
   font-size: 12px;
   color: #556;
-  font-family: 'UI', 'Bahnschrift', 'Microsoft YaHei UI', sans-serif;
+  font-family: inherit;
 }
 
 .ccp-overlay {

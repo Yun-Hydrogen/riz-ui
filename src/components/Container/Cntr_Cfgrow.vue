@@ -86,7 +86,9 @@ defineProps({
 .cfgr-slot-inner {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
 }
 
 .cfgr-stack .cfgr-slot-inner {

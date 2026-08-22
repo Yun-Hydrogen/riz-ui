@@ -15,14 +15,17 @@ import { computed } from 'vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
-  color:      { type: String, default: '#39c5bb' },
+  color:      { type: String, default: '' },
   disabled:   { type: Boolean, default: false }
 })
 
 defineEmits(['update:modelValue'])
 
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
+
 const trackStyle = computed(() => ({
-  background: props.modelValue ? props.color : undefined
+  background: props.modelValue ? cssColor.value : undefined
 }))
 </script>
 

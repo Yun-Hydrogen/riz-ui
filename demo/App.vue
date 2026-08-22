@@ -6,7 +6,7 @@ import {Ctrl_ColorPicker} from 'riz-ui'
 const route = useRoute()
 const router = useRouter()
 
-const themeColor = ref('#66ccff')
+const themeColor = ref('#66CCFF')
 provide('themeColor', themeColor)
 
 /* ── 分类 & 组件（仅用于导航） ── */
@@ -14,7 +14,9 @@ const categories = [
   {
     id: 'container', name: '容器样式', comps: [
       {route: '/demo/cntr-card', zhName: '卡片', deprecated: false},
-      {route: '/demo/cntr-cfgrow', zhName: '配置行', deprecated: false}
+      {route: '/demo/cntr-cfgrow', zhName: '配置行', deprecated: false},
+      {route: '/demo/cntr-infobox', zhName: '提示框', deprecated: false},
+      {route: '/demo/cntr-dialog', zhName: '对话框', deprecated: false}
     ]
   },
   {
@@ -23,12 +25,14 @@ const categories = [
       {route: '/demo/ctrl-slider', zhName: '滑条', deprecated: false},
       {route: '/demo/ctrl-dropdown', zhName: '下拉', deprecated: false},
       {route: '/demo/ctrl-color-picker', zhName: '取色器', deprecated: false},
-      {route: '/demo/ctrl-timeline', zhName: '时间轴', deprecated: false}
+      {route: '/demo/ctrl-timeline', zhName: '时间轴', deprecated: false},
+      {route: '/demo/ctrl-button', zhName: '按钮', deprecated: false}
     ]
   },
   {
     id: 'input', name: '输入组件', comps: [
-      {route: '/demo/inpt', zhName: '文本输入', deprecated: false}
+      {route: '/demo/inpt', zhName: '文本输入', deprecated: false},
+      {route: '/demo/inpt-mdeditor', zhName: 'MD 编辑器', deprecated: false}
     ]
   },
   {
@@ -77,7 +81,7 @@ function goPricing() {
 </script>
 
 <template>
-  <div class="app">
+  <div class="app" :style="{ '--rizui_themecolor': themeColor }">
     <!-- 背景浮动泡泡（仅 demo 装饰） -->
     <div class="demo-bubbles" aria-hidden="true">
       <span class="demo-bub b1"></span><span class="demo-bub b2"></span>
@@ -92,7 +96,7 @@ function goPricing() {
       <div class="topbar-inner">
         <div class="topbar-left">
           <span class="topbar-home" @click="goHome()">RizUI</span>
-          <Ctrl_ColorPicker v-model="themeColor" :color="themeColor"/>
+          <Ctrl_ColorPicker v-model="themeColor"/>
         </div>
         <nav v-if="isDemoPage" class="topbar-cats">
           <button v-for="cat in categories" :key="cat.id"
@@ -134,6 +138,15 @@ function goPricing() {
 </template>
 
 <style>
+/* Demo 使用本地 UI 字体（版权字体，仅用于演示；组件库不内置以避免版权纠纷） */
+@font-face {
+  font-family: 'UI';
+  src: url('./fonts/UI.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 *,
 *::before,
 *::after {
@@ -143,7 +156,7 @@ function goPricing() {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+  font-family: 'UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
   'Microsoft YaHei', sans-serif;
   background: #f3f5f8;
   color: #334;

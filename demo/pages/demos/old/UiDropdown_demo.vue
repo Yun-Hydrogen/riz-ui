@@ -12,7 +12,7 @@ const deprecated = true
 const props = [
   { name:'modelValue', type:'String | Number', default:'""', desc:'v-model 绑定值' },
   { name:'options',    type:'Array',           default:'[]', desc:'选项 [{ value, label }]' },
-  { name:'color',      type:'String',          default:'"#39c5bb"', desc:'主题色' }
+  { name:'color',      type:'String',          default:'""', desc:'主题色，空时跟随 --rizui_themecolor' }
 ]
 const events = ['update:modelValue']
 const usage = `const opts = [{ value: 'a', label: 'Alpha' }, { value: 'b', label: 'Beta' }]
@@ -26,9 +26,9 @@ const usage = `const opts = [{ value: 'a', label: 'Alpha' }, { value: 'b', label
       <div class="sec-title-row"><h2>下拉选择</h2><p class="sec-tag">UiDropdown</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">自定义下拉选择器，替代原生 select。支持 v-model、主题色高亮、点击外部关闭。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="基础用法" desc="">
-        <UiConfigRow label="选择后端" hint="点击展开下拉面板"><UiDropdown v-model="dropdownVal" :options="dropdownOptions" :color="themeColor"/></UiConfigRow>
+        <UiConfigRow label="选择后端" hint="点击展开下拉面板"><UiDropdown v-model="dropdownVal" :options="dropdownOptions"/></UiConfigRow>
         <div class="demo-echo">当前选中：<code>{{ dropdownVal }}</code></div>
       </UiCard>
     </section>

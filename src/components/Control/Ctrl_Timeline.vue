@@ -1,5 +1,5 @@
 <template>
-  <div class="ctl-root">
+  <div class="ctl-root" :style="rootStyle">
     <!-- 轨道（点击 / 拖拽定位） -->
     <div
       ref="trackRef"
@@ -19,10 +19,12 @@
         :style="{ left: tickPct(t) + '%' }"
       ></div>
 
-      <!-- 指示器（手柄 + 时间标签） -->
+      <!-- 指示器（倒三角 + 时间标签） -->
       <div class="ctl-indicator" :style="indicatorStyle">
         <span class="ctl-bubble">{{ displayTime }}</span>
-        <span class="ctl-thumb"></span>
+        <svg class="ctl-arrow" viewBox="0 0 12 6" width="12" height="6">
+          <path d="M0 0l6 6 6-6z" :fill="cssColor" />
+        </svg>
       </div>
     </div>
 
@@ -46,13 +48,16 @@ const props = defineProps({
   min:        { type: Number, default: 0 },
   max:        { type: Number, default: 120 },
   step:       { type: Number, default: 1 },
-  color:      { type: String, default: '#39c5bb' }
+  color:      { type: String, default: '' }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const trackRef = ref(null)
 const isDragging = ref(false)
+
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
 
 /* ── 刻度生成 ── */
 const minorEvery = computed(() => (props.max - props.min <= 60 ? 2 : 3))
@@ -88,9 +93,14 @@ const fillPct = computed(() => {
   return range <= 0 ? 0 : Math.max(0, Math.min(100, ((props.modelValue - props.min) / range) * 100))
 })
 
+/* 颜色变量通过内联 style 注入，空 color 时回退到全局主题色 */
+const rootStyle = computed(() => ({
+  '--ctl-color': cssColor.value
+}))
+
 const fillStyle = computed(() => ({
   width: fillPct.value + '%',
-  background: `linear-gradient(90deg, ${props.color}55, ${props.color})`
+  background: `color-mix(in srgb, ${cssColor.value} 20%, transparent)`
 }))
 
 const indicatorStyle = computed(() => ({
@@ -152,7 +162,6 @@ onBeforeUnmount(() => {
   width: 100%;
   padding: 26px 12px 0;
   user-select: none;
-  --ctl-color: v-bind('props.color');
 }
 
 /* ── 轨道 ── */
@@ -224,24 +233,21 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   padding: 1px 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 
-.ctl-thumb {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--ctl-color);
-  border: 2.5px solid #fff;
-  box-shadow: 0 0 0 1.5px var(--ctl-color), 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.ctl-arrow {
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-/* 拖拽时放大 + 外发光 */
-.ctl-dragging .ctl-thumb,
-.ctl-track:hover .ctl-thumb {
-  transform: scale(1.35);
-  box-shadow: 0 0 0 1.5px var(--ctl-color), 0 0 0 5px color-mix(in srgb, var(--ctl-color) 25%, transparent), 0 2px 8px rgba(0, 0, 0, 0.25);
+/* 拖拽/悬停时放大倒三角 + 发光 */
+.ctl-dragging .ctl-arrow,
+.ctl-track:hover .ctl-arrow {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 4px var(--ctl-color));
 }
 
 /* ── 底部时间刻度标签 ── */

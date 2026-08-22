@@ -34,7 +34,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
   options:    { type: Array, default: () => [] },
-  color:      { type: String, default: '#39c5bb' }
+  color:      { type: String, default: '' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -42,14 +42,17 @@ const emit = defineEmits(['update:modelValue'])
 const rootRef = ref(null)
 const isOpen = ref(false)
 
+/* 空 color 时跟随全局主题色变量 --rizui_themecolor */
+const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
+
 const selectedLabel = computed(() => {
   const opt = props.options.find(o => o.value === props.modelValue)
   return opt ? opt.label : String(props.modelValue || '')
 })
 
 const activeStyle = computed(() => ({
-  color: props.color,
-  background: props.color + '14'
+  color: cssColor.value,
+  background: `color-mix(in srgb, ${cssColor.value} 8%, transparent)`
 }))
 
 function toggle() { isOpen.value = !isOpen.value }
@@ -105,7 +108,7 @@ onBeforeUnmount(() => {
 }
 
 .udd-open .udd-trigger {
-  border-color: v-bind('props.color');
+  border-color: v-bind('cssColor');
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
 }
 

@@ -20,9 +20,9 @@ const usage = `<UiCard title="浮窗外观" desc="调整抽取结果浮窗的视
       <div class="sec-title-row"><h2>卡片容器</h2><p class="sec-tag">UiCard</p><p class="sec-deprecated">已弃用</p></div>
       <p class="sec-desc">统一的配置面板卡片容器，提供标题 + 描述 + 内容插槽的标准布局。</p>
     </section>
-    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 实时预览</h3>
+    <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <UiCard title="示例卡片" desc="这是 desc 描述文字，可留空">
-        <UiConfigRow label="示例配置项"><UiSwitch v-model="switchOn" :color="themeColor"/></UiConfigRow>
+        <UiConfigRow label="示例配置项"><UiSwitch v-model="switchOn"/></UiConfigRow>
       </UiCard>
       <UiCard title="无描述卡片" desc=""><div style="font-size:13px;color:#99a">desc="" 时不显示描述区</div></UiCard>
     </section>
