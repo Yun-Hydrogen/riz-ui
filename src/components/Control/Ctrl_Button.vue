@@ -1,5 +1,7 @@
 <template>
-  <button
+  <!-- href 存在时渲染为链接，浏览器原生跳转；否则为按钮 -->
+  <component
+    :is="href ? 'a' : 'button'"
     class="cbtn-root"
     :class="{
       'cbtn-primary': primary,
@@ -8,14 +10,17 @@
       'cbtn-disabled': disabled
     }"
     :style="rootStyle"
-    :type="type"
-    :disabled="disabled"
+    :type="href ? undefined : type"
+    :href="href || undefined"
+    :target="href ? target : undefined"
+    :rel="href ? 'noopener noreferrer' : undefined"
+    :disabled="href ? undefined : (disabled || undefined)"
     @click="$emit('click', $event)"
   >
     <i v-if="lIcon" class="cbtn-icon" :class="lIcon" :style="lIconInstyle"></i>
     <span v-if="text" class="cbtn-text" :style="textInstyle">{{ text }}</span>
     <i v-if="rIcon" class="cbtn-icon" :class="rIcon" :style="rIconInstyle"></i>
-  </button>
+  </component>
 </template>
 
 <script setup>
@@ -33,7 +38,9 @@ const props = defineProps({
   long:         { type: Boolean, default: false },
   color:        { type: String,  default: '' },
   disabled:     { type: Boolean, default: false },
-  type:         { type: String,  default: 'button' }
+  type:         { type: String,  default: 'button' },
+  href:         { type: String,  default: '' },
+  target:       { type: String,  default: '_blank' }
 })
 
 defineEmits(['click'])

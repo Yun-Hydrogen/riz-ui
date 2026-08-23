@@ -6,6 +6,12 @@ const themeColor = inject('themeColor')
 const textVal = ref('')
 const numVal = ref(null)
 const plainVal = ref('')
+const searchVal = ref('')
+const searched = ref(false)
+
+function onSearch() {
+  searched.value = true
+}
 
 const props = [
   {name: 'modelValue', type: 'String | Number', default: '""', desc: 'v-model 绑定值'},
@@ -16,7 +22,7 @@ const props = [
   {name: 'disabled', type: 'Boolean', default: 'false', desc: '禁用'},
   {name: 'readonly', type: 'Boolean', default: 'false', desc: '只读'}
 ]
-const events = ['update:modelValue']
+const events = ['update:modelValue', 'enter(value) — 按下回车触发，默认释放聚焦']
 const usage = `<Cntr_Cfgrow label="昵称" hint="文本输入，用原生 style 控制宽度">
   <Inpt_Text v-model="textVal" placeholder="请输入昵称" style="width: 160px"/>
 </Cntr_Cfgrow>
@@ -27,6 +33,10 @@ const usage = `<Cntr_Cfgrow label="昵称" hint="文本输入，用原生 style 
 
 <Cntr_Cfgrow label="备注" hint="plaintext 多行模式" stack>
   <Inpt_Text v-model="plainVal" plaintext placeholder="请输入多行内容..."/>
+</Cntr_Cfgrow>
+
+<Cntr_Cfgrow label="搜索" hint="按回车触发 enter 事件，默认释放聚焦">
+  <Inpt_Text v-model="searchVal" placeholder="按回车试试" style="width: 160px" @enter="onSearch"/>
 </Cntr_Cfgrow>`
 </script>
 
@@ -64,6 +74,13 @@ const usage = `<Cntr_Cfgrow label="昵称" hint="文本输入，用原生 style 
         <Cntr_Cfgrow label="只读状态">
           <Inpt_Text :model-value="'只读内容'" readonly/>
         </Cntr_Cfgrow>
+      </Cntr_Card>
+
+      <Cntr_Card title="回车事件" desc="按 Enter 触发 @enter 并释放聚焦">
+        <Cntr_Cfgrow label="搜索" hint="按回车会 blur 并触发 @enter">
+          <Inpt_Text v-model="searchVal" placeholder="按回车试试" style="width: 160px" @enter="onSearch"/>
+        </Cntr_Cfgrow>
+        <p v-if="searched" class="demo-echo">搜索了：<code>{{ searchVal }}</code></p>
       </Cntr_Card>
     </section>
     <section class="sec-props"><h3><i class="fa-solid fa-list-check"></i> Props</h3>

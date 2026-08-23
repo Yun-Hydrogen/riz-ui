@@ -49,7 +49,7 @@ const card3_usage =
     <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i>示例</h3>
       
       <!-- 标准卡片  -->
-      <Cntr_Card title="项目文件夹" desc="包含 12 个文件 · 最后修改 2 小时前" icon="fa-regular fa-folder" :iconInstyle="{ color: '#f0a030', fontSize: '28px' }">
+      <Cntr_Card title="MomoTalk 信箱" desc="包含 120 位联系人 · 最近信息 2 小时前" icon="fa-solid fa-envelope-open-text" :iconInstyle="{ color: '#f0a030', fontSize: '28px' }">
         <Cntr_Cfgrow label="这是一个标准的卡片" hint="可以在下方看到示例"></Cntr_Cfgrow>
         <Cntr_Cfgrow stack>
           <pre class="code-block"><code>{{ card1_usage }}</code></pre>

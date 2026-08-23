@@ -1,19 +1,22 @@
 {
   "name": "riz-ui",
-  "version": "26.8.1",
+  "version": "26.8.2",
   "description": "RizUI — 一套轻量、精致的 Vue 3 通用 UI 组件库",
   "type": "module",
   "main": "./dist/riz-ui.umd.cjs",
   "module": "./dist/riz-ui.js",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./dist/riz-ui.js",
       "require": "./dist/riz-ui.umd.cjs"
     },
     "./dist/style.css": "./dist/style.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "scripts": {
     "dev": "vite",

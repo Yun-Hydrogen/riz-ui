@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, provide, watch} from 'vue'
+import {ref, computed, reactive, provide, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {Ctrl_ColorPicker} from 'riz-ui'
 
@@ -16,7 +16,8 @@ const categories = [
       {route: '/demo/cntr-card', zhName: '卡片', deprecated: false},
       {route: '/demo/cntr-cfgrow', zhName: '配置行', deprecated: false},
       {route: '/demo/cntr-infobox', zhName: '提示框', deprecated: false},
-      {route: '/demo/cntr-dialog', zhName: '对话框', deprecated: false}
+      {route: '/demo/cntr-dialog', zhName: '对话框', deprecated: false},
+      {route: '/demo/cntr-toast', zhName: 'Toast', deprecated: false}
     ]
   },
   {
@@ -36,6 +37,12 @@ const categories = [
     ]
   },
   {
+    id: 'other', name: '其他控件', comps: [
+      {route: '/demo/theme-color', zhName: '主题色', deprecated: false},
+      {route: '/demo/open-url', zhName: '打开链接', deprecated: false}
+    ]
+  },
+  {
     id: 'old', name: '旧组件', comps: [
       {route: '/demo/ui-card', zhName: 'UiCard', deprecated: true},
       {route: '/demo/ui-config-row', zhName: 'UiConfigRow', deprecated: true},
@@ -50,28 +57,33 @@ const categories = [
   }
 ]
 
-const activeCatId = ref('container')
-const activeCategory = computed(() => categories.find(c => c.id === activeCatId.value))
 const isDemoPage = computed(() => route.path.startsWith('/demo/'))
 
-/* 路由变化时自动同步 activeCatId */
-watch(() => route.path, (path) => {
+function findCatId(path) {
   for (const cat of categories) {
-    if (cat.comps.some(c => path === c.route)) {
-      activeCatId.value = cat.id
-      return
-    }
+    if (cat.comps.some(c => path === c.route)) return cat.id
   }
+  return null
+}
+
+/* 展开的栏目集合（可同时展开多个） */
+const expandedCats = reactive(new Set())
+expandedCats.add(findCatId(route.path) || 'container')
+
+/* 路由变化时确保当前所在分类展开 */
+watch(() => route.path, (path) => {
+  const id = findCatId(path)
+  if (id && !expandedCats.has(id)) expandedCats.add(id)
 })
 
-function selectCat(catId) {
-  activeCatId.value = catId
-  const cat = categories.find(c => c.id === catId)
-  if (cat?.comps.length) router.push(cat.comps[0].route)
+function toggleCat(catId) {
+  if (expandedCats.has(catId)) expandedCats.delete(catId)
+  else expandedCats.add(catId)
 }
 
 function goHome() {
-  activeCatId.value = 'container';
+  expandedCats.clear()
+  expandedCats.add('container')
   router.push('/')
 }
 
@@ -98,14 +110,6 @@ function goPricing() {
           <span class="topbar-home" @click="goHome()">RizUI</span>
           <Ctrl_ColorPicker v-model="themeColor"/>
         </div>
-        <nav v-if="isDemoPage" class="topbar-cats">
-          <button v-for="cat in categories" :key="cat.id"
-                  class="topbar-cat" :class="{ active: activeCatId===cat.id }"
-                  :style="activeCatId===cat.id ? { color:themeColor, borderColor:themeColor } : {}"
-                  @click="selectCat(cat.id)"
-          >{{ cat.name }}
-          </button>
-        </nav>
         <div class="topbar-right">
           <span class="topbar-price" @click="goPricing()">AGPLv3 · 许可</span>
           <a class="topbar-gh" href="https://github.com/YunHydrogen/riz-ui" target="_blank">
@@ -119,21 +123,34 @@ function goPricing() {
       </div>
     </header>
 
-    <!-- ═══ 下顶栏（组件页 + 水平滚动） ═══ -->
-    <nav v-if="isDemoPage" class="subbar">
-      <div class="subbar-inner">
-        <router-link
-            v-for="comp in activeCategory?.comps" :key="comp.route"
-            :to="comp.route"
-            class="subbar-item"
-            :class="{ deprecated: comp.deprecated }"
-            active-class="active"
-            :style="route.path===comp.route ? { color:themeColor, borderColor:themeColor } : {}"
-        >{{ comp.zhName }}<span v-if="comp.deprecated" class="depr-tag">旧</span></router-link>
+    <!-- ═══ 侧边栏（手风琴分类）+ 主内容 ═══ -->
+    <div v-if="isDemoPage" class="app-body">
+      <aside class="sidebar">
+        <div v-for="cat in categories" :key="cat.id" class="sbar-cat">
+          <button class="sbar-head" :class="{ active: expandedCats.has(cat.id) }"
+                  :style="expandedCats.has(cat.id) ? { color: themeColor } : {}"
+                  @click="toggleCat(cat.id)">
+            <span class="sbar-name">{{ cat.name }}</span>
+            <span class="sbar-caret" :class="{ open: expandedCats.has(cat.id) }">›</span>
+          </button>
+          <div class="sbar-items" :class="{ open: expandedCats.has(cat.id) }">
+            <div class="sbar-items-inner">
+              <router-link v-for="comp in cat.comps" :key="comp.route" :to="comp.route"
+                           class="sbar-item" :class="{ deprecated: comp.deprecated }"
+                           active-class="active"
+                           :style="route.path === comp.route ? { color: themeColor } : {}">
+                {{ comp.zhName }}<span v-if="comp.deprecated" class="depr-tag">旧</span>
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="content">
+        <router-view/>
       </div>
-    </nav>
+    </div>
 
-    <router-view/>
+    <router-view v-else/>
   </div>
 </template>
 
@@ -213,31 +230,6 @@ code {
   color: v-bind(themeColor);
 }
 
-.topbar-cats {
-  display: flex;
-  gap: 4px;
-  flex: 1;
-  justify-content: center;
-}
-
-.topbar-cat {
-  padding: 5px 14px;
-  border: 1.5px solid transparent;
-  border-radius: 999px;
-  background: transparent;
-  font-size: 13px;
-  font-family: inherit;
-  color: #778;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-}
-
-.topbar-cat:hover {
-  color: #334;
-  background: #f5f5f8;
-}
-
 .topbar-right {
   display: flex;
   align-items: center;
@@ -272,52 +264,111 @@ code {
   color: #334;
 }
 
-/* ── 下顶栏（水平滚动） ── */
-.subbar {
-  width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #e8ecf2;
-}
-
-.subbar-inner {
+/* ── 侧边栏（悬浮大胶囊）+ 主内容 ── */
+.app-body {
   display: flex;
-  gap: 0;
-  padding: 0 24px;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  flex: 1;
+  align-items: flex-start;
+  min-height: 0;
+  padding: 16px 20px 24px;
+  gap: 20px;
 }
 
-.subbar-inner::-webkit-scrollbar {
-  display: none;
-}
-
-.subbar-item {
-  padding: 8px 16px;
-  border: none;
-  border-bottom: 2px solid transparent;
-  background: transparent;
-  font-size: 13px;
-  font-family: inherit;
-  color: #778;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
+.sidebar {
+  position: sticky;
+  top: 88px;
+  align-self: flex-start;
+  width: 236px;
   flex-shrink: 0;
-  text-decoration: none;
-  display: inline-block;
+  height: calc(100vh - 104px);
+  overflow-y: auto;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #eef1f5;
+  box-shadow: 0 10px 32px rgba(30, 41, 59, 0.08);
+  padding: 12px 10px 14px;
 }
 
-.subbar-item:hover {
+.sbar-cat {
+  margin-bottom: 2px;
+}
+
+.sbar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #445;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sbar-head:hover {
+  background: #f5f6f9;
+}
+
+.sbar-caret {
+  font-size: 14px;
+  color: #99a;
+  transition: transform 0.2s;
+}
+
+.sbar-caret.open {
+  transform: rotate(90deg);
+}
+
+/* 展开 / 收起动画：内层单行 grid，行高 0fr↔1fr（元素常驻 DOM，收起高度平滑收缩） */
+.sbar-items {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  padding: 2px 0 6px;
+  transition: grid-template-rows 0.28s ease, opacity 0.18s ease;
+}
+.sbar-items.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.sbar-items-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.sbar-item {
+  display: block;
+  padding: 6px 10px 6px 22px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #778;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sbar-item:hover {
+  background: #f5f6f9;
   color: #334;
 }
 
-.subbar-item.deprecated {
+.sbar-item.active {
+  background: color-mix(in srgb, var(--rizui_themecolor) 10%, white);
+  font-weight: 600;
+}
+
+.sbar-item.deprecated {
   opacity: 0.6;
 }
 
-.depr-tag {
+.content {
+  flex: 1;
+  min-width: 0;
+}.depr-tag {
   display: inline-block;
   margin-left: 5px;
   padding: 0 5px;

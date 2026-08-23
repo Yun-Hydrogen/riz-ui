@@ -20,6 +20,7 @@
     :readonly="readonly"
     :style="rootStyle"
     @input="$emit('update:modelValue', type === 'number' ? ($event.target.value === '' ? null : Number($event.target.value)) : $event.target.value)"
+    @keydown.enter="onEnter"
   />
 </template>
 
@@ -36,12 +37,18 @@ const props = defineProps({
   readonly:     { type: Boolean, default: false }
 })
 
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'enter'])
 
 /* 空 color 时跟随全局主题色变量 --rizui_themecolor */
 const rootStyle = computed(() => ({
   '--inpt-color': props.color || 'var(--rizui_themecolor)'
 }))
+
+/* Enter：触发 enter 事件，默认释放聚焦（blur） */
+function onEnter(e) {
+  emit('enter', props.modelValue)
+  e.target.blur()
+}
 </script>
 
 <style scoped>

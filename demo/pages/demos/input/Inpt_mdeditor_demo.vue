@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { Inpt_mdeditor, Cntr_Card } from 'riz-ui'
+import { Inpt_mdeditor, Cntr_Card, Cntr_Infobox } from 'riz-ui'
 const themeColor = inject('themeColor')
 
 const md = ref(`# 你好，RizUI 👋
@@ -72,6 +72,11 @@ const usage = `const md = ref('# 标题')
         <tbody><tr v-for="p in props" :key="p.name"><td><code>{{ p.name }}</code></td><td><code>{{ p.type }}</code></td><td>{{ p.required||'—' }}</td><td><code>{{ p.default||'—' }}</code></td><td>{{ p.desc }}</td></tr></tbody>
       </table>
     </section>
+
+    <!-- 主题色提示 -->
+    <Cntr_Infobox type="info">
+      未指定 <code>color</code> 时，编辑器（及所有控件）自动跟随全局变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>）。试试右上角取色器实时换色，或在你的项目中于 <code>:root</code> 覆盖该变量。
+    </Cntr_Infobox>
 
     <section class="sec-events"><h3><i class="fa-solid fa-satellite-dish"></i> Events</h3>
       <ul><li v-for="e in events" :key="e"><code>{{ e }}</code></li></ul>

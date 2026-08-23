@@ -7,6 +7,9 @@ import Cntr_Card_demo   from './pages/demos/container/Cntr_Card_demo.vue'
 import Cntr_Cfgrow_demo from './pages/demos/container/Cntr_Cfgrow_demo.vue'
 import Cntr_Infobox_demo from './pages/demos/container/Cntr_Infobox_demo.vue'
 import Ctnr_Dialog_demo from './pages/demos/container/Ctnr_Dialog_demo.vue'
+import Ctnr_Toast_demo from './pages/demos/container/Ctnr_Toast_demo.vue'
+import ThemeColor_demo from './pages/demos/other/ThemeColor_demo.vue'
+import OpenURL_demo from './pages/demos/other/OpenURL_demo.vue'
 import Ctrl_Switch_demo from './pages/demos/control/Ctrl_Switch_demo.vue'
 import Ctrl_Slider_demo from './pages/demos/control/Ctrl_Slider_demo.vue'
 import Ctrl_Dropdown_demo from './pages/demos/control/Ctrl_Dropdown_demo.vue'
@@ -32,6 +35,9 @@ const routes = [
   { path: '/demo/cntr-cfgrow',        name: 'Cntr_Cfgrow',      component: Cntr_Cfgrow_demo },
   { path: '/demo/cntr-infobox',       name: 'Cntr_Infobox',     component: Cntr_Infobox_demo },
   { path: '/demo/cntr-dialog',        name: 'Ctnr_Dialog',       component: Ctnr_Dialog_demo },
+  { path: '/demo/cntr-toast',         name: 'Ctnr_Toast',      component: Ctnr_Toast_demo },
+  { path: '/demo/theme-color',        name: 'ThemeColor',      component: ThemeColor_demo },
+  { path: '/demo/open-url',           name: 'OpenURL',         component: OpenURL_demo },
   { path: '/demo/ctrl-switch',        name: 'Ctrl_Switch',      component: Ctrl_Switch_demo },
   { path: '/demo/ctrl-slider',        name: 'Ctrl_Slider',      component: Ctrl_Slider_demo },
   { path: '/demo/ctrl-dropdown',      name: 'Ctrl_Dropdown',    component: Ctrl_Dropdown_demo },

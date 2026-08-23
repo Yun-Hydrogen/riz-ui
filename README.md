@@ -11,6 +11,7 @@
 | `Cntr_Cfgrow` | 配置行，左侧标签 + 右侧控件，支持 stack 布局 |
 | `Cntr_Infobox` | 提示框，虚线边框 + 预设 info/warn/error 配色 |
 | `Ctnr_Dialog` | 对话框，Teleport + Transition + 遮罩关闭 + 图标 |
+| `Ctnr_Toast` | 通知，info/warn/error + 标题/说明 + 倒计时进度条，Teleport 右上角排队 |
 | `Ctrl_Switch` | 纯 CSS 开关，支持 v-model 和主题色 |
 | `Ctrl_Slider` | 步进滑条，支持拖拽 / 长按 ± 快速增减 |
 | `Ctrl_Timeline` | 时间轴控件，拖拽定位 + 刻度线 |

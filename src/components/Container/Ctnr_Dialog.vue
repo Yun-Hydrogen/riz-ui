@@ -7,7 +7,7 @@
         :class="{ 'cdlg-anchored': isAnchored }"
         @click.self="onMaskClick"
       >
-        <div class="cdlg-box" :style="boxStyle">
+        <div class="cdlg-box" :style="boxStyle" v-bind="$attrs">
           <!-- 头部：图标 + 标题 + 关闭按钮 -->
           <div class="cdlg-header">
             <div v-if="icon" class="cdlg-icon" :style="iconInstyle">
@@ -36,6 +36,8 @@
 
 <script setup>
 import { computed } from 'vue'
+
+defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
   show:         { type: Boolean, default: false },
@@ -104,7 +106,6 @@ function onMaskClick() {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
   min-width: 280px;
   max-width: 90vw;
-  max-height: 70vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;

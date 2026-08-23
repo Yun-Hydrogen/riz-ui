@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { Ctnr_Dialog, Cntr_Card, Cntr_Cfgrow, Ctrl_Button } from 'riz-ui'
+import { Ctnr_Dialog, Cntr_Card, Cntr_Cfgrow, Cntr_Infobox, Ctrl_Button } from 'riz-ui'
 const themeColor = inject('themeColor')
 
 const showBasic = ref(false)
@@ -107,6 +107,11 @@ const usage = `const show = ref(false)
         <tbody><tr v-for="p in props" :key="p.name"><td><code>{{ p.name }}</code></td><td><code>{{ p.type }}</code></td><td>{{ p.required||'—' }}</td><td><code>{{ p.default||'—' }}</code></td><td>{{ p.desc }}</td></tr></tbody>
       </table>
     </section>
+
+    <!-- 主题色提示 -->
+    <Cntr_Infobox type="info">
+      未指定 <code>color</code> 时，对话框（及所有控件）自动跟随全局变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>）。试试右上角取色器实时换色，或在你的项目中于 <code>:root</code> 覆盖该变量。
+    </Cntr_Infobox>
 
     <section class="sec-slots"><h3><i class="fa-solid fa-puzzle-piece"></i> Slots</h3>
       <ul><li v-for="s in slots" :key="s"><code>{{ s }}</code></li></ul>
