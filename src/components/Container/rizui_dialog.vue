@@ -10,10 +10,10 @@
         <div class="cdlg-box" :style="boxStyle" v-bind="$attrs">
           <!-- 头部：图标 + 标题 + 关闭按钮 -->
           <div class="cdlg-header">
-            <div v-if="icon" class="cdlg-icon" :style="iconInstyle">
+            <div v-if="icon" class="cdlg-icon" :style="iconStyle">
               <i :class="icon"></i>
             </div>
-            <span class="cdlg-title" :style="titleInstyle">{{ title }}</span>
+            <span class="cdlg-title" :style="titleStyle">{{ title }}</span>
             <button v-if="closable" class="cdlg-close" @click="close" type="button">
               <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
@@ -42,9 +42,9 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps({
   show:         { type: Boolean, default: false },
   title:        { type: String,  default: '' },
-  titleInstyle: { type: Object,  default: () => ({}) },
+  titleStyle: { type: Object,  default: () => ({}) },
   icon:         { type: String,  default: '' },
-  iconInstyle:  { type: Object,  default: () => ({}) },
+  iconStyle:  { type: Object,  default: () => ({}) },
   color:        { type: String,  default: '' },
   teleport:     { type: String,  default: 'body' },
   width:        { type: String,  default: 'auto' },

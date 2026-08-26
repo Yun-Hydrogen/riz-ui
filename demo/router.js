@@ -3,21 +3,22 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import HomePage       from './pages/HomePage.vue'
 import PricingPage    from './pages/PricingPage.vue'
 
-import Cntr_Card_demo   from './pages/demos/container/Cntr_Card_demo.vue'
-import Cntr_Cfgrow_demo from './pages/demos/container/Cntr_Cfgrow_demo.vue'
-import Cntr_Infobox_demo from './pages/demos/container/Cntr_Infobox_demo.vue'
-import Ctnr_Dialog_demo from './pages/demos/container/Ctnr_Dialog_demo.vue'
-import Ctnr_Toast_demo from './pages/demos/container/Ctnr_Toast_demo.vue'
+import rizui_card_demo   from './pages/demos/container/rizui_card_demo.vue'
+import rizui_cfgrow_demo from './pages/demos/container/rizui_cfgrow_demo.vue'
+import rizui_infobox_demo from './pages/demos/container/rizui_infobox_demo.vue'
+import rizui_dialog_demo from './pages/demos/container/rizui_dialog_demo.vue'
+import rizui_toast_demo from './pages/demos/container/rizui_toast_demo.vue'
 import ThemeColor_demo from './pages/demos/other/ThemeColor_demo.vue'
 import OpenURL_demo from './pages/demos/other/OpenURL_demo.vue'
-import Ctrl_Switch_demo from './pages/demos/control/Ctrl_Switch_demo.vue'
-import Ctrl_Slider_demo from './pages/demos/control/Ctrl_Slider_demo.vue'
-import Ctrl_Dropdown_demo from './pages/demos/control/Ctrl_Dropdown_demo.vue'
-import Ctrl_ColorPicker_demo from './pages/demos/control/Ctrl_ColorPicker_demo.vue'
-import Ctrl_Timeline_demo from './pages/demos/control/Ctrl_Timeline_demo.vue'
-import Ctrl_Button_demo from './pages/demos/control/Ctrl_Button_demo.vue'
-import Inpt_demo from './pages/demos/input/Inpt_Text_demo.vue'
-import Inpt_mdeditor_demo from './pages/demos/input/Inpt_mdeditor_demo.vue'
+import rizui_switch_demo from './pages/demos/control/rizui_switch_demo.vue'
+import rizui_slider_demo from './pages/demos/control/rizui_slider_demo.vue'
+import rizui_dropdown_demo from './pages/demos/control/rizui_dropdown_demo.vue'
+import rizui_colorpicker_demo from './pages/demos/control/rizui_colorpicker_demo.vue'
+import rizui_timeline_demo from './pages/demos/control/rizui_timeline_demo.vue'
+import rizui_button_demo from './pages/demos/control/rizui_button_demo.vue'
+import rizui_checkbox_demo from './pages/demos/control/rizui_checkbox_demo.vue'
+import rizui_text_demo from './pages/demos/input/rizui_text_demo.vue'
+import rizui_mdeditor_demo from './pages/demos/input/rizui_mdeditor_demo.vue'
 import UiCard_demo    from './pages/demos/old/UiCard_demo.vue'
 import UiConfigRow_demo from './pages/demos/old/UiConfigRow_demo.vue'
 import UiSwitch_demo  from './pages/demos/old/UiSwitch_demo.vue'
@@ -31,21 +32,22 @@ import NotReadyOverlay_demo from './pages/demos/old/NotReadyOverlay_demo.vue'
 const routes = [
   { path: '/',                         name: 'home',              component: HomePage },
   { path: '/pricing',                  name: 'pricing',           component: PricingPage },
-  { path: '/demo/cntr-card',           name: 'Cntr_Card',         component: Cntr_Card_demo },
-  { path: '/demo/cntr-cfgrow',        name: 'Cntr_Cfgrow',      component: Cntr_Cfgrow_demo },
-  { path: '/demo/cntr-infobox',       name: 'Cntr_Infobox',     component: Cntr_Infobox_demo },
-  { path: '/demo/cntr-dialog',        name: 'Ctnr_Dialog',       component: Ctnr_Dialog_demo },
-  { path: '/demo/cntr-toast',         name: 'Ctnr_Toast',      component: Ctnr_Toast_demo },
+  { path: '/demo/rizui-card',          name: 'rizui_card',         component: rizui_card_demo },
+  { path: '/demo/rizui-cfgrow',       name: 'rizui_cfgrow',      component: rizui_cfgrow_demo },
+  { path: '/demo/rizui-infobox',      name: 'rizui_infobox',     component: rizui_infobox_demo },
+  { path: '/demo/rizui-dialog',       name: 'rizui_dialog',       component: rizui_dialog_demo },
+  { path: '/demo/rizui-toast',        name: 'rizui_toast',      component: rizui_toast_demo },
   { path: '/demo/theme-color',        name: 'ThemeColor',      component: ThemeColor_demo },
   { path: '/demo/open-url',           name: 'OpenURL',         component: OpenURL_demo },
-  { path: '/demo/ctrl-switch',        name: 'Ctrl_Switch',      component: Ctrl_Switch_demo },
-  { path: '/demo/ctrl-slider',        name: 'Ctrl_Slider',      component: Ctrl_Slider_demo },
-  { path: '/demo/ctrl-dropdown',      name: 'Ctrl_Dropdown',    component: Ctrl_Dropdown_demo },
-  { path: '/demo/ctrl-color-picker',  name: 'Ctrl_ColorPicker', component: Ctrl_ColorPicker_demo },
-  { path: '/demo/ctrl-timeline',      name: 'Ctrl_Timeline',   component: Ctrl_Timeline_demo },
-  { path: '/demo/ctrl-button',        name: 'Ctrl_Button',     component: Ctrl_Button_demo },
-  { path: '/demo/inpt',               name: 'Inpt',            component: Inpt_demo },
-  { path: '/demo/inpt-mdeditor',      name: 'Inpt_mdeditor',   component: Inpt_mdeditor_demo },
+  { path: '/demo/rizui-switch',       name: 'rizui_switch',      component: rizui_switch_demo },
+  { path: '/demo/rizui-slider',       name: 'rizui_slider',      component: rizui_slider_demo },
+  { path: '/demo/rizui-dropdown',     name: 'rizui_dropdown',    component: rizui_dropdown_demo },
+  { path: '/demo/rizui-colorpicker',  name: 'rizui_colorpicker', component: rizui_colorpicker_demo },
+  { path: '/demo/rizui-timeline',     name: 'rizui_timeline',   component: rizui_timeline_demo },
+  { path: '/demo/rizui-button',       name: 'rizui_button',     component: rizui_button_demo },
+  { path: '/demo/rizui-checkbox',     name: 'rizui_checkbox',   component: rizui_checkbox_demo },
+  { path: '/demo/rizui-text',         name: 'rizui_text',       component: rizui_text_demo },
+  { path: '/demo/rizui-mdeditor',     name: 'rizui_mdeditor',   component: rizui_mdeditor_demo },
   { path: '/demo/ui-card',             name: 'UiCard',            component: UiCard_demo },
   { path: '/demo/ui-config-row',       name: 'UiConfigRow',       component: UiConfigRow_demo },
   { path: '/demo/ui-switch',           name: 'UiSwitch',          component: UiSwitch_demo },

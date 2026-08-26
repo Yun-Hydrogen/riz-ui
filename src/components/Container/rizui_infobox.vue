@@ -1,12 +1,12 @@
 <template>
   <div class="inbx-root" :class="`inbx-${type}`" :style="inbxStyle">
     <!-- 左侧图标：自定义 icon 优先，否则按 type 预设 -->
-    <div class="inbx-icon" :style="iconInstyle">
+    <div class="inbx-icon" :style="iconStyle">
       <i :class="icon || defaultIcon"></i>
     </div>
     <!-- 文本 + 默认插槽（stack=auto：有 text 且带 slot 时，slot 排在 text 下方） -->
     <div class="inbx-content">
-      <div v-if="text" class="inbx-text" :style="textInstyle">{{ text }}</div>
+      <div v-if="text" class="inbx-text" :style="textStyle">{{ text }}</div>
       <div v-if="hasSlot" class="inbx-slot" :class="{ 'inbx-slot-stack': isStack }">
         <slot />
       </div>
@@ -20,9 +20,9 @@ import { computed, useSlots } from 'vue'
 const props = defineProps({
   type:        { type: String,  default: 'info' },
   text:        { type: String,  default: '' },
-  textInstyle: { type: Object,  default: () => ({}) },
+  textStyle: { type: Object,  default: () => ({}) },
   icon:        { type: String,  default: '' },
-  iconInstyle: { type: Object,  default: () => ({}) },
+  iconStyle: { type: Object,  default: () => ({}) },
   color:       { type: String,  default: '' }
 })
 

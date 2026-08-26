@@ -9,7 +9,7 @@ const themeColor = inject('themeColor')
       <h1 class="home-logo">RizUI</h1>
       <p class="home-desc">一套轻量、精致的 Vue 3 通用 UI 组件库</p>
       <div class="home-actions">
-        <router-link to="/demo/cntr-card" class="home-btn home-btn-primary" :style="{ background: themeColor }">浏览组件</router-link>
+        <router-link to="/demo/rizui-card" class="home-btn home-btn-primary" :style="{ background: themeColor }">浏览组件</router-link>
         <a class="home-btn home-btn-ghost" href="https://github.com/YunHydrogen/riz-ui" target="_blank">GitHub</a>
       </div>
     </section>
@@ -23,7 +23,7 @@ const themeColor = inject('themeColor')
       <h2>快速开始</h2>
       <pre class="code-block"><code>npm install github:YunHydrogen/riz-ui
 
-import { Ctrl_Button, Cntr_Card } from 'riz-ui'</code></pre>
+import { rizui_button, rizui_card } from 'riz-ui'</code></pre>
       <div class="home-theme-tip">
         <i class="fa-solid fa-palette"></i>
         <span>全局主题色变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>）。控件未指定 <code>color</code> 时自动跟随，覆盖该变量即可全库换色。</span>

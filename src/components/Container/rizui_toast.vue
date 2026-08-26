@@ -9,15 +9,15 @@
         @click="onClick"
       >
         <!-- 左侧图标 -->
-        <div class="tst-icon" :style="iconInstyle">
+        <div class="tst-icon" :style="iconStyle">
           <i :class="icon || defaultIcon"></i>
         </div>
 
         <!-- 内容：title / hint 与默认插槽可同时使用，或只用一个（自闭合/独立闭合均可）
              有 title/hint 且带 slot 时，slot 排在文字下方 -->
         <div class="tst-content">
-          <div v-if="title" class="tst-title" :style="titleInstyle">{{ title }}</div>
-          <div v-if="hint" class="tst-hint" :style="hintInstyle">{{ hint }}</div>
+          <div v-if="title" class="tst-title" :style="titleStyle">{{ title }}</div>
+          <div v-if="hint" class="tst-hint" :style="hintStyle">{{ hint }}</div>
           <div v-if="hasSlot" class="tst-slot" :class="{ 'tst-slot-stack': isStack }">
             <slot />
           </div>
@@ -44,10 +44,10 @@ const props = defineProps({
   type:         { type: String,  default: 'info' },
   title:        { type: String,  default: '' },
   hint:         { type: String,  default: '' },
-  titleInstyle: { type: Object,  default: () => ({}) },
-  hintInstyle:  { type: Object,  default: () => ({}) },
+  titleStyle: { type: Object,  default: () => ({}) },
+  hintStyle:  { type: Object,  default: () => ({}) },
   icon:         { type: String,  default: '' },
-  iconInstyle:  { type: Object,  default: () => ({}) },
+  iconStyle:  { type: Object,  default: () => ({}) },
   countdown:    { type: Number,  default: 3 },
   closable:     { type: Boolean, default: true },
   showBar:      { type: Boolean, default: true },

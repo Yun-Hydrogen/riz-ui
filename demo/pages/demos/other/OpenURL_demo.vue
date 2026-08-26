@@ -1,10 +1,10 @@
 <script setup>
-import { openURL, Ctrl_Button, Cntr_Card, Cntr_Cfgrow } from 'riz-ui'
+import { openURL, rizui_button, rizui_card, rizui_cfgrow } from 'riz-ui'
 
 const usage = `import { openURL } from 'riz-ui'
 
 <!-- 模板里直接绑定 -->
-<Ctrl_Button text="打开文档" @click="openURL('https://github.com/YunHydrogen/riz-ui')" />
+<rizui_button text="打开文档" @click="openURL('https://github.com/YunHydrogen/riz-ui')" />
 
 <!-- 或 JS 里调用 -->
 openURL('https://example.com', '_blank')`
@@ -18,14 +18,14 @@ openURL('https://example.com', '_blank')`
     </section>
 
     <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
-      <Cntr_Card title="跳转示例" desc="点按钮在新标签页打开">
-        <Cntr_Cfgrow label="GitHub 仓库">
-          <Ctrl_Button text="打开仓库" primary @click="openURL('https://github.com/YunHydrogen/riz-ui')" r-icon="fa-solid fa-arrow-up-right-from-square"/>
-        </Cntr_Cfgrow>
-        <Cntr_Cfgrow label="哔哩哔哩">
-          <Ctrl_Button text="打开 B 站" @click="openURL('https://space.bilibili.com/560229787')" r-icon="fa-solid fa-arrow-up-right-from-square"/>
-        </Cntr_Cfgrow>
-      </Cntr_Card>
+      <rizui_card title="跳转示例" desc="点按钮在新标签页打开">
+        <rizui_cfgrow label="GitHub 仓库">
+          <rizui_button text="打开仓库" primary @click="openURL('https://github.com/YunHydrogen/riz-ui')" r-icon="fa-solid fa-arrow-up-right-from-square"/>
+        </rizui_cfgrow>
+        <rizui_cfgrow label="哔哩哔哩">
+          <rizui_button text="打开 B 站" @click="openURL('https://space.bilibili.com/560229787')" r-icon="fa-solid fa-arrow-up-right-from-square"/>
+        </rizui_cfgrow>
+      </rizui_card>
     </section>
 
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>

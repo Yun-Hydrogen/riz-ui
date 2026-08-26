@@ -15,44 +15,44 @@ export declare function openURL(url: string, target?: string): void
 /* ═══════════════════════════ Container ═══════════════════════════ */
 
 /** 卡片容器：标题 + 描述 + 内容插槽 */
-export declare const Cntr_Card: DefineComponent<{
+export declare const rizui_card: DefineComponent<{
   title?: string
-  titleInstyle?: Instyle
+  titleStyle?: Instyle
   desc?: string
-  descInstyle?: Instyle
+  descStyle?: Instyle
   icon?: string
-  iconInstyle?: Instyle
+  iconStyle?: Instyle
 }>
 
 /** 配置行：左侧标签 + 右侧控件，支持 stack 布局 */
-export declare const Cntr_Cfgrow: DefineComponent<{
+export declare const rizui_cfgrow: DefineComponent<{
   label?: string
-  labelInstyle?: Instyle
+  labelStyle?: Instyle
   hint?: string
-  hintInstyle?: Instyle
+  hintStyle?: Instyle
   icon?: string
-  iconInstyle?: Instyle
+  iconStyle?: Instyle
   stack?: boolean
   disabled?: boolean
 }>
 
 /** 提示框：虚线边框 + info/warn/error 预设配色 */
-export declare const Cntr_Infobox: DefineComponent<{
+export declare const rizui_infobox: DefineComponent<{
   type?: string
   text?: string
-  textInstyle?: Instyle
+  textStyle?: Instyle
   icon?: string
-  iconInstyle?: Instyle
+  iconStyle?: Instyle
 }>
 
 /** 对话框：Teleport + 遮罩关闭 + 图标 */
-export declare const Ctnr_Dialog: DefineComponent<
+export declare const rizui_dialog: DefineComponent<
   {
     show?: boolean
     title?: string
-    titleInstyle?: Instyle
+    titleStyle?: Instyle
     icon?: string
-    iconInstyle?: Instyle
+    iconStyle?: Instyle
     color?: string
     teleport?: string
     width?: string
@@ -64,15 +64,15 @@ export declare const Ctnr_Dialog: DefineComponent<
 >
 
 /** 通知：info/warn/error + 倒计时进度条，Teleport 右上角排队 */
-export declare const Ctnr_Toast: DefineComponent<
+export declare const rizui_toast: DefineComponent<
   {
     type?: string
     title?: string
     hint?: string
-    titleInstyle?: Instyle
-    hintInstyle?: Instyle
+    titleStyle?: Instyle
+    hintStyle?: Instyle
     icon?: string
-    iconInstyle?: Instyle
+    iconStyle?: Instyle
     countdown?: number
     closable?: boolean
     showBar?: boolean
@@ -89,14 +89,25 @@ export declare const Ctnr_Toast: DefineComponent<
 /* ═══════════════════════════ Control ═══════════════════════════ */
 
 /** 开关：纯 CSS 开关，v-model + 主题色 */
-export declare const Ctrl_Switch: DefineComponent<{
+export declare const rizui_switch: DefineComponent<{
   modelValue?: boolean
   color?: string
   disabled?: boolean
 }>
 
+/** 复选框：方框勾选，v-model + 主题色，label 可左右 */
+export declare const rizui_checkbox: DefineComponent<{
+  modelValue?: boolean
+  color?: string
+  disabled?: boolean
+  lLabel?: string
+  lLabelStyle?: Instyle
+  rLabel?: string
+  rLabelStyle?: Instyle
+}>
+
 /** 滑条：步进 + 拖拽 / 长按 */
-export declare const Ctrl_Slider: DefineComponent<{
+export declare const rizui_slider: DefineComponent<{
   modelValue?: number
   min?: number
   max?: number
@@ -107,7 +118,7 @@ export declare const Ctrl_Slider: DefineComponent<{
 }>
 
 /** 时间轴：拖拽定位 + 刻度线 */
-export declare const Ctrl_Timeline: DefineComponent<{
+export declare const rizui_timeline: DefineComponent<{
   modelValue?: number
   min?: number
   max?: number
@@ -116,28 +127,28 @@ export declare const Ctrl_Timeline: DefineComponent<{
 }>
 
 /** 下拉选择器：点击外部自动关闭 */
-export declare const Ctrl_Dropdown: DefineComponent<{
+export declare const rizui_dropdown: DefineComponent<{
   modelValue?: string | number
   options?: Array<{ value: string | number, label?: string, icon?: string } | string | number>
   color?: string
 }>
 
 /** 颜色选择器：HSL 调色盘 + hex 输入 */
-export declare const Ctrl_ColorPicker: DefineComponent<{
+export declare const rizui_colorpicker: DefineComponent<{
   modelValue?: string
   color?: string
   teleport?: string
 }>
 
 /** 按钮：主题色填充 / 通栏 / 左右图标 / 危险 */
-export declare const Ctrl_Button: DefineComponent<
+export declare const rizui_button: DefineComponent<
   {
     text?: string
-    textInstyle?: Instyle
+    textStyle?: Instyle
     lIcon?: string
-    lIconInstyle?: Instyle
+    lIconStyle?: Instyle
     rIcon?: string
-    rIconInstyle?: Instyle
+    rIconStyle?: Instyle
     primary?: boolean
     danger?: boolean
     long?: boolean
@@ -152,7 +163,7 @@ export declare const Ctrl_Button: DefineComponent<
 /* ═══════════════════════════ Input ═══════════════════════════ */
 
 /** 文本 / 数字输入框 */
-export declare const Inpt_Text: DefineComponent<{
+export declare const rizui_text: DefineComponent<{
   modelValue?: string | number | null
   type?: string
   placeholder?: string
@@ -163,7 +174,7 @@ export declare const Inpt_Text: DefineComponent<{
 }>
 
 /** Markdown 编辑器：顶栏工具栏 + 预览选项卡 */
-export declare const Inpt_mdeditor: DefineComponent<{
+export declare const rizui_mdeditor: DefineComponent<{
   modelValue?: string
   placeholder?: string
   color?: string

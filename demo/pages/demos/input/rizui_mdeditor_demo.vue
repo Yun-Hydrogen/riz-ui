@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { Inpt_mdeditor, Cntr_Card, Cntr_Infobox } from 'riz-ui'
+import { rizui_mdeditor, rizui_card, rizui_infobox } from 'riz-ui'
 const themeColor = inject('themeColor')
 
 const md = ref(`# 你好，RizUI 👋
@@ -19,8 +19,8 @@ const md = ref(`# 你好，RizUI 👋
 
 | 组件 | 类型 |
 | --- | --- |
-| Inpt_mdeditor | Markdown 编辑器 |
-| Inpt_Text | 文本输入 |`)
+| rizui_mdeditor | Markdown 编辑器 |
+| rizui_text | 文本输入 |`)
 
 const props = [
   { name:'modelValue',  type:'String',  default:'""',      desc:'v-model 绑定的 Markdown 文本' },
@@ -34,37 +34,37 @@ const props = [
 const events = ['update:modelValue']
 const usage = `const md = ref('# 标题')
 
-<Inpt_mdeditor v-model="md" height="360px" />
+<rizui_mdeditor v-model="md" height="360px" />
 
 <!-- 默认加载编辑板块（default="edit"），可切换预览 -->
-<Inpt_mdeditor v-model="md" default="preview" />
+<rizui_mdeditor v-model="md" default="preview" />
 
 <!-- 禁用编辑，但仍可切换 编辑 / 预览 -->
-<Inpt_mdeditor v-model="md" disabled />`
+<rizui_mdeditor v-model="md" disabled />`
 </script>
 
 <template>
   <main class="main">
     <section class="sec-header">
-      <div class="sec-title-row"><h2>Markdown 编辑器</h2><p class="sec-tag">Inpt_mdeditor</p></div>
+      <div class="sec-title-row"><h2>Markdown 编辑器</h2><p class="sec-tag">rizui_mdeditor</p></div>
       <p class="sec-desc">带顶栏工具栏的 Markdown 编辑器，支持光标处插入语法与实时预览。工具栏按钮可对选中文本加粗 / 斜体 / 插入代码 / 链接等。</p>
     </section>
 
     <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
       <!--标准用法-->  
-      <Cntr_Card title="基础用法" desc="工具栏 + 编辑 / 预览选项卡">
-        <Inpt_mdeditor v-model="md" :height="'340px'" />
-      </Cntr_Card>
+      <rizui_card title="基础用法" desc="工具栏 + 编辑 / 预览选项卡">
+        <rizui_mdeditor v-model="md" :height="'340px'" />
+      </rizui_card>
 
       <!--只读模式-->
-      <Cntr_Card title="只读模式" desc="readonly=true，仅显示预览区，不可编辑">
-        <Inpt_mdeditor v-model="md" readonly height="auto" />
-      </Cntr_Card>
+      <rizui_card title="只读模式" desc="readonly=true，仅显示预览区，不可编辑">
+        <rizui_mdeditor v-model="md" readonly height="auto" />
+      </rizui_card>
 
       <!-- 禁用编辑 -->
-      <Cntr_Card title="禁用编辑" desc="disabled=true，编辑区不可输入，但可切换预览">
-        <Inpt_mdeditor v-model="md" disabled />
-      </Cntr_Card>
+      <rizui_card title="禁用编辑" desc="disabled=true，编辑区不可输入，但可切换预览">
+        <rizui_mdeditor v-model="md" disabled />
+      </rizui_card>
     </section>
 
     <section class="sec-props"><h3><i class="fa-solid fa-list-check"></i> Props</h3>
@@ -74,9 +74,9 @@ const usage = `const md = ref('# 标题')
     </section>
 
     <!-- 主题色提示 -->
-    <Cntr_Infobox type="info">
+    <rizui_infobox type="info">
       未指定 <code>color</code> 时，编辑器（及所有控件）自动跟随全局变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>）。试试右上角取色器实时换色，或在你的项目中于 <code>:root</code> 覆盖该变量。
-    </Cntr_Infobox>
+    </rizui_infobox>
 
     <section class="sec-events"><h3><i class="fa-solid fa-satellite-dish"></i> Events</h3>
       <ul><li v-for="e in events" :key="e"><code>{{ e }}</code></li></ul>

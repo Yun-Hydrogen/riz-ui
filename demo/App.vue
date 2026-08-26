@@ -1,7 +1,7 @@
 <script setup>
 import {ref, computed, reactive, provide, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {Ctrl_ColorPicker} from 'riz-ui'
+import {rizui_colorpicker} from 'riz-ui'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,27 +13,28 @@ provide('themeColor', themeColor)
 const categories = [
   {
     id: 'container', name: '容器样式', comps: [
-      {route: '/demo/cntr-card', zhName: '卡片', deprecated: false},
-      {route: '/demo/cntr-cfgrow', zhName: '配置行', deprecated: false},
-      {route: '/demo/cntr-infobox', zhName: '提示框', deprecated: false},
-      {route: '/demo/cntr-dialog', zhName: '对话框', deprecated: false},
-      {route: '/demo/cntr-toast', zhName: 'Toast', deprecated: false}
+      {route: '/demo/rizui-card', zhName: '卡片', deprecated: false},
+      {route: '/demo/rizui-cfgrow', zhName: '配置行', deprecated: false},
+      {route: '/demo/rizui-infobox', zhName: '提示框', deprecated: false},
+      {route: '/demo/rizui-dialog', zhName: '对话框', deprecated: false},
+      {route: '/demo/rizui-toast', zhName: 'Toast', deprecated: false}
     ]
   },
   {
     id: 'ioput', name: '开关控制', comps: [
-      {route: '/demo/ctrl-switch', zhName: '开关', deprecated: false},
-      {route: '/demo/ctrl-slider', zhName: '滑条', deprecated: false},
-      {route: '/demo/ctrl-dropdown', zhName: '下拉', deprecated: false},
-      {route: '/demo/ctrl-color-picker', zhName: '取色器', deprecated: false},
-      {route: '/demo/ctrl-timeline', zhName: '时间轴', deprecated: false},
-      {route: '/demo/ctrl-button', zhName: '按钮', deprecated: false}
+      {route: '/demo/rizui-switch', zhName: '开关', deprecated: false},
+      {route: '/demo/rizui-slider', zhName: '滑条', deprecated: false},
+      {route: '/demo/rizui-dropdown', zhName: '下拉', deprecated: false},
+      {route: '/demo/rizui-colorpicker', zhName: '取色器', deprecated: false},
+      {route: '/demo/rizui-timeline', zhName: '时间轴', deprecated: false},
+      {route: '/demo/rizui-button', zhName: '按钮', deprecated: false},
+      {route: '/demo/rizui-checkbox', zhName: '复选框', deprecated: false}
     ]
   },
   {
     id: 'input', name: '输入组件', comps: [
-      {route: '/demo/inpt', zhName: '文本输入', deprecated: false},
-      {route: '/demo/inpt-mdeditor', zhName: 'MD 编辑器', deprecated: false}
+      {route: '/demo/rizui-text', zhName: '文本输入', deprecated: false},
+      {route: '/demo/rizui-mdeditor', zhName: 'MD 编辑器', deprecated: false}
     ]
   },
   {
@@ -108,7 +109,7 @@ function goPricing() {
       <div class="topbar-inner">
         <div class="topbar-left">
           <span class="topbar-home" @click="goHome()">RizUI</span>
-          <Ctrl_ColorPicker v-model="themeColor"/>
+          <rizui_colorpicker v-model="themeColor"/>
         </div>
         <div class="topbar-right">
           <span class="topbar-price" @click="goPricing()">AGPLv3 · 许可</span>

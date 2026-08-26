@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { Ctrl_Button, Ctrl_Switch, Ctrl_Slider, Ctrl_Timeline, Ctrl_Dropdown, Cntr_Card, Cntr_Cfgrow } from 'riz-ui'
+import { rizui_button, rizui_switch, rizui_slider, rizui_timeline, rizui_dropdown, rizui_card, rizui_cfgrow } from 'riz-ui'
 
 const themeColor = inject('themeColor')
 
@@ -23,7 +23,7 @@ const usage = `<!-- 1. CSS 变量方式：任何元素都能直接拿（推荐�
 import { inject } from 'vue'
 const themeColor = inject('themeColor')  // 返回 ref，模板自动解包
 <\/script>
-<Ctrl_Button :text="themeColor" primary />`
+<rizui_button :text="themeColor" primary />`
 </script>
 
 <template>
@@ -34,40 +34,40 @@ const themeColor = inject('themeColor')  // 返回 ref，模板自动解包
     </section>
 
     <section class="sec-demo"><h3><i class="fa-solid fa-gamepad"></i> 示例</h3>
-      <Cntr_Card title="CSS 变量直接用" desc="不用 JS，直接在 style 里 var() 就行">
+      <rizui_card title="CSS 变量直接用" desc="不用 JS，直接在 style 里 var() 就行">
         <div class="thm-row">
           <span class="thm-chip" :style="{ color: 'var(--rizui_themecolor)' }">文字色</span>
           <span class="thm-chip thm-chip-bg" :style="{ background: 'var(--rizui_themecolor)' }">背景色</span>
           <span class="thm-chip thm-chip-line" :style="{ borderColor: 'var(--rizui_themecolor)', color: 'var(--rizui_themecolor)' }">边框色</span>
         </div>
-      </Cntr_Card>
+      </rizui_card>
 
-      <Cntr_Card title="JS 拿当前值" desc="一般用不到：只有 JS 需要读色值（拼进样式/传 prop）时才 inject">
-        <Cntr_Cfgrow label="当前主题色" hint="顶栏取色器改的就是它">
+      <rizui_card title="JS 拿当前值" desc="一般用不到：只有 JS 需要读色值（拼进样式/传 prop）时才 inject">
+        <rizui_cfgrow label="当前主题色" hint="顶栏取色器改的就是它">
           <span class="thm-value" :style="{ color: 'var(--rizui_themecolor)' }">{{ themeColor }}</span>
-        </Cntr_Cfgrow>
-        <Cntr_Cfgrow label="给按钮上主题色" hint="color prop 传给它">
-          <Ctrl_Button :text="'当前色 ' + themeColor" primary :color="themeColor" />
-        </Cntr_Cfgrow>
-      </Cntr_Card>
+        </rizui_cfgrow>
+        <rizui_cfgrow label="给按钮上主题色" hint="color prop 传给它">
+          <rizui_button :text="'当前色 ' + themeColor" primary :color="themeColor" />
+        </rizui_cfgrow>
+      </rizui_card>
 
-      <Cntr_Card title="控件空 color 自动跟随" desc="什么都不传，天然就是主题色">
-        <Cntr_Cfgrow label="按钮" hint="primary 空 color">
-          <Ctrl_Button text="跟着主题色走" primary />
-        </Cntr_Cfgrow>
-        <Cntr_Cfgrow label="开关" hint="空 color">
-          <Ctrl_Switch v-model="switchOn" />
-        </Cntr_Cfgrow>
-        <Cntr_Cfgrow label="滑条" hint="空 color">
-          <Ctrl_Slider v-model="sliderVal" />
-        </Cntr_Cfgrow>
-        <Cntr_Cfgrow label="时间轴" hint="空 color">
-          <Ctrl_Timeline v-model="timelineVal" />
-        </Cntr_Cfgrow>
-        <Cntr_Cfgrow label="下拉" hint="空 color">
-          <Ctrl_Dropdown v-model="dropdownVal" :options="['主题色方案', '跟随变色', '其他预设']" />
-        </Cntr_Cfgrow>
-      </Cntr_Card>
+      <rizui_card title="控件空 color 自动跟随" desc="什么都不传，天然就是主题色">
+        <rizui_cfgrow label="按钮" hint="primary 空 color">
+          <rizui_button text="跟着主题色走" primary />
+        </rizui_cfgrow>
+        <rizui_cfgrow label="开关" hint="空 color">
+          <rizui_switch v-model="switchOn" />
+        </rizui_cfgrow>
+        <rizui_cfgrow label="滑条" hint="空 color">
+          <rizui_slider v-model="sliderVal" />
+        </rizui_cfgrow>
+        <rizui_cfgrow label="时间轴" hint="空 color">
+          <rizui_timeline v-model="timelineVal" />
+        </rizui_cfgrow>
+        <rizui_cfgrow label="下拉" hint="空 color">
+          <rizui_dropdown v-model="dropdownVal" :options="['主题色方案', '跟随变色', '其他预设']" />
+        </rizui_cfgrow>
+      </rizui_card>
     </section>
 
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>

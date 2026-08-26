@@ -42,7 +42,7 @@
 
             <div class="ccp-footer">
               <span class="ccp-preview" :style="{ background: tempColor }"></span>
-              <Inpt_Text
+              <rizui_text
                 :model-value="tempColor"
                 :color="props.color"
                 placeholder="#ffffff"
@@ -62,7 +62,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import Inpt_Text from '../Input/Inpt_Text.vue'
+import rizui_text from '../Input/rizui_text.vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '#ffffff' },

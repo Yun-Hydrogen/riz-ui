@@ -17,9 +17,9 @@
     :disabled="href ? undefined : (disabled || undefined)"
     @click="$emit('click', $event)"
   >
-    <i v-if="lIcon" class="cbtn-icon" :class="lIcon" :style="lIconInstyle"></i>
-    <span v-if="text" class="cbtn-text" :style="textInstyle">{{ text }}</span>
-    <i v-if="rIcon" class="cbtn-icon" :class="rIcon" :style="rIconInstyle"></i>
+    <i v-if="lIcon" class="cbtn-icon" :class="lIcon" :style="lIconStyle"></i>
+    <span v-if="text" class="cbtn-text" :style="textStyle">{{ text }}</span>
+    <i v-if="rIcon" class="cbtn-icon" :class="rIcon" :style="rIconStyle"></i>
   </component>
 </template>
 
@@ -28,11 +28,11 @@ import { computed } from 'vue'
 
 const props = defineProps({
   text:         { type: String,  default: '' },
-  textInstyle:  { type: Object,  default: () => ({}) },
+  textStyle:  { type: Object,  default: () => ({}) },
   lIcon:        { type: String,  default: '' },
-  lIconInstyle: { type: Object,  default: () => ({}) },
+  lIconStyle: { type: Object,  default: () => ({}) },
   rIcon:        { type: String,  default: '' },
-  rIconInstyle: { type: Object,  default: () => ({}) },
+  rIconStyle: { type: Object,  default: () => ({}) },
   primary:      { type: Boolean, default: false },
   danger:       { type: Boolean, default: false },
   long:         { type: Boolean, default: false },

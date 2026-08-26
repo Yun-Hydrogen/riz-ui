@@ -2,12 +2,12 @@
   <div class="ct-card">
     <!-- 头部：图标 + 标题/描述（图标仅跨这两行） -->
     <div class="ct-card-head">
-      <div v-if="icon" class="ct-card-icon" :style="iconInstyle">
+      <div v-if="icon" class="ct-card-icon" :style="iconStyle">
         <i :class="icon"></i>
       </div>
       <div class="ct-card-head-text">
-        <div v-if="title" class="ct-card-title" :style="titleInstyle">{{ title }}</div>
-        <div v-if="desc" class="ct-card-desc" :style="descInstyle">{{ desc }}</div>
+        <div v-if="title" class="ct-card-title" :style="titleStyle">{{ title }}</div>
+        <div v-if="desc" class="ct-card-desc" :style="descStyle">{{ desc }}</div>
       </div>
     </div>
 
@@ -21,11 +21,11 @@
 <script setup>
 defineProps({
   title:        { type: String, default: '' },
-  titleInstyle: { type: Object, default: () => ({}) },
+  titleStyle: { type: Object, default: () => ({}) },
   desc:         { type: String, default: '' },
-  descInstyle:  { type: Object, default: () => ({}) },
+  descStyle:  { type: Object, default: () => ({}) },
   icon:         { type: String, default: '' },
-  iconInstyle:  { type: Object, default: () => ({}) }
+  iconStyle:  { type: Object, default: () => ({}) }
 })
 </script>
 

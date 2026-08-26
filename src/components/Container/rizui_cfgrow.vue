@@ -2,12 +2,12 @@
   <div class="cfgr-row" :class="{ 'cfgr-stack': stack, 'cfgr-disabled': disabled }">
     <!-- 头部：图标 + label/hint（图标仅跨 label/hint 两行） -->
     <div class="cfgr-head">
-      <div v-if="icon" class="cfgr-icon" :style="iconInstyle">
+      <div v-if="icon" class="cfgr-icon" :style="iconStyle">
         <i :class="icon"></i>
       </div>
       <div class="cfgr-head-text">
-        <div v-if="label" class="cfgr-label" :style="labelInstyle">{{ label }}</div>
-        <div v-if="hint" class="cfgr-hint" :style="hintInstyle">{{ hint }}</div>
+        <div v-if="label" class="cfgr-label" :style="labelStyle">{{ label }}</div>
+        <div v-if="hint" class="cfgr-hint" :style="hintStyle">{{ hint }}</div>
       </div>
       <!-- 非 stack 模式控件在右侧 -->
       <div v-if="!stack" class="cfgr-slot-inner" :class="{ 'cfgr-slot-disabled': disabled }">
@@ -26,11 +26,11 @@
 <script setup>
 defineProps({
   label: {type: String, default: ''},
-  labelInstyle: {type: Object, default: () => ({})},
+  labelStyle: {type: Object, default: () => ({})},
   hint: {type: String, default: ''},
-  hintInstyle: {type: Object, default: () => ({})},
+  hintStyle: {type: Object, default: () => ({})},
   icon: {type: String, default: ''},
-  iconInstyle: {type: Object, default: () => ({})},
+  iconStyle: {type: Object, default: () => ({})},
   stack: {type: Boolean, default: false},
   disabled: {type: Boolean, default: false}
 })
