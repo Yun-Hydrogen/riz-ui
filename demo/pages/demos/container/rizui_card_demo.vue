@@ -89,7 +89,7 @@ const card5_usage =
         <h2>卡片容器</h2>
         <p class="sec-tag">rizui_card</p>
       </div>
-      <p class="sec-desc">像基沃托斯里的告示板一样，把内容整整齐齐装进一块卡片。标题、描述、图标随你配，每个部分都能单独改样式；什么都不设置时，它也可以只是一块干净的背景板。</p>
+      <p class="sec-desc">高度自定义的卡片容器。</p>
     </section>
 
     <section class="sec-demo">

@@ -43,9 +43,9 @@
   "license": "AGPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YunHydrogen/riz-ui"
+    "url": "https://github.com/Yun-Hydrogen/riz-ui"
   },
-  "author": "YunHydrogen",
+  "author": "Yun-Hydrogen",
   "dependencies": {
     "vue-router": "^4.6.4"
   },

@@ -46,7 +46,7 @@ jobs:
             ## 📦 安装
 
             ```bash
-            npm install github:YunHydrogen/riz-ui#${{ steps.pkg.outputs.version }}
+            npm install github:Yun-Hydrogen/riz-ui#${{ steps.pkg.outputs.version }}
             ```
 
             ## ✨ 组件
