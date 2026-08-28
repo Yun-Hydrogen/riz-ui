@@ -21,9 +21,9 @@ const themeColor = inject('themeColor')
     </section>
     <section class="home-quick">
       <h2>快速开始</h2>
-      <pre class="code-block"><code>npm install github:YunHydrogen/riz-ui
+      <rizui_code block lang="bash">npm install github:YunHydrogen/riz-ui
 
-import { rizui_button, rizui_card } from 'riz-ui'</code></pre>
+import { rizui_button, rizui_card, rizui_code } from 'riz-ui'</rizui_code>
       <div class="home-theme-tip">
         <i class="fa-solid fa-palette"></i>
         <span>全局主题色变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>）。控件未指定 <code>color</code> 时自动跟随，覆盖该变量即可全库换色。</span>

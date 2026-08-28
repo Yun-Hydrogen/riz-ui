@@ -20,6 +20,7 @@ export { default as rizui_cfgrow }     from './components/Container/rizui_cfgrow
 export { default as rizui_infobox }    from './components/Container/rizui_infobox.vue'
 export { default as rizui_dialog }     from './components/Container/rizui_dialog.vue'
 export { default as rizui_toast }      from './components/Container/rizui_toast.vue'
+export { default as rizui_code }       from './components/Container/rizui_code.vue'
 
 export { default as rizui_switch }     from './components/Control/rizui_switch.vue'
 export { default as rizui_slider }     from './components/Control/rizui_slider.vue'

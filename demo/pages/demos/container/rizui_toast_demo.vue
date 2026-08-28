@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { rizui_toast, rizui_dialog, rizui_card, rizui_cfgrow, rizui_infobox, rizui_button, openURL } from 'riz-ui'
+import { rizui_toast, rizui_dialog, rizui_card, rizui_cfgrow, rizui_infobox, rizui_button, rizui_code, openURL } from 'riz-ui'
 import rizui_text from '../../../../src/components/Input/rizui_text.vue'
 
 const showInfo = ref(false)
@@ -31,34 +31,35 @@ const props = [
   { name:'showBar',      type:'Boolean', default:'true',    desc:'显示底部倒计时进度条' },
   { name:'color',        type:'String',  default:'""',      desc:'仅 info 生效，空则跟随主题色' },
   { name:'teleport',     type:'String',  default:'"body"',  desc:'挂载目标（选择器），默认 body' },
-  { name:'width',        type:'String',  default:'""',      desc:'宽度（如 420px），空时默认 320px' }
+  { name:'width',        type:'String',  default:'""',      desc:'宽度（如 420px），空时默认 320px' },
+  { name:'theme',       type:'String',  default:"'auto'",   desc:'主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局' }
 ]
 const events = ['click — 点击通知本体触发（不自动关闭，可绑定其他行为）']
-const usage = `<!-- title + hint：自闭合用法 -->
-<rizui_toast v-if="show" type="info" title="保存成功" hint="改动已写进文件。"
-            @close="show = false" />
+const usage = `      <rizui_toast v-if="showInfo" type="info" title="欢迎回来！" hint="老师，今天你想从哪件事开始做起呢...?"
+                  @close="showInfo = false" />
+      <rizui_toast v-if="showWarn" type="warn" title="突击学员撤退！" hint="当有突击学员撤退时，技能蓄能值回复速率将减少。"
+                  @close="showWarn = false" />
+      <rizui_toast v-if="showError" type="error" title="战败" hint="在下次尝试之前，先提升学员的属性值吧。"
+                  @close="showError = false" />
+      <rizui_toast v-if="showColor" type="info" title="让世界变得更有趣吧！" hint="这是使用了自定义颜色的toast哦！" color="#e56161"
+                  @close="showColor = false" />
 
-<!-- 默认插槽：可以塞更丰富的内容 -->
-<rizui_toast v-if="show" type="warn" title="检查一下"
-            @close="show = false">
-  请 <b>仔细</b> 检查配置再继续。
-</rizui_toast>
-
-<!-- 自定义颜色：进度条和图标跟着变 -->
-<rizui_toast v-if="show" type="info" title="自定义色" hint="进度条也用这个色"
-            color="#8b5cf6" @close="show = false" />
-
-<!-- 自定义挂载目标：和其他控件一样用 teleport（默认 body） -->
-<rizui_toast v-if="show" type="info" title="挂到别处" hint="teleport 指定选择器"
-            teleport="#app" @close="show = false" />
-
-<!-- 自定义宽度：width prop -->
-<rizui_toast v-if="show" type="info" title="宽一点" hint="width=420px"
-            width="420px" @close="show = false" />
-
-<!-- 点击是独立事件：可绑定关闭，也能绑定其他行为（配合 ref 暴露的 close） -->
-<rizui_toast v-if="show" ref="tRef" type="info" title="点一下" hint="click 事件由你决定做什么"
-            :countdown="0" @click="tRef.close()" @close="show = false" />`
+      <rizui_toast v-if="showNoBar" type="info" title="任务开始！" hint="请击败敌方首领！"
+                  :show-bar="false" @close="showNoBar = false" />
+      <rizui_toast v-if="showNoClose" type="info" title="来自MomoTalk的信息" hint="老师，你能狡辩一下这笔沙勒的支出吗?!" color="#e278b3"
+                  :closable="false" @close="showNoClose = false" />
+      <rizui_toast v-if="showPersist" ref="persistRef" type="error" title="总力战已开启！" hint="快去准备部队迎战吧！"
+                  :countdown="0" @click="persistRef?.close()"
+                  @close="showPersist = false" />
+      <rizui_toast v-if="showLong" type="info" title="剩余时间" hint="请在战斗结束前击败敌方首领！"
+                  :countdown="30" @close="showLong = false" />
+      <rizui_toast v-if="showSlot" type="info" title="Momotalk" hint="爱丽丝：邦邦卡邦！老师快来游戏开发部一趟！" icon="fa-solid fa-message" width="390px"
+                  @close="showSlot = false" :countdown="0">
+        <rizui_text placeholder="在此快速回复..." style="width: 70%;" @enter="sendMsg = true; showSlot = false"/>
+        <rizui_button primary r-icon="fa-solid fa-paper-plane" style="margin-left: 10px;" @click="sendMsg = true; showSlot = false"/>
+      </rizui_toast>
+      <rizui_toast v-if="sendMsg" type="info" title="发送成功" hint="消息已发送!"
+                  @close="sendMsg = false" />`
 </script>
 
 <template>
@@ -174,6 +175,11 @@ const usage = `<!-- title + hint：自闭合用法 -->
       </table>
     </section>
 
+    <!-- 主题模式提示 -->
+    <rizui_infobox type="info">
+      <code>theme</code> 支持 <code>Dark</code> / <code>Light</code> / <code>auto</code>（默认）。<code>auto</code> 跟随顶栏主题开关（全局 <code>data-rizui-theme</code>）或系统 <code>prefers-color-scheme</code>；<code>Dark</code> / <code>Light</code> 可对本组件局部强制明暗。试试右上角主题按钮实时切换，或在你的项目中于 <code>&lt;html&gt;</code> 上设置 <code>data-rizui-theme</code>。
+    </rizui_infobox>
+
     <!-- 主题色提示 -->
     <rizui_infobox type="info">
       <code>info</code> 默认跟随全局变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>），<code>color</code> 可自定义（仅 info 生效）；warn / error 用预设色。试试右上角取色器实时换色，或在你的项目中于 <code>:root</code> 覆盖该变量。
@@ -184,7 +190,7 @@ const usage = `<!-- title + hint：自闭合用法 -->
     </section>
 
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

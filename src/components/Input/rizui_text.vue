@@ -1,40 +1,49 @@
 <template>
-  <textarea
-    v-if="plaintext"
-    class="inpt-root inpt-plain"
-    :value="modelValue"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    :readonly="readonly"
-    :style="rootStyle"
-    rows="4"
-    @input="$emit('update:modelValue', $event.target.value)"
-  ></textarea>
-  <input
-    v-else
-    class="inpt-root"
-    :type="type"
-    :value="modelValue"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    :readonly="readonly"
-    :style="rootStyle"
-    @input="$emit('update:modelValue', type === 'number' ? ($event.target.value === '' ? null : Number($event.target.value)) : $event.target.value)"
-    @keydown.enter="onEnter"
-  />
+  <div class="inpt-wrap" :class="{ 'inpt-wrap-plain': plaintext }" :data-rizui-theme="themeAttr" :style="rootStyle">
+    <textarea
+      v-if="plaintext"
+      class="inpt-root inpt-plain"
+      :value="modelValue"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :readonly="readonly"
+      rows="4"
+      @input="$emit('update:modelValue', $event.target.value)"
+    ></textarea>
+    <input
+      v-else
+      class="inpt-root"
+      :type="type"
+      :value="modelValue"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :readonly="readonly"
+      @input="$emit('update:modelValue', type === 'number' ? ($event.target.value === '' ? null : Number($event.target.value)) : $event.target.value)"
+      @keydown.enter="onEnter"
+    />
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定值 Input value via v-model */
   modelValue:   { type: [String, Number], default: '' },
+  /** 输入类型 text / number Input type */
   type:         { type: String,  default: 'text' },
+  /** 占位提示文字 Placeholder */
   placeholder:  { type: String,  default: '' },
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
   color:        { type: String,  default: '' },
+  /** 多行纯文本模式（textarea）Multiline plaintext mode */
   plaintext:    { type: Boolean, default: false },
+  /** 禁用 Disabled */
   disabled:     { type: Boolean, default: false },
-  readonly:     { type: Boolean, default: false }
+  /** 只读 Readonly */
+  readonly:     { type: Boolean, default: false },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:        { type: String,  default: 'auto' }
 })
 
 const emit = defineEmits(['update:modelValue', 'enter'])
@@ -44,6 +53,13 @@ const rootStyle = computed(() => ({
   '--inpt-color': props.color || 'var(--rizui_themecolor)'
 }))
 
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
+
 /* Enter：触发 enter 事件，默认释放聚焦（blur） */
 function onEnter(e) {
   emit('enter', props.modelValue)
@@ -52,26 +68,80 @@ function onEnter(e) {
 </script>
 
 <style scoped>
+/* ── 包装层：承载聚焦时主题色边框「中轴向两侧展开」动画 ── */
+.inpt-wrap {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border-radius: 999px;
+  text-align: center;
+}
+
+.inpt-wrap-plain {
+  display: block;
+  border-radius: 10px;
+}
+
 .inpt-root {
+  width: 100%;
+  height: 100%;
   padding: 5px 12px;
-  border: 1.5px solid #d0d8e0;
+  border: 1.5px solid var(--rz-border);
   border-radius: 999px;
   font-size: 12px;
-  text-align: center;
+  text-align: inherit;
   outline: none;
   font-family: inherit;
-  color: #445;
-  background: #fff;
-  transition: border-color 0.2s;
+  color: var(--rz-text);
+  background: var(--rz-bg);
   box-sizing: border-box;
 }
 
-.inpt-root:focus {
-  border-color: var(--inpt-color);
+/* 组件级强制暗色（theme="Dark"） */
+.inpt-wrap[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-border: var(--rz-dark-border);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+}
+
+/* 组件级强制亮色（theme="Light"） */
+.inpt-wrap[data-rizui-theme="light"] {
+  --rz-bg: #fff;
+  --rz-border: #e8ecf2;
+  --rz-text: #334;
+  --rz-subtext: #99a;
+}
+
+/* ── 聚焦动画：完整圆角主题色边框从中轴往两侧展开并蔓延发光；失焦反向收回 ── */
+.inpt-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--inpt-color);
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--inpt-color) 55%, transparent));
+  mask-image: linear-gradient(#000, #000);
+  -webkit-mask-image: linear-gradient(#000, #000);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 0% 100%;
+  -webkit-mask-size: 0% 100%;
+  mask-position: center;
+  -webkit-mask-position: center;
+  transition: mask-size 0.35s ease, -webkit-mask-size 0.35s ease, opacity 0.2s ease;
+}
+
+.inpt-wrap:focus-within::before {
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  opacity: 1;
 }
 
 .inpt-root::placeholder {
-  color: #b0b8c4;
+  color: color-mix(in srgb, var(--rz-text) 55%, var(--rz-bg));
 }
 
 .inpt-root:disabled {
@@ -80,8 +150,8 @@ function onEnter(e) {
 }
 
 .inpt-root:read-only {
-  background: #f5f6f8;
-  color: #99a;
+  background: color-mix(in srgb, var(--rz-text) 4%, var(--rz-bg));
+  color: var(--rz-subtext);
 }
 
 /* 隐藏 number 输入框的上下箭头 */

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject, computed } from 'vue'
-import { UiCard, UiConfigRow, UiDialog } from 'riz-ui'
+import { UiCard, UiConfigRow, UiDialog, rizui_code } from 'riz-ui'
 const themeColor = inject('themeColor')
 const showDialog = ref(false)
 const deprecated = true
@@ -59,7 +59,7 @@ const usage = `const show = ref(false)
       <ul><li v-for="e in events" :key="e"><code>{{ e }}</code></li></ul>
     </section>
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

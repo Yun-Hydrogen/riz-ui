@@ -10,9 +10,101 @@
         --rizui_themecolor: #66CCFF;
       }
 
-  默认值：#66CCFF
+  主题模式变量：--rizui_theme
+  - light / dark / auto（默认 auto，跟随系统 prefers-color-scheme）
+  - 应用层可覆盖：document.documentElement.style.setProperty('--rizui_theme', 'dark')
+    或在 <html> 上加 data-rizui-theme="dark" / "light" 强制全局模式。
+
+  默认值：#66CCFF / auto
 ================================================================================
 */
 :root {
   --rizui_themecolor: #66CCFF;
+  --rizui_theme: auto;
+
+  /* ── 容器组件语义变量（浅色默认） ── */
+  --rz-bg: #fff;
+  --rz-bg-soft: rgb(248, 250, 252, 0.6);
+  --rz-border: #e8ecf2;
+  --rz-text: #334;
+  --rz-subtext: #99a;
+  --rz-icon: #99a;
+  --rz-shadow: rgba(30, 41, 59, 0.08);
+  --rz-overlay: rgba(15, 23, 42, 0.45);
+
+  /* ── 暗色值（只定义一次，供下面引用） ── */
+  --rz-dark-bg: #1e2630;
+  --rz-dark-bg-soft: rgba(30, 38, 48, 0.9);
+  --rz-dark-border: #323d4b;
+  --rz-dark-text: #e6ebf2;
+  --rz-dark-subtext: #93a1b3;
+  --rz-dark-icon: #7f8ea1;
+  --rz-dark-shadow: rgba(0, 0, 0, 0.4);
+  --rz-dark-overlay: rgba(0, 0, 0, 0.6);
+
+  /* ── 代码高亮 token 色（rizui_code，浅色默认） ── */
+  --rz-code-kw: #a626a4;
+  --rz-code-str: #50a14f;
+  --rz-code-num: #986801;
+  --rz-code-com: #9aa0a6;
+  --rz-code-fn: #4078f2;
+  --rz-code-tag: #e45649;
+  --rz-code-attr: #b76b01;
+  --rz-code-op: #9b50e0;
+  --rz-code-type: #1d7fb6;
+
+  /* ── 代码高亮暗色值 ── */
+  --rz-code-dark-kw: #c678dd;
+  --rz-code-dark-str: #98c379;
+  --rz-code-dark-num: #d19a66;
+  --rz-code-dark-com: #7f848e;
+  --rz-code-dark-fn: #61afef;
+  --rz-code-dark-tag: #e06c75;
+  --rz-code-dark-attr: #e5c07b;
+  --rz-code-dark-op: #c586c0;
+  --rz-code-dark-type: #56b6c2;
+}
+
+/* 全局强制暗色：<html data-rizui-theme="dark"> */
+:root[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-bg-soft: var(--rz-dark-bg-soft);
+  --rz-border: var(--rz-dark-border);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+  --rz-icon: var(--rz-dark-icon);
+  --rz-shadow: var(--rz-dark-shadow);
+  --rz-overlay: var(--rz-dark-overlay);
+  --rz-code-kw: var(--rz-code-dark-kw);
+  --rz-code-str: var(--rz-code-dark-str);
+  --rz-code-num: var(--rz-code-dark-num);
+  --rz-code-com: var(--rz-code-dark-com);
+  --rz-code-fn: var(--rz-code-dark-fn);
+  --rz-code-tag: var(--rz-code-dark-tag);
+  --rz-code-attr: var(--rz-code-dark-attr);
+  --rz-code-op: var(--rz-code-dark-op);
+  --rz-code-type: var(--rz-code-dark-type);
+}
+
+/* auto：跟随系统暗色（除非显式强制 light） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-rizui-theme="light"]) {
+    --rz-bg: var(--rz-dark-bg);
+    --rz-bg-soft: var(--rz-dark-bg-soft);
+    --rz-border: var(--rz-dark-border);
+    --rz-text: var(--rz-dark-text);
+    --rz-subtext: var(--rz-dark-subtext);
+    --rz-icon: var(--rz-dark-icon);
+    --rz-shadow: var(--rz-dark-shadow);
+    --rz-overlay: var(--rz-dark-overlay);
+    --rz-code-kw: var(--rz-code-dark-kw);
+    --rz-code-str: var(--rz-code-dark-str);
+    --rz-code-num: var(--rz-code-dark-num);
+    --rz-code-com: var(--rz-code-dark-com);
+    --rz-code-fn: var(--rz-code-dark-fn);
+    --rz-code-tag: var(--rz-code-dark-tag);
+    --rz-code-attr: var(--rz-code-dark-attr);
+    --rz-code-op: var(--rz-code-dark-op);
+    --rz-code-type: var(--rz-code-dark-type);
+  }
 }

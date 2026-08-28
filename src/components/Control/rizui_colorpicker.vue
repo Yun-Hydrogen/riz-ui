@@ -1,5 +1,5 @@
 <template>
-  <div class="ccp-root">
+  <div class="ccp-root" :data-rizui-theme="themeAttr">
     <div class="ccp-swatch" @click="open">
       <span class="ccp-swatch-dot" :style="{ background: modelValue || '#ffffff' }"></span>
       <span class="ccp-swatch-hex">{{ modelValue || '#ffffff' }}</span>
@@ -11,6 +11,7 @@
           v-if="show"
           class="ccp-overlay"
           :class="{ 'ccp-anchored': isAnchored }"
+          :data-rizui-theme="themeAttr"
           @click.self="cancel"
         >
           <div class="ccp-dialog">
@@ -65,9 +66,14 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import rizui_text from '../Input/rizui_text.vue'
 
 const props = defineProps({
+  /** v-model 绑定颜色值 Color value via v-model */
   modelValue: { type: String, default: '#ffffff' },
+  /** 自定义主题色，空则跟随全局主题色 Custom theme color */
   color:      { type: String, default: '' },
-  teleport:   { type: String, default: 'body' }
+  /** 挂载目标（选择器），默认 body Teleport target */
+  teleport:   { type: String, default: 'body' },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:      { type: String, default: 'auto' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -97,6 +103,13 @@ const confirmStyle = computed(() => ({
   background: cssColor.value,
   borderColor: cssColor.value
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 
 function hslToHex(h, s, l) {
   s /= 100; l /= 100
@@ -226,16 +239,35 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
+/* 组件级强制暗色（theme="Dark"） */
+.ccp-root[data-rizui-theme="dark"],
+.ccp-overlay[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-border: var(--rz-dark-border);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+  --rz-shadow: var(--rz-dark-shadow);
+}
+
+/* 组件级强制亮色（theme="Light"） */
+.ccp-root[data-rizui-theme="light"],
+.ccp-overlay[data-rizui-theme="light"] {
+  --rz-bg: #fff;
+  --rz-border: #e8ecf2;
+  --rz-text: #334;
+  --rz-subtext: #99a;
+  --rz-shadow: rgba(30, 41, 59, 0.08);
+}
+
 .ccp-swatch {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 4px 10px 4px 4px;
-  border: 1.5px solid #d0d8e0;
+  border: 1.5px solid var(--rz-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--rz-bg);
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
   user-select: none;
 }
 
@@ -254,7 +286,7 @@ onBeforeUnmount(() => {
 
 .ccp-swatch-hex {
   font-size: 12px;
-  color: #556;
+  color: var(--rz-text);
   font-family: inherit;
 }
 
@@ -283,10 +315,10 @@ onBeforeUnmount(() => {
 }
 
 .ccp-dialog {
-  background: #fff;
+  background: var(--rz-bg);
   border-radius: 16px;
   padding: 16px 18px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 48px var(--rz-shadow);
   width: 280px;
 }
 
@@ -296,7 +328,7 @@ onBeforeUnmount(() => {
   align-items: center;
   font-size: 14px;
   font-weight: 700;
-  color: #334;
+  color: var(--rz-text);
   margin-bottom: 12px;
 }
 
@@ -305,12 +337,12 @@ onBeforeUnmount(() => {
   height: 24px;
   border: none;
   border-radius: 50%;
-  background: #f0f2f5;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--rz-subtext);
   transition: all 0.2s;
 }
 
@@ -381,7 +413,7 @@ onBeforeUnmount(() => {
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1px solid #e0e4ea;
+  border: 1px solid var(--rz-border);
   flex-shrink: 0;
 }
 

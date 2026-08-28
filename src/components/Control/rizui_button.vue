@@ -1,7 +1,6 @@
 <template>
-  <!-- href 存在时渲染为链接，浏览器原生跳转；否则为按钮 -->
-  <component
-    :is="href ? 'a' : 'button'"
+  <!-- 按钮：需要打开链接时请用 @click="openURL(url)"（组件库导出，见 /demo/open-url） -->
+  <button
     class="cbtn-root"
     :class="{
       'cbtn-primary': primary,
@@ -9,38 +8,48 @@
       'cbtn-long': long,
       'cbtn-disabled': disabled
     }"
+    :data-rizui-theme="themeAttr"
     :style="rootStyle"
-    :type="href ? undefined : type"
-    :href="href || undefined"
-    :target="href ? target : undefined"
-    :rel="href ? 'noopener noreferrer' : undefined"
-    :disabled="href ? undefined : (disabled || undefined)"
+    :type="type"
+    :disabled="disabled || undefined"
     @click="$emit('click', $event)"
   >
     <i v-if="lIcon" class="cbtn-icon" :class="lIcon" :style="lIconStyle"></i>
     <span v-if="text" class="cbtn-text" :style="textStyle">{{ text }}</span>
     <i v-if="rIcon" class="cbtn-icon" :class="rIcon" :style="rIconStyle"></i>
-  </component>
+  </button>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
+  /** 按钮文字 Button text */
   text:         { type: String,  default: '' },
+  /** 文字样式覆盖 Text style override */
   textStyle:  { type: Object,  default: () => ({}) },
+  /** 左侧图标（完整 FA class）Left icon (full FA class) */
   lIcon:        { type: String,  default: '' },
+  /** 左图标样式覆盖 Left icon style override */
   lIconStyle: { type: Object,  default: () => ({}) },
+  /** 右侧图标（完整 FA class）Right icon (full FA class) */
   rIcon:        { type: String,  default: '' },
+  /** 右图标样式覆盖 Right icon style override */
   rIconStyle: { type: Object,  default: () => ({}) },
+  /** 主题色填充 Primary filled style */
   primary:      { type: Boolean, default: false },
+  /** 危险红色 Danger red style */
   danger:       { type: Boolean, default: false },
+  /** 通栏（占满宽度）Full width */
   long:         { type: Boolean, default: false },
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
   color:        { type: String,  default: '' },
+  /** 禁用 Disabled */
   disabled:     { type: Boolean, default: false },
+  /** 原生按钮类型 Native button type */
   type:         { type: String,  default: 'button' },
-  href:         { type: String,  default: '' },
-  target:       { type: String,  default: '_blank' }
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:        { type: String,  default: 'auto' }
 })
 
 defineEmits(['click'])
@@ -49,6 +58,13 @@ defineEmits(['click'])
 const rootStyle = computed(() => ({
   '--cbtn-color': props.color || 'var(--rizui_themecolor)'
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 </script>
 
 <style scoped>
@@ -58,10 +74,10 @@ const rootStyle = computed(() => ({
   justify-content: center;
   gap: 6px;
   padding: 6px 16px;
-  border: 1.5px solid #d0d8e0;
+  border: 1.5px solid var(--rz-border);
   border-radius: 999px;
-  background: #fff;
-  color: #445;
+  background: var(--rz-bg);
+  color: var(--rz-text);
   font-size: 12px;
   font-weight: 600;
   font-family: inherit;
@@ -69,7 +85,7 @@ const rootStyle = computed(() => ({
   outline: none;
   white-space: nowrap;
   user-select: none;
-  transition: filter 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
+  transition: filter 0.2s;
 }
 
 .cbtn-root:hover {

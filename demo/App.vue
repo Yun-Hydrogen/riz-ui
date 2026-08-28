@@ -9,6 +9,32 @@ const router = useRouter()
 const themeColor = ref('#66CCFF')
 provide('themeColor', themeColor)
 
+/* ── Demo 暗色主题开关（auto / dark / light 循环） ── */
+const THEME_STORAGE = 'rizui-demo-theme'
+const demoTheme = ref(localStorage.getItem(THEME_STORAGE) || 'auto')
+
+const themeLabel = computed(() => (
+  { auto: '自动', dark: '暗色', light: '亮色' }[demoTheme.value]
+))
+
+function applyDemoTheme(mode) {
+  if (mode === 'auto') {
+    delete document.documentElement.dataset.rizuiTheme
+  } else {
+    document.documentElement.dataset.rizuiTheme = mode
+  }
+  document.documentElement.style.setProperty('--rizui_theme', mode)
+}
+applyDemoTheme(demoTheme.value)
+
+function cycleDemoTheme() {
+  const order = ['auto', 'dark', 'light']
+  const next = order[(order.indexOf(demoTheme.value) + 1) % order.length]
+  demoTheme.value = next
+  localStorage.setItem(THEME_STORAGE, next)
+  applyDemoTheme(next)
+}
+
 /* ── 分类 & 组件（仅用于导航） ── */
 const categories = [
   {
@@ -17,7 +43,8 @@ const categories = [
       {route: '/demo/rizui-cfgrow', zhName: '配置行', deprecated: false},
       {route: '/demo/rizui-infobox', zhName: '提示框', deprecated: false},
       {route: '/demo/rizui-dialog', zhName: '对话框', deprecated: false},
-      {route: '/demo/rizui-toast', zhName: 'Toast', deprecated: false}
+      {route: '/demo/rizui-toast', zhName: 'Toast', deprecated: false},
+      {route: '/demo/rizui-code', zhName: '代码块', deprecated: false}
     ]
   },
   {
@@ -112,6 +139,27 @@ function goPricing() {
           <rizui_colorpicker v-model="themeColor"/>
         </div>
         <div class="topbar-right">
+          <button class="theme-switch" :title="`主题模式：${themeLabel}（点击切换）`" @click="cycleDemoTheme()">
+            <!-- auto：显示器图标 -->
+            <svg v-if="demoTheme === 'auto'" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <!-- dark：月亮图标 -->
+            <svg v-else-if="demoTheme === 'dark'" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <!-- light：太阳图标 -->
+            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <span>{{ themeLabel }}</span>
+          </button>
           <span class="topbar-price" @click="goPricing()">AGPLv3 · 许可</span>
           <a class="topbar-gh" href="https://github.com/YunHydrogen/riz-ui" target="_blank">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -177,7 +225,7 @@ body {
   font-family: 'UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
   'Microsoft YaHei', sans-serif;
   background: #f3f5f8;
-  color: #334;
+  color: var(--rz-text);
   isolation: isolate;
 }
 
@@ -195,8 +243,8 @@ code {
 /* ── 上顶栏（全宽） ── */
 .topbar {
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #e8ecf2;
+  background: var(--rz-bg);
+  border-bottom: 1px solid var(--rz-border);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -219,7 +267,7 @@ code {
 .topbar-home {
   font-size: 28px;
   font-weight: 800;
-  color: #334;
+  color: var(--rz-text);
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -240,14 +288,14 @@ code {
 
 .topbar-price {
   font-size: 12px;
-  color: #99a;
+  color: var(--rz-subtext);
   white-space: nowrap;
   cursor: pointer;
   transition: color 0.15s;
 }
 
 .topbar-price:hover {
-  color: #334;
+  color: var(--rz-text);
 }
 
 .topbar-gh {
@@ -255,14 +303,41 @@ code {
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #667;
+  color: var(--rz-subtext);
   text-decoration: none;
   white-space: nowrap;
   transition: color 0.15s;
 }
 
 .topbar-gh:hover {
-  color: #334;
+  color: var(--rz-text);
+}
+
+/* 主题模式切换按钮 */
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--rz-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rz-text) 5%, var(--rz-bg));
+  color: var(--rz-subtext);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.theme-switch:hover {
+  background: color-mix(in srgb, var(--rz-text) 10%, var(--rz-bg));
+  color: var(--rz-text);
+}
+
+.theme-switch svg {
+  flex-shrink: 0;
 }
 
 /* ── 侧边栏（悬浮大胶囊）+ 主内容 ── */
@@ -284,9 +359,9 @@ code {
   height: calc(100vh - 104px);
   overflow-y: auto;
   border-radius: 20px;
-  background: #fff;
-  border: 1px solid #eef1f5;
-  box-shadow: 0 10px 32px rgba(30, 41, 59, 0.08);
+  background: var(--rz-bg);
+  border: 1px solid var(--rz-border);
+  box-shadow: 0 10px 32px var(--rz-shadow);
   padding: 12px 10px 14px;
 }
 
@@ -306,18 +381,18 @@ code {
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
-  color: #445;
+  color: var(--rz-text);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .sbar-head:hover {
-  background: #f5f6f9;
+  background: color-mix(in srgb, var(--rz-text) 6%, var(--rz-bg));
 }
 
 .sbar-caret {
   font-size: 14px;
-  color: #99a;
+  color: var(--rz-subtext);
   transition: transform 0.2s;
 }
 
@@ -347,18 +422,18 @@ code {
   padding: 6px 10px 6px 22px;
   border-radius: 7px;
   font-size: 13px;
-  color: #778;
+  color: var(--rz-subtext);
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
 
 .sbar-item:hover {
-  background: #f5f6f9;
-  color: #334;
+  background: color-mix(in srgb, var(--rz-text) 6%, var(--rz-bg));
+  color: var(--rz-text);
 }
 
 .sbar-item.active {
-  background: color-mix(in srgb, var(--rizui_themecolor) 10%, white);
+  background: color-mix(in srgb, var(--rizui_themecolor) 10%, var(--rz-bg));
   font-weight: 600;
 }
 
@@ -400,13 +475,13 @@ code {
 .home-logo {
   font-size: 40px;
   font-weight: 800;
-  color: #222;
+  color: var(--rz-text);
   margin-bottom: 12px;
 }
 
 .home-desc {
   font-size: 16px;
-  color: #99a;
+  color: var(--rz-subtext);
   margin-bottom: 28px;
 }
 
@@ -438,13 +513,13 @@ code {
 }
 
 .home-btn-ghost {
-  background: #fff;
-  color: #667;
-  border: 1.5px solid #e0e4ea;
+  background: var(--rz-bg);
+  color: var(--rz-subtext);
+  border: 1.5px solid var(--rz-border);
 }
 
 .home-btn-ghost:hover {
-  background: #f5f5f8;
+  background: color-mix(in srgb, var(--rz-text) 6%, var(--rz-bg));
   opacity: 1;
 }
 
@@ -456,10 +531,10 @@ code {
 }
 
 .home-feat {
-  background: #fff;
+  background: var(--rz-bg);
   border-radius: 14px;
   padding: 20px;
-  border: 1px solid #e8ecf2;
+  border: 1px solid var(--rz-border);
   text-align: center;
 }
 
@@ -472,14 +547,14 @@ code {
 .home-feat h3 {
   font-size: 14px;
   font-weight: 700;
-  color: #334;
+  color: var(--rz-text);
   margin-bottom: 6px;
 }
 
 .home-feat p,
 .home-feat code {
   font-size: 12px;
-  color: #99a;
+  color: var(--rz-subtext);
   line-height: 1.6;
 }
 
@@ -487,7 +562,7 @@ code {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 12px;
-  color: #334;
+  color: var(--rz-text);
 }
 
 /* ── 许可页 ── */
@@ -501,7 +576,7 @@ code {
 
 .pricing-row {
   font-size: 13px;
-  color: #556;
+  color: color-mix(in srgb, var(--rz-text) 80%, transparent);
   padding: 6px 0;
   display: flex;
   align-items: center;
@@ -526,16 +601,16 @@ code {
 .sec-header h2 {
   font-size: 22px;
   font-weight: 800;
-  color: #222;
+  color: var(--rz-text);
 }
 
 .sec-tag {
   display: inline-block;
   padding: 1px 10px;
   border-radius: 999px;
-  background: #e8ecf2;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   font-size: 11px;
-  color: #667;
+  color: var(--rz-subtext);
 }
 
 .sec-deprecated {
@@ -551,7 +626,7 @@ code {
 .sec-desc {
   margin-top: 10px;
   font-size: 13px;
-  color: #667;
+  color: var(--rz-subtext);
   line-height: 1.6;
 }
 
@@ -571,7 +646,7 @@ code {
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 12px;
-  color: #334;
+  color: var(--rz-text);
 }
 
 .sec-demo h3 .fa-solid,
@@ -588,25 +663,25 @@ code {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
-  background: #fff;
+  background: var(--rz-bg);
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid #e8ecf2;
+  border: 1px solid var(--rz-border);
 }
 
 .props-table th {
   text-align: left;
   padding: 8px 12px;
-  background: #f8f9fb;
+  background: color-mix(in srgb, var(--rz-text) 4%, var(--rz-bg));
   font-weight: 600;
-  color: #667;
-  border-bottom: 1px solid #e8ecf2;
+  color: var(--rz-subtext);
+  border-bottom: 1px solid var(--rz-border);
 }
 
 .props-table td {
   padding: 8px 12px;
-  border-bottom: 1px solid #f5f5f5;
-  color: #445;
+  border-bottom: 1px solid color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
+  color: color-mix(in srgb, var(--rz-text) 88%, transparent);
 }
 
 .props-table tr:last-child td {
@@ -614,7 +689,7 @@ code {
 }
 
 .props-table code {
-  background: #f0f2f5;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -629,7 +704,7 @@ code {
 
 .sec-slots li,
 .sec-events li {
-  background: #f0f2f5;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 12px;
@@ -648,15 +723,15 @@ code {
 
 .demo-echo {
   font-size: 12px;
-  color: #99a;
+  color: var(--rz-subtext);
   padding-top: 4px;
 }
 
 .demo-echo code {
-  background: #f0f2f5;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   padding: 1px 6px;
   border-radius: 4px;
-  color: #556;
+  color: color-mix(in srgb, var(--rz-text) 85%, transparent);
 }
 
 .demo-btn {
@@ -676,12 +751,12 @@ code {
 }
 
 .demo-btn-ghost {
-  background: #f0f2f5;
-  color: #667;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
+  color: var(--rz-subtext);
 }
 
 .demo-btn-ghost:hover {
-  background: #e5e8ed;
+  background: color-mix(in srgb, var(--rz-text) 12%, var(--rz-bg));
   opacity: 1;
 }
 
@@ -722,7 +797,7 @@ code {
   overflow: hidden;
   border-radius: 10px;
   padding: 0 12px;
-  background: #fafbfc;
+  background: color-mix(in srgb, var(--rz-text) 3%, var(--rz-bg));
 }
 
 /* ── 背景泡泡（仅 demo 装饰） ── */
@@ -733,7 +808,7 @@ code {
   overflow: hidden;
   z-index: -1;
   filter: blur(10px);
-  background: rgb(255, 255, 255);
+  background: var(--rz-bg);
 }
 
 .demo-bub {
@@ -864,6 +939,17 @@ code {
   100% {
     transform: translate(0, 0) scale(1);
   }
+}
+
+/* ── 暗色模式：demo 外壳适配 ── */
+[data-rizui-theme="dark"] body {
+  background: #161d27;
+}
+
+[data-rizui-theme="dark"] .depr-tag,
+[data-rizui-theme="dark"] .sec-deprecated {
+  background: #4a3b10;
+  color: #ffd54f;
 }
 </style>
 

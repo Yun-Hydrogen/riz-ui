@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { rizui_dropdown, rizui_card, rizui_cfgrow, rizui_infobox } from 'riz-ui'
+import { rizui_dropdown, rizui_card, rizui_cfgrow, rizui_infobox, rizui_code } from 'riz-ui'
 const themeColor = inject('themeColor')
 const dropdownVal = ref('option2')
 const dropdownOptions = [
@@ -12,7 +12,8 @@ const dropdownOptions = [
 const props = [
   { name:'modelValue', type:'String | Number', default:'""', desc:'v-model 绑定值' },
   { name:'options',    type:'Array',           default:'[]', desc:'选项 [{ value, label }]' },
-  { name:'color',      type:'String',          default:'""', desc:'主题色，空时跟随 --rizui_themecolor' }
+  { name:'color',      type:'String',          default:'""', desc:'主题色，空时跟随 --rizui_themecolor' },
+  { name:'theme',       type:'String',          default:"'auto'", desc:'主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局' }
 ]
 const events = ['update:modelValue']
 const usage = 
@@ -48,6 +49,10 @@ const dropdownOptions = [
         <tbody><tr v-for="p in props" :key="p.name"><td><code>{{ p.name }}</code></td><td><code>{{ p.type }}</code></td><td>{{ p.required||'—' }}</td><td><code>{{ p.default||'—' }}</code></td><td>{{ p.desc }}</td></tr></tbody>
       </table>
     </section>
+    <!-- 主题模式提示 -->
+    <rizui_infobox type="info">
+      <code>theme</code> 支持 <code>Dark</code> / <code>Light</code> / <code>auto</code>（默认）。<code>auto</code> 跟随顶栏主题开关（全局 <code>data-rizui-theme</code>）或系统 <code>prefers-color-scheme</code>；<code>Dark</code> / <code>Light</code> 可对本组件局部强制明暗。试试右上角主题按钮实时切换，或在你的项目中于 <code>&lt;html&gt;</code> 上设置 <code>data-rizui-theme</code>。
+    </rizui_infobox>
     <!-- 主题色提示 -->
     <rizui_infobox type="info">
       未指定 <code>color</code> 时，控件自动跟随全局变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>）。试试右上角取色器实时换色，或在你的项目中于 <code>:root</code> 覆盖该变量。
@@ -57,7 +62,7 @@ const dropdownOptions = [
       <ul><li v-for="e in events" :key="e"><code>{{ e }}</code></li></ul>
     </section>
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

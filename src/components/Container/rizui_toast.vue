@@ -5,6 +5,7 @@
         v-if="visible"
         class="tst-root"
         :class="`tst-${type}`"
+        :data-rizui-theme="themeAttr"
         :style="{ '--tst-color': cssColor, '--tst-countdown': countdown + 's', '--tst-width': width }"
         @click="onClick"
       >
@@ -41,19 +42,41 @@
 import { ref, computed, useSlots, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
+  /** 预设类型：info / warn / error Preset type */
   type:         { type: String,  default: 'info' },
+  /** 标题 Title */
   title:        { type: String,  default: '' },
+  /** 说明文字 Hint text */
   hint:         { type: String,  default: '' },
-  titleStyle: { type: Object,  default: () => ({}) },
-  hintStyle:  { type: Object,  default: () => ({}) },
+  /** 标题样式覆盖 Title style override */
+  titleStyle: { type: Object, default: () => ({}) },
+  /** 说明样式覆盖 Hint style override */
+  hintStyle:  { type: Object, default: () => ({}) },
+  /** 左侧图标（完整 FA class）Icon (full FA class) */
   icon:         { type: String,  default: '' },
-  iconStyle:  { type: Object,  default: () => ({}) },
+  /** 图标样式覆盖 Icon style override */
+  iconStyle:  { type: Object, default: () => ({}) },
+  /** 自动关闭秒数，0 不自动关 Auto-close seconds, 0 = never */
   countdown:    { type: Number,  default: 3 },
+  /** 显示关闭按钮 Show close button */
   closable:     { type: Boolean, default: true },
+  /** 显示底部倒计时进度条 Show countdown bar */
   showBar:      { type: Boolean, default: true },
+  /** 自定义颜色（仅 info 生效，空则跟随主题色）Custom color (info only) */
   color:        { type: String,  default: '' },
+  /** 挂载目标（选择器），默认 body Teleport target */
   teleport:     { type: String,  default: 'body' },
-  width:        { type: String,  default: '' }
+  /** 宽度（如 420px），空时默认 320px Width */
+  width:        { type: String,  default: '' },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:        { type: String,  default: 'auto' }
+})
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
 })
 
 const emit = defineEmits(['close', 'click'])
@@ -213,15 +236,29 @@ defineExpose({ close: requestClose })
   padding-right: 40px;
   border-radius: 14px;
   border: none;
-  background: #fff;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  background: var(--rz-bg);
+  box-shadow: 0 8px 28px var(--rz-shadow);
   box-sizing: border-box;
   font-size: 13px;
-  color: #445;
+  color: var(--rz-text);
   line-height: 1.6;
   cursor: pointer;
   overflow: hidden;
   pointer-events: auto;
+}
+
+/* 组件级强制暗色（theme="Dark"） */
+.tst-root[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+}
+
+/* 组件级强制亮色（theme="Light"） */
+.tst-root[data-rizui-theme="light"] {
+  --rz-bg: #fff;
+  --rz-text: #334;
+  --rz-subtext: #889;
 }
 
 
@@ -244,13 +281,13 @@ defineExpose({ close: requestClose })
 .tst-title {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--rz-text);
   line-height: 1.5;
 }
 
 .tst-hint {
   font-size: 12.5px;
-  color: #889;
+  color: var(--rz-subtext);
   line-height: 1.6;
   margin-top: 2px;
 }
@@ -273,14 +310,13 @@ defineExpose({ close: requestClose })
   height: 22px;
   border: none;
   border-radius: 50%;
-  background: #f2f3f5;
-  color: #99a;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
+  color: var(--rz-subtext);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
 }
 
 .tst-close:hover { 
-  background: color-mix(in srgb, var(--tst-color) 30%, #fff);
+  background: color-mix(in srgb, var(--tst-color) 30%, var(--rz-bg));
   color: var(--tst-color);
 }
 

@@ -8,6 +8,7 @@ import rizui_cfgrow_demo from './pages/demos/container/rizui_cfgrow_demo.vue'
 import rizui_infobox_demo from './pages/demos/container/rizui_infobox_demo.vue'
 import rizui_dialog_demo from './pages/demos/container/rizui_dialog_demo.vue'
 import rizui_toast_demo from './pages/demos/container/rizui_toast_demo.vue'
+import rizui_code_demo from './pages/demos/container/rizui_code_demo.vue'
 import ThemeColor_demo from './pages/demos/other/ThemeColor_demo.vue'
 import OpenURL_demo from './pages/demos/other/OpenURL_demo.vue'
 import rizui_switch_demo from './pages/demos/control/rizui_switch_demo.vue'
@@ -37,6 +38,7 @@ const routes = [
   { path: '/demo/rizui-infobox',      name: 'rizui_infobox',     component: rizui_infobox_demo },
   { path: '/demo/rizui-dialog',       name: 'rizui_dialog',       component: rizui_dialog_demo },
   { path: '/demo/rizui-toast',        name: 'rizui_toast',      component: rizui_toast_demo },
+  { path: '/demo/rizui-code',         name: 'rizui_code',       component: rizui_code_demo },
   { path: '/demo/theme-color',        name: 'ThemeColor',      component: ThemeColor_demo },
   { path: '/demo/open-url',           name: 'OpenURL',         component: OpenURL_demo },
   { path: '/demo/rizui-switch',       name: 'rizui_switch',      component: rizui_switch_demo },

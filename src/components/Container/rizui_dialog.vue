@@ -1,10 +1,11 @@
 <template>
   <Teleport :to="teleport">
-    <Transition name="cdlg-pop">
+    <Transition name="cdlg-pop" @after-leave="emit('update:show', false)">
       <div
         v-if="show"
         class="cdlg-overlay"
         :class="{ 'cdlg-anchored': isAnchored }"
+        :data-rizui-theme="themeAttr"
         @click.self="onMaskClick"
       >
         <div class="cdlg-box" :style="boxStyle" v-bind="$attrs">
@@ -40,19 +41,38 @@ import { computed } from 'vue'
 defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
+  /** v-model:show 控制显隐 Show state via v-model:show */
   show:         { type: Boolean, default: false },
+  /** 标题文字 Title text */
   title:        { type: String,  default: '' },
+  /** 标题样式覆盖 Title style override */
   titleStyle: { type: Object,  default: () => ({}) },
+  /** 标题左侧图标（完整 FA class）Title icon (full FA class) */
   icon:         { type: String,  default: '' },
+  /** 图标样式覆盖 Icon style override */
   iconStyle:  { type: Object,  default: () => ({}) },
+  /** 主题色，空则跟随 --rizui_themecolor Theme color */
   color:        { type: String,  default: '' },
+  /** 挂载目标（选择器），默认 body Teleport target */
   teleport:     { type: String,  default: 'body' },
+  /** 对话框宽度 Dialog width */
   width:        { type: String,  default: 'auto' },
+  /** 显示关闭按钮 Show close button */
   closable:     { type: Boolean, default: true },
-  maskClose:    { type: Boolean, default: true }
+  /** 点击遮罩关闭 Close on mask click */
+  maskClose:    { type: Boolean, default: true },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:       { type: String,  default: 'auto' }
 })
 
 const emit = defineEmits(['update:show'])
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 
 const isAnchored = computed(() => props.teleport !== 'body')
 
@@ -74,11 +94,21 @@ function onMaskClick() {
 </script>
 
 <style scoped>
+/* ── 进场 / 退场 ── */
+.cdlg-pop-enter-active,
+.cdlg-pop-leave-active {
+  transition: opacity 0.22s ease;
+}
+.cdlg-pop-enter-from,
+.cdlg-pop-leave-to {
+  opacity: 0;
+}
+
 .cdlg-overlay {
   position: fixed;
   inset: 0;
   z-index: 9990;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--rz-overlay);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
@@ -90,20 +120,24 @@ function onMaskClick() {
   position: absolute;
 }
 
-.cdlg-pop-enter-active,
-.cdlg-pop-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+/* 组件级强制暗色（theme="Dark"） */
+.cdlg-overlay[data-rizui-theme="dark"] {
+  --rz-overlay: var(--rz-dark-overlay);
+  --rz-bg: var(--rz-dark-bg);
+  --rz-text: var(--rz-dark-text);
 }
-.cdlg-pop-enter-from,
-.cdlg-pop-leave-to {
-  opacity: 0;
-  transform: scale(0.92);
+
+/* 组件级强制亮色（theme="Light"） */
+.cdlg-overlay[data-rizui-theme="light"] {
+  --rz-overlay: rgba(15, 23, 42, 0.45);
+  --rz-bg: #fff;
+  --rz-text: #334;
 }
 
 .cdlg-box {
-  background: #fff;
+  background: var(--rz-bg);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 40px var(--rz-shadow);
   min-width: 280px;
   max-width: 90vw;
   display: flex;
@@ -133,7 +167,7 @@ function onMaskClick() {
   min-width: 0;
   font-size: 15px;
   font-weight: 700;
-  color: #334;
+  color: var(--rz-text);
 }
 
 .cdlg-close {
@@ -141,14 +175,14 @@ function onMaskClick() {
   height: 26px;
   border: none;
   border-radius: 50%;
-  background: #f0f2f5;
-  color: #888;
+  background: color-mix(in srgb, var(--rz-text) 8%, transparent);
+  color: var(--rz-subtext);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.2s;
+  transition: filter 0.2s;
 }
 
 .cdlg-close:hover {
@@ -160,7 +194,7 @@ function onMaskClick() {
 .cdlg-body {
   padding: 0 20px 8px;
   font-size: 13px;
-  color: #667;
+  color: var(--rz-text);
   line-height: 1.6;
   overflow-y: auto;
 }

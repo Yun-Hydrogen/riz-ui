@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { UiCard, UiConfigRow, UiSwitch, NotReadyOverlay } from 'riz-ui'
+import { UiCard, UiConfigRow, UiSwitch, NotReadyOverlay, rizui_code } from 'riz-ui'
 const themeColor = inject('themeColor')
 const switchOn = ref(true)
 const deprecated = true
@@ -55,7 +55,7 @@ const usage = `<UiConfigRow label="持续置顶" hint="窗口将始终位于最�
       <ul><li v-for="s in slots" :key="s"><code>{{ s }}</code></li></ul>
     </section>
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

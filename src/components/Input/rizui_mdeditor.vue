@@ -1,13 +1,16 @@
 <template>
-  <div class="imd-root" :style="rootStyle" :class="{ 'imd-readonly': readonly }">
-    <!-- ═══ 顶栏工具栏（readonly 隐藏） ═══ -->
+  <div class="imd-root" :data-rizui-theme="themeAttr" :style="rootStyle" :class="{ 'imd-readonly': readonly }">
+    <!-- ═══ 内容画布（滚动容器；玻璃顶栏悬浮于画布上方，覆盖滚动的正文） ═══ -->
+    <div class="imd-body" :style="{ height }">
+    <!-- ═══ 顶栏工具栏（readonly 隐藏，液态玻璃胶囊） ═══ -->
     <div v-if="!readonly" class="imd-toolbar">
       <div class="imd-toolbar-btns">
         <button
           v-for="b in toolbarBtns"
           :key="b.id"
           class="imd-tb"
-          :title="b.title"
+          :data-tip="b.title"
+          :aria-label="b.title"
           type="button"
           :disabled="disabled"
           @mousedown.prevent
@@ -15,27 +18,27 @@
         ><i :class="b.icon"></i></button>
       </div>
 
-      <!-- 编辑 / 预览 选项卡（右侧） -->
+      <!-- 编辑 / 预览 选项卡（右侧，滑块滑动切换） -->
       <div class="imd-tabs">
+        <span class="imd-tab-slider" :class="{ 'imd-tab-slider-right': activeTab === 'preview' }"></span>
         <button
           class="imd-tab"
           :class="{ 'imd-tab-active': activeTab === 'edit' }"
           type="button"
           @mousedown.prevent
-          @click="activeTab = 'edit'"
+          @click="switchTab('edit')"
         ><i class="fa-solid fa-pen"></i> 编辑</button>
         <button
           class="imd-tab"
           :class="{ 'imd-tab-active': activeTab === 'preview' }"
           type="button"
           @mousedown.prevent
-          @click="activeTab = 'preview'"
+          @click="switchTab('preview')"
         ><i class="fa-solid fa-eye"></i> 预览</button>
       </div>
     </div>
 
-    <!-- ═══ 内容区 ═══ -->
-    <div class="imd-body">
+    <Transition :name="tabAnim" mode="out-in">
       <textarea
         v-if="!readonly && activeTab === 'edit'"
         ref="taRef"
@@ -43,29 +46,38 @@
         :value="modelValue"
         :placeholder="placeholder"
         :disabled="disabled"
-        :style="{ height }"
         @input="$emit('update:modelValue', $event.target.value)"
         @keydown.tab.prevent="insertIndent"
       ></textarea>
 
-      <div v-if="readonly || activeTab === 'preview'" class="imd-preview" :style="{ height }">
+      <div v-else-if="readonly || activeTab === 'preview'" class="imd-preview">
         <div class="imd-preview-inner" v-html="renderedHtml"></div>
       </div>
+    </Transition>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, nextTick, onMounted, watch } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定 Markdown 文本 Markdown content via v-model */
   modelValue:  { type: String,  default: '' },
+  /** 占位提示文字 Placeholder */
   placeholder: { type: String,  default: '在此输入 Markdown 内容…' },
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
   color:       { type: String,  default: '' },
+  /** 禁用 Disabled */
   disabled:    { type: Boolean, default: false },
+  /** 只读（仅预览）Readonly (preview only) */
   readonly:    { type: Boolean, default: false },
+  /** 编辑 / 预览区高度 Editor height */
   height:      { type: String,  default: '320px' },
-  default:     { type: String,  default: 'edit' }
+  /** 初始板块 edit / preview Default tab */
+  default:     { type: String,  default: 'edit' },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:       { type: String,  default: 'auto' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -73,11 +85,37 @@ const emit = defineEmits(['update:modelValue'])
 const taRef = ref(null)
 /* 编辑 / 预览 选项卡：default prop 控制初始板块（'edit' | 'preview'） */
 const activeTab = ref(props.default === 'preview' ? 'preview' : 'edit')
+/* tab 切换时内容滑入方向：edit→preview 左滑，preview→edit 右滑 */
+const tabAnim = ref('anim-left')
+
+function switchTab(tab) {
+  if (tab === activeTab.value) return
+  tabAnim.value = tab === 'preview' ? 'anim-left' : 'anim-right'
+  activeTab.value = tab
+}
+
+/* 编辑框高度随内容增长（画布 .imd-body 统一滚动，玻璃顶栏才能悬浮覆盖正文） */
+function autosizeTextarea() {
+  const ta = taRef.value
+  if (!ta) return
+  ta.style.height = 'auto'
+  ta.style.height = ta.scrollHeight + 'px'
+}
+watch(() => props.modelValue, () => nextTick(autosizeTextarea))
+watch(() => props.height, () => nextTick(autosizeTextarea))
+onMounted(() => nextTick(autosizeTextarea))
 
 /* 空 color 时跟随全局主题色变量 --rizui_themecolor */
 const rootStyle = computed(() => ({
   '--imd-color': props.color || 'var(--rizui_themecolor)'
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 
 /* ════════════════════════════════════════════════════════
    工具栏定义
@@ -151,7 +189,7 @@ function insertIndent() {
 function onToolbar(id) {
   /* 若当前在预览选项卡，先切回编辑再执行插入 */
   if (activeTab.value !== 'edit') {
-    activeTab.value = 'edit'
+    switchTab('edit')
     nextTick(() => doToolbar(id))
   } else {
     doToolbar(id)
@@ -334,28 +372,78 @@ function renderMarkdown(md) {
 
 <style scoped>
 .imd-root {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  border: 1.5px solid #d0d8e0;
+  border: 1.5px solid var(--rz-border);
   border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-  transition: border-color 0.2s;
+  overflow: clip;
+  background: var(--rz-bg);
 }
 
-.imd-root:focus-within {
-  border-color: var(--imd-color);
+/* 组件级强制暗色（theme="Dark"） */
+.imd-root[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-border: var(--rz-dark-border);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+  --rz-shadow: var(--rz-dark-shadow);
 }
 
-/* ═══ 工具栏 ═══ */
+/* 组件级强制亮色（theme="Light"） */
+.imd-root[data-rizui-theme="light"] {
+  --rz-bg: #fff;
+  --rz-border: #e8ecf2;
+  --rz-text: #334;
+  --rz-subtext: #99a;
+  --rz-shadow: rgba(30, 41, 59, 0.08);
+}
+
+/* ── 聚焦动画：完整圆角主题色边框（2.5px）从中轴往两侧展开并蔓延发光；失焦反向收回 ── */
+.imd-root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--imd-color);
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--imd-color) 55%, transparent));
+  mask-image: linear-gradient(#000, #000);
+  -webkit-mask-image: linear-gradient(#000, #000);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 0% 100%;
+  -webkit-mask-size: 0% 100%;
+  mask-position: center;
+  -webkit-mask-position: center;
+  transition: mask-size 0.35s ease, -webkit-mask-size 0.35s ease, opacity 0.2s ease;
+  z-index: 6;
+}
+
+.imd-root:focus-within::before {
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  opacity: 1;
+}
+
+/* ═══ 工具栏（高斯模糊玻璃：高透明底 + 强模糊，正文透过后被虚化，滚动吸顶遮挡内容） ═══ */
 .imd-toolbar {
+  position: sticky;
+  top: 10px;
+  z-index: 5;
+  margin: 10px 10px 6px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
-  border-bottom: 1px solid #e8ecf2;
-  background: linear-gradient(to bottom, #fdfdfe, #f6f8fa);
+  padding: 5px 12px;
+  border: 1px solid color-mix(in srgb, var(--rz-text) 12%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rz-bg) 38%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--rz-shadow) 70%, transparent);
 }
 
 .imd-toolbar-btns {
@@ -368,6 +456,7 @@ function renderMarkdown(md) {
 }
 
 .imd-tb {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -376,14 +465,39 @@ function renderMarkdown(md) {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #667;
+  color: var(--rz-subtext);
   font-size: 12px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+}
+
+/* ── 自定义工具提示（替代原生 title） ── */
+.imd-tb::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  background: color-mix(in srgb, var(--rz-text) 88%, var(--rz-bg));
+  color: var(--rz-bg);
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 8;
+}
+
+.imd-tb:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .imd-tb:hover:not(:disabled) {
-  background: #eef1f5;
+  background: color-mix(in srgb, var(--rz-text) 6%, var(--rz-bg));
   color: var(--imd-color);
 }
 
@@ -392,20 +506,42 @@ function renderMarkdown(md) {
   cursor: not-allowed;
 }
 
-/* ── 编辑 / 预览 选项卡（右侧胶囊） ── */
+/* ── 编辑 / 预览 选项卡（右侧胶囊，滑块滑动切换） ── */
 .imd-tabs {
+  position: relative;
   display: inline-flex;
   gap: 4px;
   padding: 3px;
   border-radius: 999px;
-  background: #eceff4;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   flex-shrink: 0;
 }
 
+/* 滑块：从当前 tab 滑向目标 tab */
+.imd-tab-slider {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 999px;
+  background: var(--rz-bg);
+  box-shadow: 0 2px 8px var(--rz-shadow);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.imd-tab-slider-right {
+  transform: translateX(100%);
+}
+
 .imd-tab {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  flex: 1;
   padding: 5px 14px;
   border: none;
   border-radius: 999px;
@@ -413,9 +549,9 @@ function renderMarkdown(md) {
   font-size: 12px;
   font-weight: 500;
   font-family: inherit;
-  color: #889;
+  color: var(--rz-subtext);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .imd-tab:hover:not(:disabled) {
@@ -428,27 +564,32 @@ function renderMarkdown(md) {
 }
 
 .imd-tab-active {
-  background: #fff;
+  background: transparent;
   color: var(--imd-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-/* ═══ 内容区 ═══ */
+/* ═══ 内容画布（滚动容器：正文在此滚动，玻璃顶栏悬浮覆盖其上） ═══ */
 .imd-body {
-  display: flex;
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--rz-bg);
 }
 
 .imd-editor {
-  flex: 1;
-  min-width: 0;
+  display: block;
+  width: 100%;
+  min-height: 100%;
+  height: auto;
   padding: 12px 14px;
   border: none;
   outline: none;
   resize: none;
+  overflow: hidden;
   font-family: ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace;
   font-size: 13px;
   line-height: 1.7;
-  color: #334;
+  color: var(--rz-text);
   background: transparent;
 }
 
@@ -458,53 +599,47 @@ function renderMarkdown(md) {
 }
 
 .imd-preview {
-  flex: 1;
-  min-width: 0;
-  overflow-y: auto;
-  background: #fff;
+  display: block;
+  width: 100%;
+  min-height: 100%;
+  overflow: visible;
+  background: transparent;
 }
 
-/* ── 滚动条：主题色半透明 ── */
-.imd-editor::-webkit-scrollbar,
-.imd-preview::-webkit-scrollbar {
+/* ── 滚动条：主题色半透明（画布滚动） ── */
+.imd-body::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.imd-editor::-webkit-scrollbar-track,
-.imd-preview::-webkit-scrollbar-track {
+.imd-body::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.imd-editor::-webkit-scrollbar-thumb,
-.imd-preview::-webkit-scrollbar-thumb {
+.imd-body::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--imd-color) 28%, transparent);
   border-radius: 999px;
 }
 
-.imd-editor::-webkit-scrollbar-thumb:hover,
-.imd-preview::-webkit-scrollbar-thumb:hover {
+.imd-body::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--imd-color) 48%, transparent);
 }
 
-.imd-editor,
-.imd-preview {
+.imd-body {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--imd-color) 28%, transparent) transparent;
 }
 
-/* ── readonly：仅显示预览，height 约束高度，超出滚动 ── */
+/* ── readonly：仅显示预览，画布内滚动 ── */
 .imd-readonly .imd-preview {
-  flex: 1;
-  min-height: 120px;
-  overflow-y: auto;
+  min-height: 100%;
 }
 
 .imd-preview-inner {
   padding: 12px 14px;
   font-size: 13px;
   line-height: 1.7;
-  color: #445;
+  color: var(--rz-text);
   word-break: break-word;
 }
 
@@ -517,12 +652,12 @@ function renderMarkdown(md) {
 .imd-preview-inner :deep(h6) {
   margin: 1em 0 0.5em;
   font-weight: 700;
-  color: #222;
+  color: var(--rz-text);
   line-height: 1.4;
 }
 
-.imd-preview-inner :deep(h1) { font-size: 22px; border-bottom: 1px solid #eef0f4; padding-bottom: 6px; }
-.imd-preview-inner :deep(h2) { font-size: 18px; border-bottom: 1px solid #eef0f4; padding-bottom: 5px; }
+.imd-preview-inner :deep(h1) { font-size: 22px; border-bottom: 1px solid var(--rz-border); padding-bottom: 6px; }
+.imd-preview-inner :deep(h2) { font-size: 18px; border-bottom: 1px solid var(--rz-border); padding-bottom: 5px; }
 .imd-preview-inner :deep(h3) { font-size: 16px; }
 .imd-preview-inner :deep(h4) { font-size: 14px; }
 .imd-preview-inner :deep(p) { margin: 0.5em 0; }
@@ -531,7 +666,7 @@ function renderMarkdown(md) {
 .imd-preview-inner :deep(code) {
   padding: 1px 6px;
   border-radius: 4px;
-  background: #f0f2f5;
+  background: color-mix(in srgb, var(--rz-text) 8%, var(--rz-bg));
   color: #c7254e;
   font-family: ui-monospace, Consolas, monospace;
   font-size: 12px;
@@ -540,13 +675,13 @@ function renderMarkdown(md) {
   margin: 0.75em 0;
   padding: 12px 14px;
   border-radius: 8px;
-  background: #f6f8fa;
+  background: color-mix(in srgb, var(--rz-text) 5%, var(--rz-bg));
   overflow-x: auto;
 }
 .imd-preview-inner :deep(pre code) {
   padding: 0;
   background: transparent;
-  color: #334;
+  color: var(--rz-text);
 }
 .imd-preview-inner :deep(blockquote) {
   margin: 0.75em 0;
@@ -554,7 +689,7 @@ function renderMarkdown(md) {
   border-left: 3px solid var(--imd-color);
   background: color-mix(in srgb, var(--imd-color) 6%, transparent);
   border-radius: 0 8px 8px 0;
-  color: #667;
+  color: var(--rz-subtext);
 }
 .imd-preview-inner :deep(ul),
 .imd-preview-inner :deep(ol) {
@@ -573,15 +708,15 @@ function renderMarkdown(md) {
 .imd-preview-inner :deep(th),
 .imd-preview-inner :deep(td) {
   padding: 6px 10px;
-  border: 1px solid #e4e8ee;
+  border: 1px solid var(--rz-border);
   text-align: left;
 }
 .imd-preview-inner :deep(th) {
-  background: #f6f8fa;
+  background: color-mix(in srgb, var(--rz-text) 5%, var(--rz-bg));
   font-weight: 600;
-  color: #334;
+  color: var(--rz-text);
 }
-.imd-preview-inner :deep(tr:nth-child(2n) td) { background: #fafbfc; }
+.imd-preview-inner :deep(tr:nth-child(2n) td) { background: color-mix(in srgb, var(--rz-text) 3%, var(--rz-bg)); }
 .imd-preview-inner :deep(img) {
   max-width: 100%;
   border-radius: 8px;
@@ -590,7 +725,35 @@ function renderMarkdown(md) {
 .imd-preview-inner :deep(hr) {
   margin: 1em 0;
   border: none;
-  border-top: 1px solid #e4e8ee;
+  border-top: 1px solid var(--rz-border);
 }
-.imd-preview-inner :deep(del) { color: #99a; }
+.imd-preview-inner :deep(del) { color: var(--rz-subtext); }
+
+/* ═══ tab 切换：内容画布左滑 / 右滑 ═══ */
+.anim-left-enter-active,
+.anim-left-leave-active,
+.anim-right-enter-active,
+.anim-right-leave-active {
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+
+/* 编辑 → 预览：向左滑（新内容从右进入） */
+.anim-left-enter-from {
+  transform: translateX(24px);
+  opacity: 0;
+}
+.anim-left-leave-to {
+  transform: translateX(-12px);
+  opacity: 0;
+}
+
+/* 预览 → 编辑：向右滑（新内容从左进入） */
+.anim-right-enter-from {
+  transform: translateX(-24px);
+  opacity: 0;
+}
+.anim-right-leave-to {
+  transform: translateX(12px);
+  opacity: 0;
+}
 </style>

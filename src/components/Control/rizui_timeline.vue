@@ -1,5 +1,5 @@
 <template>
-  <div class="ctl-root" :style="rootStyle">
+  <div class="ctl-root" :data-rizui-theme="themeAttr" :style="rootStyle">
     <!-- 轨道（点击 / 拖拽定位） -->
     <div
       ref="trackRef"
@@ -44,11 +44,18 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定时间值（秒）Time value in seconds via v-model */
   modelValue: { type: Number, default: 0 },
+  /** 最小值 Min */
   min:        { type: Number, default: 0 },
+  /** 最大值 Max */
   max:        { type: Number, default: 120 },
+  /** 步进 Step */
   step:       { type: Number, default: 1 },
-  color:      { type: String, default: '' }
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
+  color:      { type: String, default: '' },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:      { type: String, default: 'auto' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -112,6 +119,13 @@ const displayTime = computed(() => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 })
 
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
+
 /* ── 拖拽逻辑 ── */
 function parseNum(v) {
   return props.step < 1 ? parseFloat(v) : parseInt(v)
@@ -164,6 +178,22 @@ onBeforeUnmount(() => {
   user-select: none;
 }
 
+/* 组件级强制暗色（theme="Dark"） */
+.ctl-root[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-border: var(--rz-dark-border);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+}
+
+/* 组件级强制亮色（theme="Light"） */
+.ctl-root[data-rizui-theme="light"] {
+  --rz-bg: #fff;
+  --rz-border: #e8ecf2;
+  --rz-text: #334;
+  --rz-subtext: #99a;
+}
+
 /* ── 轨道 ── */
 .ctl-track {
   position: relative;
@@ -180,8 +210,8 @@ onBeforeUnmount(() => {
   right: 0;
   height: 6px;
   border-radius: 999px;
-  background: #e8ecf2;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: var(--rz-border);
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--rz-text) 10%, transparent);
 }
 
 .ctl-fill {
@@ -200,14 +230,14 @@ onBeforeUnmount(() => {
   width: 2px;
   height: 12px;
   border-radius: 1px;
-  background: #cfd6df;
+  background: color-mix(in srgb, var(--rz-text) 22%, var(--rz-bg));
   transform: translateX(-50%);
 }
 
 .ctl-tick-minor {
   top: 11px;
   height: 6px;
-  background: #dde3ea;
+  background: color-mix(in srgb, var(--rz-text) 14%, var(--rz-bg));
 }
 
 /* ── 指示器 ── */
@@ -225,14 +255,14 @@ onBeforeUnmount(() => {
 .ctl-bubble {
   font-size: 11px;
   font-weight: 700;
-  color: #334;
+  color: var(--rz-text);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  background: #fff;
+  background: var(--rz-bg);
   border: 1.5px solid var(--ctl-color);
   border-radius: 999px;
   padding: 1px 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px var(--rz-shadow);
   margin-bottom: 2px;
 }
 
@@ -261,7 +291,7 @@ onBeforeUnmount(() => {
 .ctl-label-tick {
   position: absolute;
   font-size: 10px;
-  color: #aab;
+  color: var(--rz-subtext);
   transform: translateX(-50%);
   font-variant-numeric: tabular-nums;
 }

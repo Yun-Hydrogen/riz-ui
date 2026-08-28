@@ -22,6 +22,8 @@ export declare const rizui_card: DefineComponent<{
   descStyle?: Instyle
   icon?: string
   iconStyle?: Instyle
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 配置行：左侧标签 + 右侧控件，支持 stack 布局 */
@@ -34,6 +36,8 @@ export declare const rizui_cfgrow: DefineComponent<{
   iconStyle?: Instyle
   stack?: boolean
   disabled?: boolean
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 提示框：虚线边框 + info/warn/error 预设配色 */
@@ -41,6 +45,9 @@ export declare const rizui_infobox: DefineComponent<{
   type?: string
   text?: string
   textStyle?: Instyle
+  color?: string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
   icon?: string
   iconStyle?: Instyle
 }>
@@ -55,6 +62,8 @@ export declare const rizui_dialog: DefineComponent<
     iconStyle?: Instyle
     color?: string
     teleport?: string
+    /** 主题模式 Dark/Light/auto */
+    theme?: string
     width?: string
     closable?: boolean
     maskClose?: boolean
@@ -62,6 +71,18 @@ export declare const rizui_dialog: DefineComponent<
   {},
   { default: () => any, footer: () => any }
 >
+
+/** 代码块：单行代码或大代码块（block），支持语法高亮与复制 */
+export declare const rizui_code: DefineComponent<{
+  code?: string
+  block?: boolean
+  lang?: string
+  color?: string
+  /** 最大高度（如 320px），默认内容全高展开 */
+  height?: string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
+}>
 
 /** 通知：info/warn/error + 倒计时进度条，Teleport 右上角排队 */
 export declare const rizui_toast: DefineComponent<
@@ -73,6 +94,10 @@ export declare const rizui_toast: DefineComponent<
     hintStyle?: Instyle
     icon?: string
     iconStyle?: Instyle
+    /** 宽度（如 420px） */
+    width?: string
+    /** 主题模式 Dark/Light/auto */
+    theme?: string
     countdown?: number
     closable?: boolean
     showBar?: boolean
@@ -93,6 +118,8 @@ export declare const rizui_switch: DefineComponent<{
   modelValue?: boolean
   color?: string
   disabled?: boolean
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 复选框：方框勾选，v-model + 主题色，label 可左右 */
@@ -104,6 +131,8 @@ export declare const rizui_checkbox: DefineComponent<{
   lLabelStyle?: Instyle
   rLabel?: string
   rLabelStyle?: Instyle
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 滑条：步进 + 拖拽 / 长按 */
@@ -115,6 +144,8 @@ export declare const rizui_slider: DefineComponent<{
   color?: string
   display?: string
   displayValue?: string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 时间轴：拖拽定位 + 刻度线 */
@@ -124,6 +155,8 @@ export declare const rizui_timeline: DefineComponent<{
   max?: number
   step?: number
   color?: string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 下拉选择器：点击外部自动关闭 */
@@ -131,6 +164,8 @@ export declare const rizui_dropdown: DefineComponent<{
   modelValue?: string | number
   options?: Array<{ value: string | number, label?: string, icon?: string } | string | number>
   color?: string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 颜色选择器：HSL 调色盘 + hex 输入 */
@@ -138,6 +173,8 @@ export declare const rizui_colorpicker: DefineComponent<{
   modelValue?: string
   color?: string
   teleport?: string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** 按钮：主题色填充 / 通栏 / 左右图标 / 危险 */
@@ -155,6 +192,8 @@ export declare const rizui_button: DefineComponent<
     color?: string
     disabled?: boolean
     type?: string
+    /** 主题模式 Dark/Light/auto */
+    theme?: string
   },
   { click: (e: MouseEvent) => void },
   {}
@@ -171,6 +210,8 @@ export declare const rizui_text: DefineComponent<{
   plaintext?: boolean
   disabled?: boolean
   readonly?: boolean
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /** Markdown 编辑器：顶栏工具栏 + 预览选项卡 */
@@ -182,6 +223,8 @@ export declare const rizui_mdeditor: DefineComponent<{
   readonly?: boolean
   height?: string
   default?: 'edit' | 'preview'
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
 }>
 
 /* ═══════════════════════════ old（已弃用，保留兼容） ═══════════════════════════ */

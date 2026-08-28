@@ -1,5 +1,5 @@
 <script setup>
-import { rizui_infobox, rizui_card } from 'riz-ui'
+import { rizui_infobox, rizui_card, rizui_code } from 'riz-ui'
 import rizui_cfgrow from '../../../../src/components/Container/rizui_cfgrow.vue';
 
 const props = [
@@ -8,7 +8,8 @@ const props = [
   { name:'text-style', type:'Object',  default:'{}',      desc:'文字样式覆盖' },
   { name:'icon',        type:'String',  default:'""',      desc:'自定义图标，空时按 type' },
   { name:'icon-style', type:'Object',  default:'{}',      desc:'图标样式覆盖' },
-  { name:'color',       type:'String',  default:'""',      desc:'仅 info 生效，空则跟随主题色' }
+  { name:'color',       type:'String',  default:'""',      desc:'仅 info 生效，空则跟随主题色' },
+  { name:'theme',       type:'String',  default:"'auto'",   desc:'主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局' }
 ]
 const usage = `<!-- 三种预设 -->
 <rizui_infobox type="info" text="提示" />
@@ -75,13 +76,18 @@ const gacha = "📘📘📘📘📘📘📘📘📘📙"
       </table>
     </section>
 
+    <!-- 主题模式提示 -->
+    <rizui_infobox type="info">
+      <code>theme</code> 支持 <code>Dark</code> / <code>Light</code> / <code>auto</code>（默认）。<code>auto</code> 跟随顶栏主题开关（全局 <code>data-rizui-theme</code>）或系统 <code>prefers-color-scheme</code>；<code>Dark</code> / <code>Light</code> 可对本组件局部强制明暗。试试右上角主题按钮实时切换，或在你的项目中于 <code>&lt;html&gt;</code> 上设置 <code>data-rizui-theme</code>。
+    </rizui_infobox>
+
     <!-- 主题色提示 -->
     <rizui_infobox type="info">
       <code>info</code> 默认跟随全局变量 <code>--rizui_themecolor</code>（默认 <code>#66CCFF</code>），<code>color</code> 可自定义（仅 info 生效）；warn / error 用预设色。试试右上角取色器实时换色，或在你的项目中于 <code>:root</code> 覆盖该变量。
     </rizui_infobox>
 
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

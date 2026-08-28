@@ -1,5 +1,5 @@
 <template>
-  <div ref="rootRef" class="cdd-root" :class="{ 'cdd-open': isOpen }">
+  <div ref="rootRef" class="cdd-root" :class="{ 'cdd-open': isOpen }" :data-rizui-theme="themeAttr">
     <button class="cdd-trigger" @click="toggle" type="button">
       <span>{{ selectedLabel }}</span>
       <svg class="cdd-arrow" viewBox="0 0 12 7" width="10" height="6">
@@ -32,9 +32,14 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定值 Selected value via v-model */
   modelValue: { type: [String, Number], default: '' },
+  /** 选项列表 Options */
   options:    { type: Array, default: () => [] },
-  color:      { type: String, default: '' }
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
+  color:      { type: String, default: '' },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:      { type: String, default: 'auto' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -54,6 +59,13 @@ const activeStyle = computed(() => ({
   color: cssColor.value,
   background: `color-mix(in srgb, ${cssColor.value} 8%, transparent)`
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 
 function toggle() { isOpen.value = !isOpen.value }
 
@@ -86,36 +98,53 @@ onBeforeUnmount(() => {
   user-select: none;
 }
 
+/* 组件级强制暗色（theme="Dark"） */
+.cdd-root[data-rizui-theme="dark"] {
+  --rz-bg: var(--rz-dark-bg);
+  --rz-border: var(--rz-dark-border);
+  --rz-text: var(--rz-dark-text);
+  --rz-subtext: var(--rz-dark-subtext);
+  --rz-shadow: var(--rz-dark-shadow);
+}
+
+/* 组件级强制亮色（theme="Light"） */
+.cdd-root[data-rizui-theme="light"] {
+  --rz-bg: #fff;
+  --rz-border: #e8ecf2;
+  --rz-text: #334;
+  --rz-subtext: #99a;
+  --rz-shadow: rgba(30, 41, 59, 0.08);
+}
+
 .cdd-trigger {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  border: 1.5px solid #d0d8e0;
+  border: 1.5px solid var(--rz-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--rz-bg);
   font-size: 12px;
   font-family: inherit;
-  color: #445;
+  color: var(--rz-text);
   cursor: pointer;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
   white-space: nowrap;
 }
 
 .cdd-trigger:hover {
-  border-color: #aab4c0;
+  border-color: color-mix(in srgb, var(--rz-text) 40%, var(--rz-bg));
 }
 
 .cdd-open .cdd-trigger {
   border-color: v-bind('cssColor');
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rz-text) 6%, transparent);
 }
 
 .cdd-arrow {
   flex-shrink: 0;
   transition: transform 0.2s;
-  color: #99a;
+  color: var(--rz-subtext);
 }
 
 .cdd-open .cdd-arrow {
@@ -127,10 +156,10 @@ onBeforeUnmount(() => {
   top: calc(100% + 6px);
   left: 0;
   min-width: 100%;
-  background: #fff;
-  border: 1px solid #e8ecf2;
+  background: var(--rz-bg);
+  border: 1px solid var(--rz-border);
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px var(--rz-shadow);
   padding: 4px;
   z-index: 100;
 }
@@ -144,7 +173,7 @@ onBeforeUnmount(() => {
   background: transparent;
   font-size: 12px;
   font-family: inherit;
-  color: #445;
+  color: var(--rz-text);
   cursor: pointer;
   text-align: left;
   outline: none;
@@ -153,7 +182,7 @@ onBeforeUnmount(() => {
 }
 
 .cdd-opt:hover {
-  background: #f5f5f8;
+  background: color-mix(in srgb, var(--rz-text) 6%, var(--rz-bg));
 }
 
 .cdd-active {

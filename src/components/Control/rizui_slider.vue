@@ -3,6 +3,7 @@
     ref="rootRef"
     class="csl-root"
     :class="{ 'csl-dragging': isDragging }"
+    :data-rizui-theme="themeAttr"
     :style="rootStyle"
     @mousedown.left="startDrag"
     @touchstart.prevent="startDrag"
@@ -17,13 +18,22 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定值 Slider value via v-model */
   modelValue:   { type: Number, default: 0 },
+  /** 最小值 Min */
   min:          { type: Number, default: 0 },
+  /** 最大值 Max */
   max:          { type: Number, default: 100 },
+  /** 步进 Step */
   step:         { type: Number, default: 1 },
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
   color:        { type: String, default: '' },
+  /** 显示单位文案 Display unit text */
   display:      { type: String, default: '' },
-  displayValue: { type: String, default: '' }
+  /** 显示值覆盖 Display value override */
+  displayValue: { type: String, default: '' },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:        { type: String, default: 'auto' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -43,6 +53,13 @@ const rootStyle = computed(() => ({
   background: `linear-gradient(to right, color-mix(in srgb, ${cssColor.value} 20%, transparent) ${fillPct.value}%, transparent ${fillPct.value}%)`,
   borderColor: cssColor.value
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 
 function parseNum(v) {
   return props.step < 1 ? parseFloat(v) : parseInt(v)
@@ -138,12 +155,11 @@ const displayText = computed(() => {
   height: 26px;
   min-width: 160px;
   border-radius: 999px;
-  border: 1.5px solid #d0d8e0;
-  background: #fff;
+  border: 1.5px solid var(--rz-border);
+  background: var(--rz-bg);
   overflow: hidden;
   user-select: none;
   cursor: col-resize;
-  transition: border-color 0.2s;
 }
 
 .csl-btn {
@@ -153,13 +169,12 @@ const displayText = computed(() => {
   background: transparent;
   font-size: 14px;
   font-weight: 600;
-  color: #667;
+  color: var(--rz-subtext);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
   font-family: inherit;
   line-height: 1;
   padding: 0;
@@ -167,8 +182,8 @@ const displayText = computed(() => {
 }
 
 .csl-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: #334;
+  background: color-mix(in srgb, var(--rz-text) 6%, var(--rz-bg));
+  color: var(--rz-text);
 }
 
 .csl-value {
@@ -176,7 +191,7 @@ const displayText = computed(() => {
   text-align: center;
   font-size: 13px;
   font-weight: 600;
-  color: #445;
+  color: var(--rz-text);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
 }

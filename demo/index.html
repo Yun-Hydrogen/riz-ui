@@ -12,7 +12,18 @@
       background: #f3f5f8;
       color: #334;
     }
+    html[data-rizui-theme="dark"] body { background: #161d27; color: #e6ebf2; }
   </style>
+  <script>
+    /* 提前恢复演示主题，避免暗色模式刷新时闪烁（与 App.vue 的 localStorage 键一致） */
+    (function () {
+      try {
+        var t = localStorage.getItem('rizui-demo-theme')
+        if (t === 'dark') document.documentElement.setAttribute('data-rizui-theme', 'dark')
+        else if (t === 'light') document.documentElement.setAttribute('data-rizui-theme', 'light')
+      } catch (e) {}
+    })()
+  </script>
 </head>
 <body>
   <div id="app"></div>

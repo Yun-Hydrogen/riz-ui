@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue'
-import { UiCard, UiConfigRow, UiDropdown } from 'riz-ui'
+import { UiCard, UiConfigRow, UiDropdown, rizui_code } from 'riz-ui'
 const themeColor = inject('themeColor')
 const dropdownVal = ref('option2')
 const dropdownOptions = [
@@ -41,7 +41,7 @@ const usage = `const opts = [{ value: 'a', label: 'Alpha' }, { value: 'b', label
       <ul><li v-for="e in events" :key="e"><code>{{ e }}</code></li></ul>
     </section>
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

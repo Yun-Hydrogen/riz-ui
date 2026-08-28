@@ -1,5 +1,5 @@
 <template>
-  <label class="csw-root" :class="{ 'csw-disabled': disabled }">
+  <label class="csw-root" :class="{ 'csw-disabled': disabled }" :data-rizui-theme="themeAttr">
     <input
       type="checkbox"
       :checked="modelValue"
@@ -14,9 +14,14 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定开关状态 Switch state via v-model */
   modelValue: { type: Boolean, default: false },
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
   color:      { type: String,  default: '' },
-  disabled:   { type: Boolean, default: false }
+  /** 禁用 Disabled */
+  disabled:   { type: Boolean, default: false },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:      { type: String,  default: 'auto' }
 })
 
 defineEmits(['update:modelValue'])
@@ -27,6 +32,13 @@ const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
 const trackStyle = computed(() => ({
   background: props.modelValue ? cssColor.value : undefined
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 </script>
 
 <style scoped>
@@ -56,8 +68,7 @@ const trackStyle = computed(() => ({
   position: absolute;
   inset: 0;
   border-radius: 12px;
-  background: #ccc;
-  transition: background 0.2s;
+  background: color-mix(in srgb, var(--rz-text) 30%, var(--rz-bg));
 }
 
 .csw-track::after {

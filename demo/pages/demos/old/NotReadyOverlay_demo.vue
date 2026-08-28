@@ -1,6 +1,6 @@
 <script setup>
 import { inject } from 'vue'
-import { UiCard, UiConfigRow, UiSwitch, UiDropdown, NotReadyOverlay } from 'riz-ui'
+import { UiCard, UiConfigRow, UiSwitch, UiDropdown, NotReadyOverlay, rizui_code } from 'riz-ui'
 const themeColor = inject('themeColor')
 const dropdownOptions = [
   { value: 'option1', label: '选项 Alpha' },
@@ -44,7 +44,7 @@ const usage = `<div style="position: relative">
       </table>
     </section>
     <section class="sec-usage"><h3><i class="fa-solid fa-code"></i> 用法</h3>
-      <pre class="code-block"><code>{{ usage }}</code></pre>
+      <rizui_code block lang="html" :code="usage" />
     </section>
   </main>
 </template>

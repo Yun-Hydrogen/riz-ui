@@ -1,5 +1,5 @@
 <template>
-  <label class="cchk-root" :class="{ 'cchk-disabled': disabled }">
+  <label class="cchk-root" :class="{ 'cchk-disabled': disabled }" :data-rizui-theme="themeAttr">
     <input
       type="checkbox"
       :checked="modelValue"
@@ -27,13 +27,22 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+  /** v-model 绑定值 Checked state via v-model */
   modelValue:   { type: Boolean, default: false },
+  /** 自定义颜色，空则跟随主题色 Custom color (defaults to theme) */
   color:        { type: String,  default: '' },
+  /** 禁用 Disabled */
   disabled:     { type: Boolean, default: false },
+  /** 左侧标签文字 Left label */
   lLabel:       { type: String,  default: '' },
+  /** 左标签样式覆盖 Left label style override */
   lLabelStyle:  { type: Object,  default: () => ({}) },
+  /** 右侧标签文字 Right label */
   rLabel:       { type: String,  default: '' },
-  rLabelStyle:  { type: Object,  default: () => ({}) }
+  /** 右标签样式覆盖 Right label style override */
+  rLabelStyle:  { type: Object,  default: () => ({}) },
+  /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
+  theme:        { type: String,  default: 'auto' }
 })
 
 defineEmits(['update:modelValue'])
@@ -44,6 +53,13 @@ const boxStyle = computed(() => ({
     ? (props.color || 'var(--rizui_themecolor)')
     : undefined
 }))
+
+/* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
+const themeAttr = computed(() => {
+  if (props.theme === 'Dark') return 'dark'
+  if (props.theme === 'Light') return 'light'
+  return undefined
+})
 </script>
 
 <style scoped>
@@ -75,10 +91,9 @@ const boxStyle = computed(() => ({
   justify-content: center;
   width: 18px;
   height: 18px;
-  border: 1.5px solid #d0d8e0;
+  border: 1.5px solid var(--rz-border);
   border-radius: 5px;
-  background: #fff;
-  transition: background 0.2s, border-color 0.2s;
+  background: var(--rz-bg);
 }
 
 .cchk-tick {
@@ -100,7 +115,7 @@ const boxStyle = computed(() => ({
 
 .cchk-label {
   font-size: 13px;
-  color: #445;
+  color: var(--rz-text);
   line-height: 1.4;
 }
 </style>
