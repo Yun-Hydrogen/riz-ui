@@ -1,6 +1,6 @@
 {
   "name": "riz-ui",
-  "version": "26.8.3",
+  "version": "26.9.1",
   "description": "RizUI — 一套轻量、精致的 Vue 3 通用 UI 组件库",
   "type": "module",
   "main": "./dist/riz-ui.umd.cjs",
