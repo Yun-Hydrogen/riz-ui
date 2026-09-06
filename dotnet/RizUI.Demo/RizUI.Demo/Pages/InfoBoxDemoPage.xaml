@@ -2,8 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
-  <ScrollViewer>
-    <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+  <ScrollViewer FontFamily="{StaticResource UiFont}">
+    <StackPanel Padding="32" Spacing="12">
       <TextBlock Text="RizInfoBox" FontSize="26" FontWeight="Bold" />
       <TextBlock Text="info 使用主题色；warn 和 error 使用固定预设色。默认 Content 与 Text 可并存。" Opacity="0.7" />
       <rizui:RizInfoBox Type="info" Text="Info：主题色混合背景与虚线边框。" Icon="fa-solid fa-circle-info" />

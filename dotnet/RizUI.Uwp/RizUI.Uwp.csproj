@@ -60,18 +60,19 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <!-- Font Awesome Free 7.3.1：字体作为应用内容分发，all.css 作为程序集资源解析完整 FA class→glyph。 -->
+  <!-- Font Awesome Free 6.7.2：官方 TTF 字体随包分发（Uno/Skia 原生支持 ttf，不支持 woff2）；
+       all.css 作为程序集资源解析完整 FA class→glyph 映射。 -->
   <ItemGroup>
-    <Content Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\webfonts\fa-solid-900.woff2"
-             Link="Assets\FontAwesome\fa-solid-900.woff2" CopyToOutputDirectory="PreserveNewest"
-             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-solid-900.woff2" />
-    <Content Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\webfonts\fa-regular-400.woff2"
-             Link="Assets\FontAwesome\fa-regular-400.woff2" CopyToOutputDirectory="PreserveNewest"
-             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-regular-400.woff2" />
-    <Content Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\webfonts\fa-brands-400.woff2"
-             Link="Assets\FontAwesome\fa-brands-400.woff2" CopyToOutputDirectory="PreserveNewest"
-             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-brands-400.woff2" />
-    <EmbeddedResource Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\css\all.css"
+    <Content Include="Assets\FontAwesome\fa-solid-900.ttf"
+             Link="Assets\FontAwesome\fa-solid-900.ttf" CopyToOutputDirectory="PreserveNewest"
+             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-solid-900.ttf" />
+    <Content Include="Assets\FontAwesome\fa-regular-400.ttf"
+             Link="Assets\FontAwesome\fa-regular-400.ttf" CopyToOutputDirectory="PreserveNewest"
+             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-regular-400.ttf" />
+    <Content Include="Assets\FontAwesome\fa-brands-400.ttf"
+             Link="Assets\FontAwesome\fa-brands-400.ttf" CopyToOutputDirectory="PreserveNewest"
+             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-brands-400.ttf" />
+    <EmbeddedResource Include="Assets\FontAwesome\all.css"
                       LogicalName="RizUI.Uwp.Assets.FontAwesome.all.css" />
     <None Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\LICENSE.txt"
           Link="THIRD-PARTY-NOTICES\Font-Awesome-Free-LICENSE.txt" Pack="true"

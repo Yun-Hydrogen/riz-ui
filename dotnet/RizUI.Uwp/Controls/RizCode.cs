@@ -3,14 +3,15 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Text;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace RizUI.Uwp.Controls;
 
-/// <summary>原生实现的 rizui_code；使用 RichTextBlock 保留轻量 tokenizer 的逐 token 配色。</summary>
 /// <summary>原生实现的 rizui_code；使用 TextBlock.Inlines 保留轻量 tokenizer 的逐 token 配色。</summary>
+[ContentProperty(Name = nameof(Code))]
 public sealed class RizCode : Control
 {
     private TextBlock? _inline;

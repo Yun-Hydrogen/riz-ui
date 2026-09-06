@@ -68,6 +68,41 @@ public sealed partial class MainPage : Page
     private void NavigateTo(string key)
     {
         if (_pages.TryGetValue(key, out var page) && PageHost.CurrentSourcePageType != page)
+        {
             PageHost.Navigate(page);
+            AnimatePageTransition();
+        }
+    }
+
+    private void AnimatePageTransition()
+    {
+        var transform = PageHost.RenderTransform as CompositeTransform ?? new CompositeTransform();
+        PageHost.RenderTransform = transform;
+
+        var duration = new Microsoft.UI.Xaml.Duration(System.TimeSpan.FromMilliseconds(220));
+        var opacityAnim = new Microsoft.UI.Xaml.Media.Animation.DoubleAnimation
+        {
+            From = 0.3,
+            To = 1.0,
+            Duration = duration,
+            EasingFunction = new Microsoft.UI.Xaml.Media.Animation.CubicEase { EasingMode = Microsoft.UI.Xaml.Media.Animation.EasingMode.EaseOut }
+        };
+        Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTarget(opacityAnim, PageHost);
+        Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTargetProperty(opacityAnim, "Opacity");
+
+        var translateAnim = new Microsoft.UI.Xaml.Media.Animation.DoubleAnimation
+        {
+            From = 14,
+            To = 0,
+            Duration = duration,
+            EasingFunction = new Microsoft.UI.Xaml.Media.Animation.CubicEase { EasingMode = Microsoft.UI.Xaml.Media.Animation.EasingMode.EaseOut }
+        };
+        Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTarget(translateAnim, transform);
+        Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTargetProperty(translateAnim, "TranslateY");
+
+        var sb = new Microsoft.UI.Xaml.Media.Animation.Storyboard();
+        sb.Children.Add(opacityAnim);
+        sb.Children.Add(translateAnim);
+        sb.Begin();
     }
 }

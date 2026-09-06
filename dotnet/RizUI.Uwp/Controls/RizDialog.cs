@@ -237,10 +237,8 @@ public sealed class RizDialog : ContentControl
         _title.Text = Title ?? string.Empty;
         _title.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
         _title.Style = TitleStyle;
-        _icon.Text = RizVisuals.ResolveIcon(Icon, string.Empty);
-        _icon.Visibility = string.IsNullOrWhiteSpace(Icon) ? Visibility.Collapsed : Visibility.Visible;
-        _icon.Foreground = RizVisuals.Brush(accent);
-        _icon.Style = IconStyle;
+        RizVisuals.ApplyIcon(_icon, Icon, 16, accent);
+        if (IconStyle != null) _icon.Style = IconStyle;
         _close.Visibility = Closable ? Visibility.Visible : Visibility.Collapsed;
         _close.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08));
         _close.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));

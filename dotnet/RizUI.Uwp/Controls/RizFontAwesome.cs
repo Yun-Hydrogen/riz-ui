@@ -12,9 +12,9 @@ namespace RizUI.Uwp.Controls;
 public static class RizFontAwesome
 {
     /// <summary>Solid / Regular 字体族名称。</summary>
-    public const string FreeFamily = "Font Awesome 7 Free";
+    public const string FreeFamily = "Font Awesome 6 Free";
     /// <summary>Brands 字体族名称。</summary>
-    public const string BrandsFamily = "Font Awesome 7 Brands";
+    public const string BrandsFamily = "Font Awesome 6 Brands";
 
     private const string ResourceName = "RizUI.Uwp.Assets.FontAwesome.all.css";
     private static readonly Lazy<IReadOnlyDictionary<string, string>> Glyphs = new(LoadGlyphs);
@@ -36,9 +36,10 @@ public static class RizFontAwesome
             || token.Equals("fab", StringComparison.OrdinalIgnoreCase));
         var isRegular = tokens.Any(token => token.Equals("fa-regular", StringComparison.OrdinalIgnoreCase)
             || token.Equals("far", StringComparison.OrdinalIgnoreCase));
-        var source = isBrands ? "fa-brands-400.woff2" : isRegular ? "fa-regular-400.woff2" : "fa-solid-900.woff2";
+        // Uno/Skia 原生支持 TTF，不支持 woff2；字体随库打包到应用 Assets/FontAwesome。
+        var source = isBrands ? "fa-brands-400.ttf" : isRegular ? "fa-regular-400.ttf" : "fa-solid-900.ttf";
         var family = isBrands ? BrandsFamily : FreeFamily;
-        return new RizFontAwesomeIcon(glyph, new FontFamily($"ms-appx:///RizUI.Uwp/Assets/FontAwesome/{source}#{family}"));
+        return new RizFontAwesomeIcon(glyph, new FontFamily($"ms-appx:///Assets/FontAwesome/{source}#{family}"));
     }
 
     /// <summary>判断类名是否是已内置的 Font Awesome Free 图标类。</summary>

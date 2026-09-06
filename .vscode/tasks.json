@@ -11,8 +11,27 @@
                 "-c",
                 "Debug"
             ],
-            "group": { "kind": "build", "isDefault": true },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-desktop (热重载)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo/RizUI.Demo.csproj"
+            ],
+            "isBackground": true,
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
         }
     ]
 }

@@ -227,9 +227,8 @@ public sealed class RizToast : ContentControl
         var fallback = string.Equals(Type, "warn", StringComparison.OrdinalIgnoreCase) ? "⚠"
             : string.Equals(Type, "error", StringComparison.OrdinalIgnoreCase) ? "!" : "ⓘ";
         _card.Background = RizVisuals.Brush(RizVisuals.Surface(dark));
-        _icon.Text = RizVisuals.ResolveIcon(Icon, fallback);
-        _icon.Foreground = RizVisuals.Brush(accent);
-        _icon.Style = IconStyle;
+        RizVisuals.ApplyIcon(_icon, string.IsNullOrWhiteSpace(Icon) ? fallback : Icon, 18, accent);
+        if (IconStyle != null) _icon.Style = IconStyle;
         _title.Text = Title ?? string.Empty;
         _title.Visibility = string.IsNullOrWhiteSpace(Title) ? Visibility.Collapsed : Visibility.Visible;
         _title.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));

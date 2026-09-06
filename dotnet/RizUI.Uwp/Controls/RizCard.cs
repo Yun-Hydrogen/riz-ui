@@ -69,24 +69,26 @@ public sealed class RizCard : ContentControl
         }
         if (_icon != null)
         {
-            _icon.Text = RizVisuals.ResolveIcon(Icon, string.Empty);
-            _icon.Visibility = string.IsNullOrWhiteSpace(Icon) ? Visibility.Collapsed : Visibility.Visible;
-            _icon.Style = IconStyle;
-            _icon.Foreground = RizVisuals.Brush(RizVisuals.Icon(dark));
+            if (IconStyle != null) _icon.Style = IconStyle;
+            RizVisuals.ApplyIcon(_icon, Icon, 20, RizVisuals.Icon(dark));
         }
         if (_title != null)
         {
+            if (TitleStyle != null) _title.Style = TitleStyle;
             _title.Text = Title ?? string.Empty;
             _title.Visibility = string.IsNullOrWhiteSpace(Title) ? Visibility.Collapsed : Visibility.Visible;
-            _title.Style = TitleStyle;
-            _title.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
+            if (TitleStyle == null)
+            {
+                _title.FontWeight = Microsoft.UI.Text.FontWeights.Bold;
+                _title.Foreground = RizVisuals.Brush(RizVisuals.TitleText(dark));
+            }
         }
         if (_desc != null)
         {
+            if (DescStyle != null) _desc.Style = DescStyle;
             _desc.Text = Desc ?? string.Empty;
             _desc.Visibility = string.IsNullOrWhiteSpace(Desc) ? Visibility.Collapsed : Visibility.Visible;
-            _desc.Style = DescStyle;
-            _desc.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
+            if (DescStyle == null) _desc.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
         }
         if (_contentHost != null)
             _contentHost.Visibility = Content is null ? Visibility.Collapsed : Visibility.Visible;

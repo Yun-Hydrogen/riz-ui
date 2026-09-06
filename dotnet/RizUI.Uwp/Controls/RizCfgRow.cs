@@ -73,10 +73,13 @@ public sealed class RizCfgRow : ContentControl
         if (_root != null) _root.BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark));
         if (_icon != null)
         {
-            _icon.Text = RizVisuals.ResolveIcon(Icon, string.Empty);
-            _icon.Visibility = string.IsNullOrWhiteSpace(Icon) ? Visibility.Collapsed : Visibility.Visible;
-            _icon.Style = IconStyle;
-            _icon.Foreground = RizVisuals.Brush(RizVisuals.Icon(dark));
+            var hasIcon = !string.IsNullOrWhiteSpace(Icon);
+            _icon.Visibility = hasIcon ? Visibility.Visible : Visibility.Collapsed;
+            if (hasIcon)
+            {
+                RizVisuals.ApplyIcon(_icon, Icon, 18, RizVisuals.Icon(dark));
+                if (IconStyle != null) _icon.Style = IconStyle;
+            }
         }
         if (_label != null)
         {

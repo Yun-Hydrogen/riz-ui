@@ -30,4 +30,9 @@
     <ProjectReference Include="..\..\RizUI.Uwp\RizUI.Uwp.csproj" />
   </ItemGroup>
 
+  <!-- 仅 Demo 使用的版权字体（组件库不引用）：与 Vue Demo 保持一致 -->
+  <ItemGroup>
+    <Content Include="Assets\Fonts\UI.ttf" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

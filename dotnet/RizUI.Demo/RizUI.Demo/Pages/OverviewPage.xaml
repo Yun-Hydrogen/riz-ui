@@ -2,8 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
-  <ScrollViewer>
-    <StackPanel Padding="32" Spacing="14" MaxWidth="880">
+  <ScrollViewer FontFamily="{StaticResource UiFont}">
+    <StackPanel Padding="32" Spacing="14">
       <TextBlock Text="RizUI .NET Demo" FontSize="28" FontWeight="Bold" />
       <TextBlock Text="每个已重写控件都有独立页面。通过左侧分类导航切换页面，侧边栏支持多级目录、折叠和内置 Font Awesome Free 图标。" TextWrapping="Wrap" Opacity="0.7" />
       <rizui:RizInfoBox Type="info" Text="当前可预览：Card、CfgRow、InfoBox、Dialog、Toast、Code、Button、Checkbox 和 SliderNav。" />

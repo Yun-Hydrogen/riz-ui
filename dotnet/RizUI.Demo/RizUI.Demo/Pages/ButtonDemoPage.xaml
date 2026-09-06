@@ -2,8 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
-  <ScrollViewer>
-    <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+  <ScrollViewer FontFamily="{StaticResource UiFont}">
+    <StackPanel Padding="32" Spacing="12">
       <TextBlock Text="RizButton" FontSize="26" FontWeight="Bold" />
       <TextBlock Text="普通、Primary、Danger、自定义色、图标、Long 与禁用状态。" Opacity="0.7" />
       <rizui:RizCard Title="按钮状态" Desc="请悬停和按压查看交互反馈。" Icon="fa-solid fa-hand-pointer">

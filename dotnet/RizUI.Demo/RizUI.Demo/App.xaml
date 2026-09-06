@@ -9,8 +9,8 @@
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
       </ResourceDictionary.MergedDictionaries>
 
-      <!-- Add resources here -->
-
+      <!-- Demo 页面统一字体（与 Vue Demo 的 UI.ttf 一致；组件库不内置该字体） -->
+      <FontFamily x:Key="UiFont">ms-appx:///Assets/Fonts/UI.ttf#UI</FontFamily>
     </ResourceDictionary>
   </Application.Resources>
 

@@ -69,16 +69,15 @@ public sealed class RizInfoBox : ContentControl
         var accent = RizVisuals.PresetColor(Type, Color);
         var hasText = !string.IsNullOrWhiteSpace(Text);
         var hasContent = Content is not null;
-        var fallback = string.Equals(Type, "warn", StringComparison.OrdinalIgnoreCase) ? "⚠"
-            : string.Equals(Type, "error", StringComparison.OrdinalIgnoreCase) ? "!" : "ⓘ";
+        var defaultIcon = string.Equals(Type, "warn", StringComparison.OrdinalIgnoreCase) ? "fa-solid fa-triangle-exclamation"
+            : string.Equals(Type, "error", StringComparison.OrdinalIgnoreCase) ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-info";
 
         if (_root != null) _root.Background = RizVisuals.Brush(RizVisuals.Mix(accent, RizVisuals.Surface(dark), 0.14));
         if (_outline != null) _outline.Stroke = RizVisuals.Brush(accent);
         if (_icon != null)
         {
-            _icon.Text = RizVisuals.ResolveIcon(Icon, fallback);
-            _icon.Style = IconStyle;
-            _icon.Foreground = RizVisuals.Brush(accent);
+            RizVisuals.ApplyIcon(_icon, string.IsNullOrWhiteSpace(Icon) ? defaultIcon : Icon, 16, accent);
+            if (IconStyle != null) _icon.Style = IconStyle;
         }
         if (_text != null)
         {
