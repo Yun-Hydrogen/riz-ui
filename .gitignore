@@ -4,3 +4,10 @@ demo-dist/
 .DS_Store
 Thumbs.db
 .idea/
+
+# Visual Studio / .NET
+.vs/
+.dotnet/
+bin/
+obj/
+*.user
