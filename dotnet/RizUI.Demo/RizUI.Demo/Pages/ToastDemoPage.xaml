@@ -1,0 +1,22 @@
+<Page x:Class="RizUI.Demo.Pages.ToastDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <Grid x:Name="Host">
+    <ScrollViewer>
+      <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+        <TextBlock Text="RizToast" FontSize="26" FontWeight="Bold" />
+        <TextBlock Text="通知共享右上角队列，支持自动关闭、常驻、进度条与移除后的重排动画。" Opacity="0.7" />
+        <rizui:RizCard Title="通知队列" Desc="连续点击可观察多个 Toast 排队。" Icon="fa-solid fa-bell">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <rizui:RizButton Text="Info" Primary="True" Click="OnInfo" />
+            <rizui:RizButton Text="Warn" Color="#E6A23C" Primary="True" Click="OnWarn" />
+            <rizui:RizButton Text="Error" Danger="True" Click="OnError" />
+            <rizui:RizButton Text="常驻" Click="OnPersistent" />
+          </StackPanel>
+        </rizui:RizCard>
+        <TextBlock x:Name="Status" Text="等待通知" Opacity="0.65" />
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Page>

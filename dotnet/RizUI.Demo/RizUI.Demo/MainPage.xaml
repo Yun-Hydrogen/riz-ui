@@ -1,17 +1,15 @@
 ﻿<Page x:Class="RizUI.Demo.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="using:RizUI.Demo"
+      xmlns:rizui="using:RizUI.Uwp.Controls"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-  <ScrollViewer IsTabStop="True">
-    <Grid>
-      <StackPanel
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center">
-        <TextBlock AutomationProperties.AutomationId="HelloTextBlock"
-          Text="Hello Uno Platform!"
-          HorizontalAlignment="Center" />
-      </StackPanel>
-    </Grid>
-  </ScrollViewer>
+  <rizui:RizSliderNav x:Name="DemoNav"
+                       Title="RizUI Demo"
+                       Icon="fa-solid fa-cubes"
+                       DefaultSelectedItem="overview"
+                       SelectionChanged="OnNavigationSelectionChanged">
+    <rizui:RizSliderNav.Content>
+      <Frame x:Name="PageHost" />
+    </rizui:RizSliderNav.Content>
+  </rizui:RizSliderNav>
 </Page>

@@ -1,0 +1,40 @@
+name: Build Demo
+
+on:
+  push:
+    branches: [main, sharp-dev]
+  pull_request:
+
+jobs:
+  build-demo:
+    name: Build Demo (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          include-prerelease: true
+
+      - name: Restore
+        run: dotnet restore dotnet/RizUI.Demo/RizUI.Demo.sln
+
+      - name: Build
+        run: dotnet build dotnet/RizUI.Demo/RizUI.Demo.sln -c Release --no-restore
+
+      - name: Upload demo artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rizui-demo-${{ runner.os }}
+          path: |
+            dotnet/RizUI.Demo/RizUI.Demo/bin/Release/net10.0-desktop
+            dotnet/RizUI.Uwp/bin/Release/net10.0-desktop
+          if-no-files-found: warn

@@ -1,0 +1,31 @@
+<Page x:Class="RizUI.Demo.Pages.CodeDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer>
+    <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+      <TextBlock Text="RizCode" FontSize="26" FontWeight="Bold" />
+      <TextBlock Text="支持 inline / block、语言别名、轻量 token 高亮、复制和最大高度。" Opacity="0.7" />
+      <rizui:RizCard Title="Inline" Desc="适合插入在说明文字中的小段代码。" Icon="fa-solid fa-code">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <TextBlock Text="调用：" VerticalAlignment="Center" />
+          <rizui:RizCode Code="RizUI.ShowToast();" Lang="cs" />
+        </StackPanel>
+      </rizui:RizCard>
+      <rizui:RizCard Title="Block" Desc="点击右上角复制按钮查看复制反馈。" Icon="fa-solid fa-file-code">
+        <StackPanel>
+          <rizui:RizCode Block="True" Lang="cs" HeightText="180px" Copied="OnCopied">
+            <rizui:RizCode.Code><![CDATA[using RizUI.Uwp.Controls;
+
+var nav = new RizSliderNav
+{
+    Title = "RizUI Demo",
+    StyleMode = RizSliderNavStyle.Fixed
+};]]></rizui:RizCode.Code>
+          </rizui:RizCode>
+          <TextBlock x:Name="Status" Text="等待复制" Opacity="0.65" Margin="0,10,0,0" />
+        </StackPanel>
+      </rizui:RizCard>
+    </StackPanel>
+  </ScrollViewer>
+</Page>

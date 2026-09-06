@@ -1,0 +1,17 @@
+<Page x:Class="RizUI.Demo.Pages.InfoBoxDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer>
+    <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+      <TextBlock Text="RizInfoBox" FontSize="26" FontWeight="Bold" />
+      <TextBlock Text="info 使用主题色；warn 和 error 使用固定预设色。默认 Content 与 Text 可并存。" Opacity="0.7" />
+      <rizui:RizInfoBox Type="info" Text="Info：主题色混合背景与虚线边框。" Icon="fa-solid fa-circle-info" />
+      <rizui:RizInfoBox Type="warn" Text="Warn：此操作会影响当前工作区。" Icon="fa-solid fa-triangle-exclamation" />
+      <rizui:RizInfoBox Type="error" Text="Error：服务暂不可用。">
+        <rizui:RizButton Text="重试" Danger="True" />
+      </rizui:RizInfoBox>
+      <rizui:RizInfoBox Type="info" Color="#39C5BB" Text="Info：可通过 Color 覆盖主题色。" />
+    </StackPanel>
+  </ScrollViewer>
+</Page>

@@ -1,0 +1,29 @@
+<Page x:Class="RizUI.Demo.Pages.SliderNavDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer>
+    <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+      <TextBlock Text="RizSliderNav" FontSize="26" FontWeight="Bold" />
+      <TextBlock Text="左侧树状导航，Items 支持无限 Children，且直接接受完整 Font Awesome Free class。" Opacity="0.7" />
+      <rizui:RizCard Title="Fixed" Desc="占据左侧布局列，Content 在右侧。" Icon="fa-solid fa-table-columns">
+        <Border Height="280" BorderThickness="1" BorderBrush="#E8ECF2" CornerRadius="12">
+          <rizui:RizSliderNav x:Name="FixedNav" Title="RizUI Console" Icon="fa-solid fa-cube" DefaultSelectedItem="home" SelectionChanged="OnSelected">
+            <rizui:RizSliderNav.Content>
+              <Grid Background="#F8FAFC" Padding="22"><TextBlock x:Name="FixedStatus" Text="当前：home" FontSize="16" /></Grid>
+            </rizui:RizSliderNav.Content>
+          </rizui:RizSliderNav>
+        </Border>
+      </rizui:RizCard>
+      <rizui:RizCard Title="Floating" Desc="Content 跨整个区域，左侧导航悬浮其上。" Icon="fa-solid fa-layer-group">
+        <Border Height="240" BorderThickness="1" BorderBrush="#E8ECF2" CornerRadius="12">
+          <rizui:RizSliderNav x:Name="FloatingNav" Title="浮动导航" Icon="fa-solid fa-compass" StyleMode="Floating" DefaultSelectedItem="home" SelectionChanged="OnSelected">
+            <rizui:RizSliderNav.Content>
+              <Grid Background="#F8FAFC"><TextBlock Text="悬浮内容区域" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" /></Grid>
+            </rizui:RizSliderNav.Content>
+          </rizui:RizSliderNav>
+        </Border>
+      </rizui:RizCard>
+    </StackPanel>
+  </ScrollViewer>
+</Page>

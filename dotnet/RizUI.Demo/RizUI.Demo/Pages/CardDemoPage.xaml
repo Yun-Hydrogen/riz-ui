@@ -1,0 +1,21 @@
+<Page x:Class="RizUI.Demo.Pages.CardDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer>
+    <StackPanel Padding="32" Spacing="12" MaxWidth="880">
+      <TextBlock Text="RizCard" FontSize="26" FontWeight="Bold" />
+      <TextBlock Text="标题、描述、图标与默认 Content 均可独立使用。" Opacity="0.7" />
+      <rizui:RizCard Title="项目状态" Desc="带标题、描述、FA 图标和内容插槽。" Icon="fa-solid fa-chart-line">
+        <StackPanel Spacing="8">
+          <TextBlock Text="本周构建：12 次" />
+          <rizui:RizButton Text="查看详情" Primary="True" />
+        </StackPanel>
+      </rizui:RizCard>
+      <rizui:RizCard Title="只含标题" Icon="fa-regular fa-bookmark" />
+      <rizui:RizCard Theme="Dark" Title="局部暗色 Card" Desc="Theme=Dark 可单独覆盖组件主题。" Icon="fa-solid fa-moon">
+        <TextBlock Text="此内容仍由 Card 的默认 Content 承载。" />
+      </rizui:RizCard>
+    </StackPanel>
+  </ScrollViewer>
+</Page>

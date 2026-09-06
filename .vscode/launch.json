@@ -10,6 +10,22 @@
             "name": "针对 localhost 启动集成浏览器",
             "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Uno Platform Desktop Debug",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-desktop",
+            // 若改了目标框架，请同步更新 program 路径
+            "program": "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo/bin/Debug/net10.0-desktop/RizUI.Demo.dll",
+            "args": [],
+            "launchSettingsProfile": "RizUI.Demo (Desktop)",
+            "env": {
+                "DOTNET_MODIFIABLE_ASSEMBLIES": "debug"
+            },
+            "cwd": "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo",
+            "console": "internalConsole",
+            "stopAtEntry": false
         }
     ]
 }

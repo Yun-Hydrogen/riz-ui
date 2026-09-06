@@ -1,0 +1,26 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+      ═══ 主题语义资源：逐字映射原项目 CSS 变量 ═══
+      rz-bg            → RZ_Bg
+      rz-bg-soft       → RZ_BgSoft
+      rz-border        → RZ_Border
+      rz-text          → RZ_Text
+      rz-subtext       → RZ_Subtext
+      rz-shadow        → RZ_Shadow
+      rizui_themecolor → RZ_Theme
+    -->
+    <SolidColorBrush x:Key="RZ_Bg"       Color="#FFFFFF" />
+    <SolidColorBrush x:Key="RZ_BgSoft"   Color="#F6F8FB" />
+    <SolidColorBrush x:Key="RZ_Border"   Color="#E8ECF2" />
+    <SolidColorBrush x:Key="RZ_Text"     Color="#334455" />
+    <SolidColorBrush x:Key="RZ_Subtext"  Color="#999AAA" />
+    <SolidColorBrush x:Key="RZ_Theme"    Color="#66CCFF" />
+
+    <!-- 组件内常用颜色（css color-mix 的近似直译） -->
+    <SolidColorBrush x:Key="RZ_HoverFill"  Color="#0F66CCFF" />
+    <SolidColorBrush x:Key="RZ_TrackOff"   Color="#B8BCC6" />
+    <SolidColorBrush x:Key="RZ_RowHover"   Color="#0F334455" />
+</ResourceDictionary>

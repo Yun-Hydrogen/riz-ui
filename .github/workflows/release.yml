@@ -10,6 +10,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vue
     steps:
       - uses: actions/checkout@v4
 
@@ -53,4 +56,4 @@ jobs:
 
             UiCard · UiConfigRow · UiSwitch · UiSlider · UiTimeline
             UiDropdown · UiColorPicker · UiDialog · NotReadyOverlay
-          files: dist/*
+          files: vue/dist/*

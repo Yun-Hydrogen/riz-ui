@@ -1,6 +1,11 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net10.0-ios;net10.0-android;net10.0-windows10.0.26100;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <!--
+      跨平台桌面（Skia，Windows/macOS/Linux）。
+      如需增加 iOS/Android/Windows App SDK，请补回对应目标框架并安装 workload：
+        dotnet workload install ios android
+    -->
+    <TargetFrameworks>net10.0-desktop</TargetFrameworks>
     <UnoSingleProject>true</UnoSingleProject>
     <OutputType>Library</OutputType>
     <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
@@ -16,6 +21,20 @@
     <UnoFeatures>
       SkiaRenderer;
     </UnoFeatures>
+
+    <!-- ═══ NuGet 打包元数据（版本在 dotnet/Directory.Build.props 统一维护） ═══ -->
+    <PackageId>RizUI.Uwp</PackageId>
+    <Title>RizUI</Title>
+    <Description>RizUI — 一套轻量、精致的跨平台原生 UI 组件库（Uno Platform）。</Description>
+    <Authors>Yun-Hydrogen</Authors>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Yun-Hydrogen/riz-ui</RepositoryUrl>
+    <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+    <PackageTags>uno;winui;ui;controls;cross-platform</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
   </PropertyGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
@@ -31,5 +50,31 @@
     -->
     <!-- <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" RuntimeFrameworkVersion="10.0.22621.28" />
     <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" TargetingPackVersion="10.0.22621.28" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Themes\Generic.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Font Awesome Free 7.3.1：字体作为应用内容分发，all.css 作为程序集资源解析完整 FA class→glyph。 -->
+  <ItemGroup>
+    <Content Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\webfonts\fa-solid-900.woff2"
+             Link="Assets\FontAwesome\fa-solid-900.woff2" CopyToOutputDirectory="PreserveNewest"
+             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-solid-900.woff2" />
+    <Content Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\webfonts\fa-regular-400.woff2"
+             Link="Assets\FontAwesome\fa-regular-400.woff2" CopyToOutputDirectory="PreserveNewest"
+             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-regular-400.woff2" />
+    <Content Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\webfonts\fa-brands-400.woff2"
+             Link="Assets\FontAwesome\fa-brands-400.woff2" CopyToOutputDirectory="PreserveNewest"
+             Pack="true" PackagePath="contentFiles\any\any\Assets\FontAwesome\fa-brands-400.woff2" />
+    <EmbeddedResource Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\css\all.css"
+                      LogicalName="RizUI.Uwp.Assets.FontAwesome.all.css" />
+    <None Include="..\..\vue\node_modules\@fortawesome\fontawesome-free\LICENSE.txt"
+          Link="THIRD-PARTY-NOTICES\Font-Awesome-Free-LICENSE.txt" Pack="true"
+          PackagePath="THIRD-PARTY-NOTICES\Font-Awesome-Free-LICENSE.txt" />
   </ItemGroup>
 </Project>

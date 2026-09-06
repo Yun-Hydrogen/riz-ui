@@ -26,4 +26,8 @@
     </UnoFeatures>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\RizUI.Uwp\RizUI.Uwp.csproj" />
+  </ItemGroup>
+
 </Project>

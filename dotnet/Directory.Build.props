@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- ══════════════════════════════════════════════════════════
+         RizUI · .NET 库版本单点源（类似 npm 的 version 字段）
+         改动此文件即可统一同步全部 NuGet 包的版本，用于 dotnet pack
+         ══════════════════════════════════════════════════════════ -->
+    <Version>0.1.0</Version>
+    <PackageVersion>$(Version)</PackageVersion>
+  </PropertyGroup>
+</Project>
