@@ -1,0 +1,127 @@
+<Page x:Class="RizUI.Demo.Pages.SwitchDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer FontFamily="{StaticResource UiFont}">
+    <StackPanel Padding="32" Spacing="16">
+      <!-- 页面头部 -->
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="滑动开关" FontSize="26" FontWeight="Bold" />
+          <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock Text="RizSwitch" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="精致小巧的胶囊滑动开关，支持 IsOn 双向绑定、平滑滚动动画、主题色填充与禁用态。"
+                   Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 示例展示 (复刻 Web Demo) -->
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- 示例一：基础绑定 -->
+        <rizui:RizCard Title="示例" Desc="IsOn 双向绑定与交互" Icon="fa-solid fa-toggle-on">
+          <StackPanel>
+            <rizui:RizCfgRow Label="展示学员 EX 技能动画" Hint="关闭可节省终端渲染开销">
+              <rizui:RizSwitch IsOn="True" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Label="高刷新率模式" Hint="开启 120Hz 高帧率顺滑显示">
+              <rizui:RizSwitch IsOn="False" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage1}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例二：禁用状态 -->
+        <rizui:RizCard Title="禁用属性" Desc="设置 IsEnabled=False 后不可交互，可用于展示受限状态" Icon="fa-solid fa-lock">
+          <StackPanel>
+            <rizui:RizCfgRow Label="自动作战" Hint="剧情模式下无法关闭">
+              <rizui:RizSwitch IsOn="True" IsEnabled="False" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Label="倍速作战" Hint="特殊挑战关卡锁定无法开启">
+              <rizui:RizSwitch IsOn="False" IsEnabled="False" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage2}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例三：自定义颜色 -->
+        <rizui:RizCard Title="自定义配色" Desc="支持 Color 属性定制开启状态下的主题色" Icon="fa-solid fa-palette">
+          <StackPanel>
+            <rizui:RizCfgRow Label="初音未来葱绿配色" Hint="Color='#39C5BB'">
+              <rizui:RizSwitch IsOn="True" Color="#39C5BB" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Label="普拉娜紫罗兰配色" Hint="Color='#A855F7'">
+              <rizui:RizSwitch IsOn="True" Color="#A855F7" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage3}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+      </StackPanel>
+
+      <!-- 属性列表表格 (Properties Table) -->
+      <StackPanel Spacing="10" Margin="0,12,0,0">
+        <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
+        <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="140" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 表头 -->
+            <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
+            <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 1: IsOn -->
+            <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="IsOn" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="bool" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="false" Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="开关当前状态（对应 Vue 的 modelValue）" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 2: Color -->
+            <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Color" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="开启时主题色，空则跟随 --rizui_themecolor" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 3: Theme -->
+            <Border Grid.Row="3" Grid.ColumnSpan="4" />
+            <TextBlock Text="Theme" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='"auto"' Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+          </Grid>
+        </Border>
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</Page>

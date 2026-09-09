@@ -27,6 +27,7 @@ public partial class RizCheckbox : Control
     public RizCheckbox()
     {
         DefaultStyleKey = typeof(RizCheckbox);
+        ActualThemeChanged += (_, _) => UpdateVisualState(false);
         RegisterPropertyChangedCallback(IsEnabledProperty, (_, _) => UpdateVisualState(false));
     }
 
@@ -262,6 +263,10 @@ public partial class RizCheckbox : Control
         }
 
         if (_root != null) _root.Opacity = IsEnabled ? 1 : 0.45;
+
+        var textBrush = RizVisuals.Brush(IsDarkTheme() ? Windows.UI.Color.FromArgb(255, 0xE6, 0xEB, 0xF2) : Windows.UI.Color.FromArgb(255, 0x33, 0x33, 0x44));
+        if (_labelL != null && LLabelStyle == null) _labelL.Foreground = textBrush;
+        if (_labelR != null && RLabelStyle == null) _labelR.Foreground = textBrush;
     }
 
     private void AnimateTick(double opacity, double scale, bool animate)

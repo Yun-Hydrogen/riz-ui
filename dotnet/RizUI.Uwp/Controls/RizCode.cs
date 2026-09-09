@@ -1,11 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Markup;
-using Microsoft.UI.Text;
-using System.Text.RegularExpressions;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace RizUI.Uwp.Controls;
@@ -14,14 +17,19 @@ namespace RizUI.Uwp.Controls;
 [ContentProperty(Name = nameof(Code))]
 public sealed class RizCode : Control
 {
+    private Border? _root;
     private TextBlock? _inline;
     private TextBlock? _blockCode;
     private TextBlock? _langText;
-    private Button? _copy;
+    private Border? _copyBtn;
+    private TextBlock? _copyIcon;
     private Border? _copyBar;
+    private Border? _headerBorder;
     private ScrollViewer? _scroll;
     private Grid? _blockRoot;
     private Storyboard? _copyStoryboard;
+    private DispatcherQueueTimer? _copiedResetTimer;
+    private bool _isCopied;
 
     private static readonly Dictionary<string, string> Aliases = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -46,8 +54,9 @@ public sealed class RizCode : Control
     public RizCode()
     {
         DefaultStyleKey = typeof(RizCode);
+        ActualThemeChanged += (_, _) => UpdateVisual();
         RegisterPropertyChangedCallback(CodeProperty, (_, _) => UpdateCode());
-            RegisterPropertyChangedCallback(BlockProperty, (_, _) => { UpdateMode(); UpdateVisual(); });
+        RegisterPropertyChangedCallback(BlockProperty, (_, _) => { UpdateMode(); UpdateVisual(); });
         RegisterPropertyChangedCallback(LangProperty, (_, _) => UpdateCode());
         RegisterPropertyChangedCallback(ColorProperty, (_, _) => UpdateVisual());
         RegisterPropertyChangedCallback(HeightTextProperty, (_, _) => UpdateVisual());
@@ -75,14 +84,33 @@ public sealed class RizCode : Control
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
+        _root = GetTemplateChild("Root") as Border;
         _inline = GetTemplateChild("InlineCode") as TextBlock;
         _blockCode = GetTemplateChild("BlockCode") as TextBlock;
         _langText = GetTemplateChild("LangText") as TextBlock;
-        _copy = GetTemplateChild("Copy") as Button;
+        _copyBtn = GetTemplateChild("CopyBtn") as Border;
+        _copyIcon = GetTemplateChild("CopyIcon") as TextBlock;
         _copyBar = GetTemplateChild("CopyBar") as Border;
+        _headerBorder = GetTemplateChild("HeaderBorder") as Border;
         _scroll = GetTemplateChild("CodeScroll") as ScrollViewer;
-        if (_copy != null) _copy.Click += OnCopy;
-        if (_inline != null) _inline.Visibility = Block ? Visibility.Collapsed : Visibility.Visible;
+
+        if (_copyBtn != null)
+        {
+            _copyBtn.PointerPressed += (_, e) =>
+            {
+                e.Handled = true;
+                OnCopy();
+            };
+            _copyBtn.PointerEntered += (_, _) =>
+            {
+                if (_copyBtn != null) _copyBtn.Opacity = 1.0;
+            };
+            _copyBtn.PointerExited += (_, _) =>
+            {
+                if (_copyBtn != null) _copyBtn.Opacity = 0.55;
+            };
+        }
+
         _blockRoot = GetTemplateChild("BlockRoot") as Grid;
         UpdateMode();
         UpdateVisual();
@@ -95,35 +123,71 @@ public sealed class RizCode : Control
         var accent = RizVisuals.ThemeColor(Color);
         var surface = RizVisuals.Surface(dark);
         var border = string.IsNullOrWhiteSpace(Color) ? RizVisuals.Border(dark) : accent;
-            var root = GetTemplateChild("Root") as Border;
-            if (root != null)
-            {
-                root.BorderBrush = RizVisuals.Brush(border);
-                root.Background = RizVisuals.Brush(Block
-                    ? RizVisuals.Mix(RizVisuals.Text(dark), surface, 0.05)
-                    : RizVisuals.Mix(RizVisuals.Text(dark), surface, 0.08));
-                root.CornerRadius = new CornerRadius(Block ? 10 : 6);
-            }
-        if (_copy != null)
+
+        if (_root != null)
         {
-            _copy.Foreground = RizVisuals.Brush(accent);
-            _copy.Background = RizVisuals.Brush(RizVisuals.Mix(accent, surface, 0.12));
+            _root.BorderBrush = RizVisuals.Brush(border);
+            _root.Background = RizVisuals.Brush(Block
+                ? RizVisuals.Mix(RizVisuals.Text(dark), surface, 0.05)
+                : RizVisuals.Mix(RizVisuals.Text(dark), surface, 0.08));
+            _root.CornerRadius = new CornerRadius(Block ? 10 : 6);
         }
-        if (_langText != null) _langText.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
-        if (_copyBar != null) _copyBar.Background = RizVisuals.Brush(accent);
-        if (_scroll != null && !string.IsNullOrWhiteSpace(HeightText)) _scroll.MaxHeight = RizVisuals.ParsePixels(HeightText, double.PositiveInfinity);
+
+        if (_headerBorder != null)
+        {
+            _headerBorder.BorderBrush = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), surface, 0.08));
+        }
+
+        if (_copyBtn != null)
+        {
+            _copyBtn.Background = RizVisuals.Brush(RizVisuals.Mix(accent, surface, 0.12));
+            _copyBtn.Opacity = 0.55;
+        }
+
+        if (_copyIcon != null)
+        {
+            UpdateCopyIconVisual(accent);
+        }
+
+        if (_langText != null)
+        {
+            _langText.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
+        }
+
+        if (_copyBar != null)
+        {
+            // 顶栏背景进度条：使用淡色主题色填充 (18%~25% accent)
+            _copyBar.Background = RizVisuals.Brush(RizVisuals.Mix(accent, surface, 0.22));
+        }
+
+        if (_scroll != null && !string.IsNullOrWhiteSpace(HeightText))
+        {
+            _scroll.MaxHeight = RizVisuals.ParsePixels(HeightText, double.PositiveInfinity);
+        }
+
         if (_inline != null) _inline.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
         if (_blockCode != null) _blockCode.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
+
+        // 重新着色 tokens
+        UpdateCode();
+    }
+
+    private void UpdateCopyIconVisual(Windows.UI.Color accent)
+    {
+        if (_copyIcon == null) return;
+        var iconClass = _isCopied ? "fa-solid fa-check" : "fa-regular fa-copy";
+        RizVisuals.ApplyIcon(_copyIcon, iconClass, 11, accent);
     }
 
     private void UpdateCode()
     {
         var text = Code ?? string.Empty;
         var canonical = Canonical(Lang);
+        var dark = RizVisuals.IsDark(this, Theme);
         if (_langText != null) _langText.Text = LanguageName(canonical);
-        if (_inline != null) Fill(_inline, text, canonical);
-        if (_blockCode != null) Fill(_blockCode, text, canonical);
-            UpdateMode();
+        if (_inline != null) Fill(_inline, text, canonical, dark);
+        if (_blockCode != null) Fill(_blockCode, text, canonical, dark);
+        UpdateMode();
     }
 
     private void UpdateMode()
@@ -132,72 +196,184 @@ public sealed class RizCode : Control
         if (_blockRoot != null) _blockRoot.Visibility = Block ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void OnCopy(object sender, RoutedEventArgs e)
+    private void OnCopy()
     {
         var package = new DataPackage();
         package.SetText(Code ?? string.Empty);
         Clipboard.SetContent(package);
         Copied?.Invoke(this, EventArgs.Empty);
-        if (_copyBar == null) return;
-        _copyStoryboard?.Stop();
-        _copyBar.RenderTransform = new ScaleTransform { ScaleX = 0, ScaleY = 1, CenterX = 0, CenterY = 0 };
-        var transform = (ScaleTransform)_copyBar.RenderTransform;
-        var animation = new DoubleAnimation { To = 1, Duration = new Duration(TimeSpan.FromMilliseconds(1200)) };
-        Storyboard.SetTarget(animation, transform);
-        Storyboard.SetTargetProperty(animation, "ScaleX");
-        _copyStoryboard = new Storyboard();
-        _copyStoryboard.Children.Add(animation);
-        _copyStoryboard.Begin();
-        if (_copy != null) _copy.Content = "✓";
+
+        _isCopied = true;
+        var dark = RizVisuals.IsDark(this, Theme);
+        var accent = RizVisuals.ThemeColor(Color);
+        UpdateCopyIconVisual(accent);
+
+        if (_copyBar != null)
+        {
+            _copyBar.Visibility = Visibility.Visible;
+            _copyBar.Opacity = 1.0;
+            _copyStoryboard?.Stop();
+
+            // 测量 Header 宽度以进行像素级宽度动画
+            var header = GetTemplateChild("Header") as FrameworkElement;
+            var targetWidth = header?.ActualWidth > 0 ? header.ActualWidth : (_root?.ActualWidth > 0 ? _root.ActualWidth : 300);
+
+            _copyBar.Width = 0;
+            var animation = new DoubleAnimation
+            {
+                From = 0,
+                To = targetWidth,
+                Duration = new Duration(TimeSpan.FromMilliseconds(1300)),
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(animation, _copyBar);
+            Storyboard.SetTargetProperty(animation, "Width");
+            _copyStoryboard = new Storyboard();
+            _copyStoryboard.Children.Add(animation);
+            _copyStoryboard.Begin();
+        }
+
+        _copiedResetTimer?.Stop();
+        _copiedResetTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+        _copiedResetTimer.Interval = TimeSpan.FromMilliseconds(1300);
+        _copiedResetTimer.IsRepeating = false;
+        _copiedResetTimer.Tick += (_, _) =>
+        {
+            _isCopied = false;
+            UpdateCopyIconVisual(accent);
+
+            // 填充完成后平滑淡出消失 (200ms)
+            if (_copyBar != null)
+            {
+                var fadeAnim = new DoubleAnimation
+                {
+                    From = 1.0,
+                    To = 0.0,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+                    EnableDependentAnimation = true
+                };
+                Storyboard.SetTarget(fadeAnim, _copyBar);
+                Storyboard.SetTargetProperty(fadeAnim, "Opacity");
+                var fadeSb = new Storyboard();
+                fadeSb.Children.Add(fadeAnim);
+                fadeSb.Completed += (_, _) =>
+                {
+                    if (_copyBar != null)
+                    {
+                        _copyBar.Visibility = Visibility.Collapsed;
+                        _copyBar.Opacity = 1.0;
+                    }
+                };
+                fadeSb.Begin();
+            }
+
+            _copiedResetTimer?.Stop();
+            _copiedResetTimer = null;
+        };
+        _copiedResetTimer.Start();
     }
 
-    private static void Fill(TextBlock target, string text, string language)
+    private static void Fill(TextBlock target, string text, string language, bool dark)
     {
         target.Inlines.Clear();
         foreach (var token in Tokenize(text, language))
         {
             var run = new Run { Text = token.Text };
-            if (token.Kind != TokenKind.Plain) run.Foreground = new SolidColorBrush(TokenColor(token.Kind));
+            if (token.Kind != TokenKind.Plain)
+            {
+                run.Foreground = new SolidColorBrush(TokenColor(token.Kind, dark));
+            }
             if (token.Kind == TokenKind.Keyword) run.FontWeight = FontWeights.SemiBold;
             if (token.Kind == TokenKind.Comment) run.FontStyle = Windows.UI.Text.FontStyle.Italic;
             target.Inlines.Add(run);
         }
     }
 
-    private enum TokenKind { Plain, Keyword, String, Number, Comment, Function, Type, Operator }
+    private enum TokenKind { Plain, Keyword, String, Number, Comment, Function, Type, Operator, Tag, Attr }
     private readonly record struct Token(string Text, TokenKind Kind);
 
     private static IEnumerable<Token> Tokenize(string code, string language)
     {
         var kw = Keywords.TryGetValue(language, out var values) ? new HashSet<string>(values, StringComparer.OrdinalIgnoreCase) : new HashSet<string>();
-        var pattern = language is "html" ? @"(<!--[\s\S]*?-->)|(""(?:[^""\\]|\\.)*""|'(?:[^'\\]|\\.)*')|(\b\d+(?:\.\d+)?\b)|(\b[A-Za-z_$][\w$]*\b)" : @"(//[^\n]*|#[^\n]*|/\*[\s\S]*?\*/)|(""(?:[^""\\]|\\.)*""|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(=>|===|!==|==|!=|<=|>=|&&|\|\||[-+*/%!&|^~=]+)|(\b\d[\d_]*(?:\.\d+)?\b)|(\b[A-Za-z_$][\w$]*\b)";
+        var pattern = language is "html" or "xml" or "vue"
+            ? @"(<!--[\s\S]*?-->)|(""(?:[^""\\]|\\.)*""|'(?:[^'\\]|\\.)*')|(=>|===|!==|==|!=|<=|>=|&&|\|\||[-+*/%!&|^~=]+)|(\b\d+(?:\.\d+)?\b)|(\b[A-Za-z_$][\w$]*\b)"
+            : @"(//[^\n]*|#[^\n]*|/\*[\s\S]*?\*/)|(""(?:[^""\\]|\\.)*""|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(=>|===|!==|==|!=|<=|>=|&&|\|\||[-+*/%!&|^~=]+)|(\b\d[\d_]*(?:\.\d+)?\b)|(\b[A-Za-z_$][\w$]*\b)";
         var last = 0;
         foreach (Match match in Regex.Matches(code, pattern))
         {
             if (match.Index > last) yield return new Token(code[last..match.Index], TokenKind.Plain);
-            var kind = match.Groups[1].Success ? TokenKind.Comment
-                : match.Groups[2].Success ? TokenKind.String
-                : match.Groups.Count > 3 && match.Groups[3].Success ? TokenKind.Operator
-                : match.Groups.Count > 4 && match.Groups[4].Success ? TokenKind.Number
-                : kw.Contains(match.Value) ? TokenKind.Keyword
-                : match.Value is "string" or "number" or "bool" or "int" or "float" or "double" ? TokenKind.Type
-                : code[(match.Index + match.Length)..].TrimStart().StartsWith("(") ? TokenKind.Function : TokenKind.Plain;
+            var rest = code[(match.Index + match.Length)..];
+            var prev = code[..match.Index];
+
+            TokenKind kind;
+            if (match.Groups[1].Success)
+            {
+                kind = TokenKind.Comment;
+            }
+            else if (match.Groups[2].Success)
+            {
+                kind = TokenKind.String;
+            }
+            else if (match.Groups[3].Success)
+            {
+                kind = TokenKind.Operator;
+            }
+            else if (match.Groups[4].Success)
+            {
+                kind = TokenKind.Number;
+            }
+            else if (language is "html" or "xml" or "vue" && Regex.IsMatch(prev, @"<\/?$"))
+            {
+                kind = TokenKind.Tag;
+            }
+            else if (Regex.IsMatch(rest, @"^\s*="))
+            {
+                kind = TokenKind.Attr;
+            }
+            else if (Regex.IsMatch(rest, @"^\s*\("))
+            {
+                kind = TokenKind.Function;
+            }
+            else if (kw.Contains(match.Value))
+            {
+                kind = TokenKind.Keyword;
+            }
+            else if (match.Value is "string" or "number" or "bool" or "boolean" or "int" or "float" or "double" or "void" or "object" or "var")
+            {
+                kind = TokenKind.Type;
+            }
+            else
+            {
+                kind = TokenKind.Plain;
+            }
+
             yield return new Token(match.Value, kind);
             last = match.Index + match.Length;
         }
         if (last < code.Length) yield return new Token(code[last..], TokenKind.Plain);
     }
 
-    private static Windows.UI.Color TokenColor(TokenKind kind) => kind switch
+    private static Windows.UI.Color TokenColor(TokenKind kind, bool dark) => (kind, dark) switch
     {
-        TokenKind.Keyword => Windows.UI.Color.FromArgb(255, 0xA6, 0x26, 0xA4),
-        TokenKind.String => Windows.UI.Color.FromArgb(255, 0x50, 0xA1, 0x4F),
-        TokenKind.Number => Windows.UI.Color.FromArgb(255, 0x98, 0x68, 0x01),
-        TokenKind.Comment => Windows.UI.Color.FromArgb(255, 0x9A, 0xA0, 0xA6),
-        TokenKind.Function => Windows.UI.Color.FromArgb(255, 0x40, 0x78, 0xF2),
-        TokenKind.Type => Windows.UI.Color.FromArgb(255, 0x1D, 0x7F, 0xB6),
-        TokenKind.Operator => Windows.UI.Color.FromArgb(255, 0x9B, 0x50, 0xE0),
-        _ => Windows.UI.Color.FromArgb(255, 0x33, 0x33, 0x44)
+        (TokenKind.Keyword, false) => Windows.UI.Color.FromArgb(255, 0xA6, 0x26, 0xA4),
+        (TokenKind.Keyword, true)  => Windows.UI.Color.FromArgb(255, 0xC6, 0x78, 0xDD),
+        (TokenKind.String, false)  => Windows.UI.Color.FromArgb(255, 0x50, 0xA1, 0x4F),
+        (TokenKind.String, true)   => Windows.UI.Color.FromArgb(255, 0x98, 0xC3, 0x79),
+        (TokenKind.Number, false)  => Windows.UI.Color.FromArgb(255, 0x98, 0x68, 0x01),
+        (TokenKind.Number, true)   => Windows.UI.Color.FromArgb(255, 0xD1, 0x9A, 0x66),
+        (TokenKind.Comment, false) => Windows.UI.Color.FromArgb(255, 0x9A, 0xA0, 0xA6),
+        (TokenKind.Comment, true)  => Windows.UI.Color.FromArgb(255, 0x7F, 0x84, 0x8E),
+        (TokenKind.Function, false)=> Windows.UI.Color.FromArgb(255, 0x40, 0x78, 0xF2),
+        (TokenKind.Function, true) => Windows.UI.Color.FromArgb(255, 0x61, 0xAF, 0xEF),
+        (TokenKind.Type, false)    => Windows.UI.Color.FromArgb(255, 0x1D, 0x7F, 0xB6),
+        (TokenKind.Type, true)     => Windows.UI.Color.FromArgb(255, 0x56, 0xB6, 0xC2),
+        (TokenKind.Operator, false)=> Windows.UI.Color.FromArgb(255, 0x9B, 0x50, 0xE0),
+        (TokenKind.Operator, true) => Windows.UI.Color.FromArgb(255, 0xC5, 0x86, 0xC0),
+        (TokenKind.Tag, false)     => Windows.UI.Color.FromArgb(255, 0xE4, 0x56, 0x49),
+        (TokenKind.Tag, true)      => Windows.UI.Color.FromArgb(255, 0xE0, 0x6C, 0x75),
+        (TokenKind.Attr, false)    => Windows.UI.Color.FromArgb(255, 0xB7, 0x6B, 0x01),
+        (TokenKind.Attr, true)     => Windows.UI.Color.FromArgb(255, 0xE5, 0xC0, 0x7B),
+        _ => dark ? Windows.UI.Color.FromArgb(255, 0xE6, 0xEB, 0xF2) : Windows.UI.Color.FromArgb(255, 0x33, 0x33, 0x44)
     };
 
     private static string Canonical(string? language) => Aliases.TryGetValue(language?.Trim() ?? string.Empty, out var value) ? value : (language?.Trim().ToLowerInvariant() ?? "text");

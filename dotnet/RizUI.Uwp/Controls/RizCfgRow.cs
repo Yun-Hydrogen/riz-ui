@@ -7,7 +7,9 @@ namespace RizUI.Uwp.Controls;
 public sealed class RizCfgRow : ContentControl
 {
     private Border? _root;
+    private Border? _iconBox;
     private TextBlock? _icon;
+    private StackPanel? _headText;
     private TextBlock? _label;
     private TextBlock? _hint;
     private ContentPresenter? _contentHost;
@@ -16,6 +18,7 @@ public sealed class RizCfgRow : ContentControl
     {
         DefaultStyleKey = typeof(RizCfgRow);
         RegisterPropertyChangedCallback(ContentProperty, (_, _) => ApplyVisual());
+        ActualThemeChanged += (_, _) => ApplyVisual();
     }
 
     public static readonly DependencyProperty LabelProperty =
@@ -58,7 +61,9 @@ public sealed class RizCfgRow : ContentControl
     {
         base.OnApplyTemplate();
         _root = GetTemplateChild("Root") as Border;
+        _iconBox = GetTemplateChild("IconBox") as Border;
         _icon = GetTemplateChild("Icon") as TextBlock;
+        _headText = GetTemplateChild("HeadText") as StackPanel;
         _label = GetTemplateChild("Label") as TextBlock;
         _hint = GetTemplateChild("Hint") as TextBlock;
         _contentHost = GetTemplateChild("ContentHost") as ContentPresenter;
@@ -71,40 +76,76 @@ public sealed class RizCfgRow : ContentControl
     {
         var dark = RizVisuals.IsDark(this, Theme);
         if (_root != null) _root.BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark));
+
+        var hasIcon = !string.IsNullOrWhiteSpace(Icon);
+        if (_iconBox != null) _iconBox.Visibility = hasIcon ? Visibility.Visible : Visibility.Collapsed;
         if (_icon != null)
         {
-            var hasIcon = !string.IsNullOrWhiteSpace(Icon);
-            _icon.Visibility = hasIcon ? Visibility.Visible : Visibility.Collapsed;
             if (hasIcon)
             {
                 RizVisuals.ApplyIcon(_icon, Icon, 18, RizVisuals.Icon(dark));
                 if (IconStyle != null) _icon.Style = IconStyle;
             }
+            else
+            {
+                _icon.Text = string.Empty;
+            }
         }
+
+        var hasLabel = !string.IsNullOrWhiteSpace(Label);
         if (_label != null)
         {
             _label.Text = Label ?? string.Empty;
-            _label.Visibility = string.IsNullOrWhiteSpace(Label) ? Visibility.Collapsed : Visibility.Visible;
+            _label.Visibility = hasLabel ? Visibility.Visible : Visibility.Collapsed;
             _label.Style = LabelStyle;
-            _label.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
+            if (LabelStyle == null)
+            {
+                _label.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
+            }
         }
+
+        var hasHint = !string.IsNullOrWhiteSpace(Hint);
         if (_hint != null)
         {
             _hint.Text = Hint ?? string.Empty;
-            _hint.Visibility = string.IsNullOrWhiteSpace(Hint) ? Visibility.Collapsed : Visibility.Visible;
+            _hint.Visibility = hasHint ? Visibility.Visible : Visibility.Collapsed;
             _hint.Style = HintStyle;
-            _hint.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
+            if (HintStyle == null)
+            {
+                _hint.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
+            }
         }
+
+        if (_headText != null)
+        {
+            _headText.Visibility = (hasLabel || hasHint) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         if (_contentHost == null) return;
 
         _contentHost.Visibility = Content is null ? Visibility.Collapsed : Visibility.Visible;
         _contentHost.Opacity = Disabled ? 0.45 : 1;
         _contentHost.IsHitTestVisible = !Disabled;
-        Grid.SetRow(_contentHost, Stack ? 1 : 0);
-        Grid.SetColumn(_contentHost, Stack ? 0 : 2);
-        Grid.SetColumnSpan(_contentHost, Stack ? 3 : 1);
-        _contentHost.HorizontalAlignment = Stack ? HorizontalAlignment.Stretch : HorizontalAlignment.Right;
-        _contentHost.VerticalAlignment = VerticalAlignment.Center;
-        _contentHost.Margin = Stack ? new Thickness(0, 8, 0, 0) : new Thickness(0);
+
+        var hasHeader = hasIcon || hasLabel || hasHint;
+        if (Stack)
+        {
+            Grid.SetRow(_contentHost, 1);
+            Grid.SetColumn(_contentHost, 0);
+            Grid.SetColumnSpan(_contentHost, 3);
+            _contentHost.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _contentHost.VerticalAlignment = VerticalAlignment.Center;
+            _contentHost.Margin = hasHeader ? new Thickness(0, 8, 0, 0) : new Thickness(0);
+        }
+        else
+        {
+            Grid.SetRow(_contentHost, 0);
+            Grid.SetColumn(_contentHost, 2);
+            Grid.SetColumnSpan(_contentHost, 1);
+            _contentHost.HorizontalAlignment = HorizontalAlignment.Right;
+            _contentHost.VerticalAlignment = VerticalAlignment.Center;
+            // 距离左侧文本预留至少 14px 间隔，距离右侧外边框留出 6px 呼吸间距，避免紧贴外边缘
+            _contentHost.Margin = new Thickness(14, 0, 6, 0);
+        }
     }
 }

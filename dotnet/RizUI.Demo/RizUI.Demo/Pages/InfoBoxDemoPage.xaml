@@ -3,15 +3,166 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
   <ScrollViewer FontFamily="{StaticResource UiFont}">
-    <StackPanel Padding="32" Spacing="12">
-      <TextBlock Text="RizInfoBox" FontSize="26" FontWeight="Bold" />
-      <TextBlock Text="info 使用主题色；warn 和 error 使用固定预设色。默认 Content 与 Text 可并存。" Opacity="0.7" />
-      <rizui:RizInfoBox Type="info" Text="Info：主题色混合背景与虚线边框。" Icon="fa-solid fa-circle-info" />
-      <rizui:RizInfoBox Type="warn" Text="Warn：此操作会影响当前工作区。" Icon="fa-solid fa-triangle-exclamation" />
-      <rizui:RizInfoBox Type="error" Text="Error：服务暂不可用。">
-        <rizui:RizButton Text="重试" Danger="True" />
-      </rizui:RizInfoBox>
-      <rizui:RizInfoBox Type="info" Color="#39C5BB" Text="Info：可通过 Color 覆盖主题色。" />
+    <StackPanel Padding="32" Spacing="16">
+      <!-- 页面头部 -->
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="提示框" FontSize="26" FontWeight="Bold" />
+          <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock Text="RizInfoBox" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="长方形的提示框，撑满整行、虚线边框，左边带图标。支持三种预设配色、自定义主题色与文字/图标样式覆盖。"
+                   Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 示例展示 (完全复刻 Vue Web Demo) -->
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- 示例一：三种预设样式 -->
+        <rizui:RizCard Title="三种预设样式" Desc="Type 可为 info / warn / error" Icon="fa-solid fa-bell">
+          <StackPanel Spacing="10">
+            <rizui:RizInfoBox Type="info" Text="emm...今天真是个好天气！" />
+            <rizui:RizInfoBox Type="warn" Text="看起来，好像要下雨......" />
+            <rizui:RizInfoBox Type="error" Text="老师，请立即下达撤退命令！" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind UsageCode1}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例二：自定义样式 -->
+        <rizui:RizCard Title="自定义样式" Desc="Icon / 文字都能改样式，以及自定义颜色" Icon="fa-solid fa-palette">
+          <StackPanel Spacing="10">
+            <!-- 替换图标并放大变色 -->
+            <rizui:RizInfoBox Type="info" Text="抽取结果: 📘📘📘📘📘📘📘📘📘📙" Icon="fa-solid fa-bell">
+              <rizui:RizInfoBox.IconStyle>
+                <Style TargetType="TextBlock">
+                  <Setter Property="FontSize" Value="18" />
+                  <Setter Property="Foreground" Value="#E6A23C" />
+                </Style>
+              </rizui:RizInfoBox.IconStyle>
+            </rizui:RizInfoBox>
+
+            <!-- 文字加粗放大 -->
+            <rizui:RizInfoBox Type="warn" Text="青辉石 -1200">
+              <rizui:RizInfoBox.TextStyle>
+                <Style TargetType="TextBlock">
+                  <Setter Property="FontWeight" Value="Bold" />
+                  <Setter Property="FontSize" Value="14" />
+                </Style>
+              </rizui:RizInfoBox.TextStyle>
+            </rizui:RizInfoBox>
+
+            <!-- 自定义紫色 -->
+            <rizui:RizInfoBox Type="info" Text="招募点数 Pt x 199" Color="#8B5CF6" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind UsageCode2}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例三：文字 + 插槽 -->
+        <rizui:RizCard Title="文字 + 插槽" Desc="有插槽时自动在文字下方排布并带有虚线分割，可以放置更多控件" Icon="fa-solid fa-puzzle-piece">
+          <StackPanel Spacing="10">
+            <rizui:RizInfoBox Type="info" Text="这是标题文字">
+              <rizui:RizCfgRow Label="这是一个配置行" Hint="可以放置更多控件">
+                <rizui:RizButton Text="执行操作" Primary="True" />
+              </rizui:RizCfgRow>
+            </rizui:RizInfoBox>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind UsageCode3}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+      </StackPanel>
+
+      <!-- 属性列表表格 (Properties Table) -->
+      <StackPanel Spacing="10" Margin="0,12,0,0">
+        <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
+        <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="140" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 表头 -->
+            <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
+            <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 1: Type -->
+            <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Type" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='"info"' Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="预设类型：info / warn / error" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 2: Text -->
+            <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Text" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="提示框主要展示文本" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 3: TextStyle -->
+            <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="TextStyle" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="Style" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="null" Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="主要文本的 XAML 样式覆盖" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 4: Icon -->
+            <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Icon" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="自定义左侧图标（空则根据 Type 自动匹配）" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 5: IconStyle -->
+            <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="IconStyle" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="Style" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="null" Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="左侧图标的 XAML 样式覆盖" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 6: Color -->
+            <Border Grid.Row="6" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Color" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="自定义主题色（仅在 Type='info' 时生效）" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 7: Theme -->
+            <Border Grid.Row="7" Grid.ColumnSpan="4" />
+            <TextBlock Text="Theme" Grid.Row="7" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="7" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='"auto"' Grid.Row="7" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="7" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+          </Grid>
+        </Border>
+      </StackPanel>
     </StackPanel>
   </ScrollViewer>
 </Page>

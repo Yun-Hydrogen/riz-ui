@@ -42,6 +42,11 @@ public sealed class RizSliderNav : ContentControl
     public RizSliderNav()
     {
         DefaultStyleKey = typeof(RizSliderNav);
+        ActualThemeChanged += (_, _) =>
+        {
+            ApplyLayout();
+            UpdateSelectionVisuals(string.Empty, SelectedItem);
+        };
         RegisterPropertyChangedCallback(ContentProperty, (_, _) =>
         {
             if (_contentHost != null && !ReferenceEquals(_contentHost.Content, Content))
@@ -96,6 +101,11 @@ public sealed class RizSliderNav : ContentControl
         DependencyProperty.Register(nameof(Theme), typeof(string), typeof(RizSliderNav), new PropertyMetadata("auto", OnVisualChanged));
     public string Theme { get => (string)GetValue(ThemeProperty); set => SetValue(ThemeProperty, value); }
 
+    public static readonly DependencyProperty FooterProperty =
+        DependencyProperty.Register(nameof(Footer), typeof(object), typeof(RizSliderNav), new PropertyMetadata(null));
+    /// <summary>侧边栏底部操作区内容，通常放置模式切换开关或版权信息。</summary>
+    public object? Footer { get => GetValue(FooterProperty); set => SetValue(FooterProperty, value); }
+
     public event EventHandler<RizSliderNavItem>? SelectionChanged;
 
     protected override void OnApplyTemplate()
@@ -109,7 +119,36 @@ public sealed class RizSliderNav : ContentControl
         _itemsHost = GetTemplateChild("ItemsHost") as StackPanel;
         _contentHost = GetTemplateChild("ContentHost") as ContentPresenter;
         _navColumn = GetTemplateChild("NavColumn") as ColumnDefinition;
-        if (_collapse != null) _collapse.Click += (_, _) => { if (IsCollapsible) AnimateCollapse(); };
+
+        if (_nav != null)
+        {
+            _nav.SizeChanged += (s, e) =>
+            {
+                if (_navColumn != null && e.NewSize.Width > 0 && StyleMode != RizSliderNavStyle.Floating)
+                {
+                    _navColumn.Width = new GridLength(e.NewSize.Width + 16);
+                }
+            };
+        }
+
+        if (_collapse != null)
+        {
+            _collapse.Click += (_, _) => { if (IsCollapsible) AnimateCollapse(); };
+            _collapse.PointerEntered += (_, _) =>
+            {
+                var isDk = RizVisuals.IsDark(this, Theme);
+                var ac = RizVisuals.ThemeColor(null);
+                _collapse.Background = RizVisuals.Brush(RizVisuals.Mix(ac, RizVisuals.SurfaceSoft(isDk), 0.15));
+                if (_collapse.Content is TextBlock tb) tb.Foreground = RizVisuals.Brush(ac);
+            };
+            _collapse.PointerExited += (_, _) =>
+            {
+                var isDk = RizVisuals.IsDark(this, Theme);
+                _collapse.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(isDk), RizVisuals.SurfaceSoft(isDk), 0.08));
+                if (_collapse.Content is TextBlock tb) tb.Foreground = RizVisuals.Brush(RizVisuals.Subtext(isDk));
+            };
+        }
+
         _templateReady = true;
         if (string.IsNullOrWhiteSpace(SelectedItem) && !string.IsNullOrWhiteSpace(DefaultSelectedItem))
             SetValue(SelectedItemProperty, DefaultSelectedItem);
@@ -136,9 +175,9 @@ public sealed class RizSliderNav : ContentControl
         var dark = RizVisuals.IsDark(this, Theme);
         var floating = StyleMode == RizSliderNavStyle.Floating;
         var width = IsCollapsed && IsCollapsible ? CollapsedWidth : ExpandedWidth;
-        var surface = RizVisuals.Surface(dark);
+        var surface = RizVisuals.SurfaceSoft(dark);
 
-        // 视觉对齐 Vue Demo：白色圆角浮层卡片 + 1px 边框 + 四周留白；
+        // 视觉对齐 Vue Demo：圆角浮层卡片 + 1px 边框 + 四周留白；
         // Floating 时 Content 跨两列绘制，Nav 在其后声明故位于内容之上。
         _navColumn.Width = new GridLength(width + 16);
         _nav.Width = width;
@@ -179,10 +218,8 @@ public sealed class RizSliderNav : ContentControl
                 _collapse.SetValue(Grid.ColumnSpanProperty, 3);
                 _collapse.SetValue(Grid.ColumnProperty, 0);
                 _collapse.HorizontalAlignment = HorizontalAlignment.Center;
-                _collapse.Width = 36;
-                _collapse.Height = 36;
-                _collapse.Content = "›";
-                _collapse.CornerRadius = new CornerRadius(8);
+                _collapse.Width = 32;
+                _collapse.Height = 32;
             }
             else
             {
@@ -194,14 +231,28 @@ public sealed class RizSliderNav : ContentControl
                 _collapse.HorizontalAlignment = HorizontalAlignment.Right;
                 _collapse.Width = 28;
                 _collapse.Height = 28;
-                _collapse.Content = "‹";
-                _collapse.CornerRadius = new CornerRadius(6);
             }
             _collapse.Visibility = IsCollapsible ? Visibility.Visible : Visibility.Collapsed;
-            _collapse.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
-            _collapse.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), surface, 0.06));
+            UpdateCollapseButtonVisual(dark, IsCollapsed);
         }
         RebuildItems();
+    }
+
+    private void UpdateCollapseButtonVisual(bool dark, bool isCollapsed)
+    {
+        if (_collapse == null) return;
+        var iconText = new TextBlock
+        {
+            FontSize = 11,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        var iconClass = isCollapsed ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left";
+        RizVisuals.ApplyIcon(iconText, iconClass, 11, RizVisuals.Subtext(dark));
+        _collapse.Content = iconText;
+        _collapse.CornerRadius = new CornerRadius(8);
+        _collapse.BorderThickness = new Thickness(0);
+        _collapse.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.SurfaceSoft(dark), 0.08));
     }
 
     private void RebuildItems()
@@ -622,21 +673,98 @@ public sealed class RizSliderNav : ContentControl
     {
         if (_animatingCollapse || _nav == null) return;
         _animatingCollapse = true;
-        var target = IsCollapsed ? ExpandedWidth : CollapsedWidth;
+        var nextCollapsed = !IsCollapsed;
+        var targetWidth = nextCollapsed ? CollapsedWidth : ExpandedWidth;
+
+        var cubicEase = new CubicEase { EasingMode = EasingMode.EaseInOut };
         var storyboard = new Storyboard();
-        var animation = new DoubleAnimation
+        var widthAnim = new DoubleAnimation
         {
-            To = target,
-            Duration = new Duration(TimeSpan.FromMilliseconds(220)),
+            To = targetWidth,
+            Duration = new Duration(TimeSpan.FromMilliseconds(260)),
             EnableDependentAnimation = true,
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            EasingFunction = cubicEase
         };
-        Storyboard.SetTarget(animation, _nav);
-        Storyboard.SetTargetProperty(animation, "Width");
+        Storyboard.SetTarget(widthAnim, _nav);
+        Storyboard.SetTargetProperty(widthAnim, "Width");
+        storyboard.Children.Add(widthAnim);
+
+        // 如果是收缩：渐隐文字与标头文本 (120ms)
+        if (nextCollapsed)
+        {
+            if (_itemsHost != null)
+            {
+                var fadeItems = new DoubleAnimation
+                {
+                    To = 0.0,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(120)),
+                    EnableDependentAnimation = true
+                };
+                Storyboard.SetTarget(fadeItems, _itemsHost);
+                Storyboard.SetTargetProperty(fadeItems, "Opacity");
+                storyboard.Children.Add(fadeItems);
+            }
+            if (_title != null)
+            {
+                var fadeTitle = new DoubleAnimation
+                {
+                    To = 0.0,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(120)),
+                    EnableDependentAnimation = true
+                };
+                Storyboard.SetTarget(fadeTitle, _title);
+                Storyboard.SetTargetProperty(fadeTitle, "Opacity");
+                storyboard.Children.Add(fadeTitle);
+            }
+        }
+
         storyboard.Completed += (_, _) =>
         {
-            SetValue(IsCollapsedProperty, !IsCollapsed);
+            SetValue(IsCollapsedProperty, nextCollapsed);
             _animatingCollapse = false;
+            ApplyLayout();
+
+            // 如果是展开：平滑渐显文字 (180ms)
+            if (!nextCollapsed)
+            {
+                if (_itemsHost != null)
+                {
+                    _itemsHost.Opacity = 0;
+                    var fadeIn = new DoubleAnimation
+                    {
+                        To = 1.0,
+                        Duration = new Duration(TimeSpan.FromMilliseconds(180)),
+                        EnableDependentAnimation = true,
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    Storyboard.SetTarget(fadeIn, _itemsHost);
+                    Storyboard.SetTargetProperty(fadeIn, "Opacity");
+                    var sb = new Storyboard();
+                    sb.Children.Add(fadeIn);
+                    sb.Begin();
+                }
+                if (_title != null)
+                {
+                    _title.Opacity = 0;
+                    var fadeInTitle = new DoubleAnimation
+                    {
+                        To = 1.0,
+                        Duration = new Duration(TimeSpan.FromMilliseconds(180)),
+                        EnableDependentAnimation = true,
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    Storyboard.SetTarget(fadeInTitle, _title);
+                    Storyboard.SetTargetProperty(fadeInTitle, "Opacity");
+                    var sb2 = new Storyboard();
+                    sb2.Children.Add(fadeInTitle);
+                    sb2.Begin();
+                }
+            }
+            else
+            {
+                if (_itemsHost != null) _itemsHost.Opacity = 1.0;
+                if (_title != null) _title.Opacity = 1.0;
+            }
         };
         storyboard.Begin();
     }

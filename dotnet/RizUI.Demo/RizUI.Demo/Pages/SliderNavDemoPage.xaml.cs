@@ -4,6 +4,36 @@ using RizUI.Uwp.Controls;
 namespace RizUI.Demo.Pages;
 public sealed partial class SliderNavDemoPage : Page
 {
+    public string CodeUsageFixed { get; } =
+@"<!-- 固定布局模式（StyleMode=""Fixed""） -->
+<rizui:RizSliderNav Title=""RizUI Console""
+                    Icon=""fa-solid fa-cube""
+                    StyleMode=""Fixed""
+                    DefaultSelectedItem=""home""
+                    SelectionChanged=""OnSelected"">
+  <rizui:RizSliderNav.Content>
+    <!-- 右侧页面主内容 -->
+    <Grid Padding=""24"">
+      <TextBlock Text=""主界面内容区"" FontSize=""16"" />
+    </Grid>
+  </rizui:RizSliderNav.Content>
+</rizui:RizSliderNav>";
+
+    public string CodeUsageFloating { get; } =
+@"<!-- 悬浮浮动布局（StyleMode=""Floating""） -->
+<rizui:RizSliderNav Title=""浮动导航""
+                    Icon=""fa-solid fa-compass""
+                    StyleMode=""Floating""
+                    DefaultSelectedItem=""home""
+                    SelectionChanged=""OnSelected"">
+  <rizui:RizSliderNav.Content>
+    <!-- 通栏铺满背景的主内容 -->
+    <Grid Background=""#F8FAFC"">
+      <TextBlock Text=""悬浮通栏内容区域"" HorizontalAlignment=""Center"" VerticalAlignment=""Center"" />
+    </Grid>
+  </rizui:RizSliderNav.Content>
+</rizui:RizSliderNav>";
+
     public SliderNavDemoPage()
     {
         InitializeComponent();

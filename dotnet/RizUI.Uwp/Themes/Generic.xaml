@@ -16,8 +16,8 @@
                     <!-- 外层投影层：对应 CSS box-shadow: 0 2px 10px rgba(30, 41, 59, 0.08) -->
                     <Grid Margin="0,0,0,12">
                         <!-- 轻微柔和阴影底衬（向下偏移 2px，柔和黑色半透明） -->
-                        <Border CornerRadius="14" Margin="0,2,0,0" Background="#0F1E293B" />
-                        <Border CornerRadius="14" Margin="0,1,0,0" Background="#081E293B" />
+                        <Border x:Name="Shadow1" CornerRadius="14" Margin="0,2,0,0" Background="#0F1E293B" />
+                        <Border x:Name="Shadow2" CornerRadius="14" Margin="0,1,0,0" Background="#081E293B" />
                         <Border x:Name="Root" Padding="16,14" CornerRadius="14"
                                 UseLayoutRounding="True" BorderThickness="1"
                                 Background="{StaticResource RZ_BgSoft}"
@@ -50,7 +50,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:RizCfgRow">
                     <Border x:Name="Root" Padding="0,12" UseLayoutRounding="True" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}">
-                        <Grid ColumnSpacing="14">
+                        <Grid x:Name="LayoutGrid">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -60,11 +60,19 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="Icon" Grid.Row="0" Grid.Column="0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="0" VerticalAlignment="Center">
+
+                            <!-- 图标容器：固定 36px 居中容器，有图标时显示并保持 14px 右间距；无图标时完全折叠不占位 -->
+                            <Border x:Name="IconBox" Grid.Row="0" Grid.Column="0" Width="36" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,14,0" Visibility="Collapsed">
+                                <TextBlock x:Name="Icon" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+
+                            <!-- 文本区：Label + Hint 垂直堆叠居中 -->
+                            <StackPanel x:Name="HeadText" Grid.Row="0" Grid.Column="1" Spacing="0" VerticalAlignment="Center">
                                 <TextBlock x:Name="Label" FontSize="14" LineHeight="20" Margin="0,0,0,2" TextWrapping="Wrap" />
                                 <TextBlock x:Name="Hint" FontSize="11" LineHeight="15.4" TextWrapping="Wrap" />
                             </StackPanel>
+
+                            <!-- 控件插槽：非 Stack 模式下位于 Row 0 Col 2（右对齐并保留舒适边距）；Stack 模式下位于 Row 1 Col 0 并通栏排布 -->
                             <ContentPresenter x:Name="ContentHost" Grid.Row="0" Grid.Column="2" Content="{TemplateBinding Content}" />
                         </Grid>
                     </Border>
@@ -73,37 +81,48 @@
         </Setter>
     </Style>
 
-    <!-- ═══ rizui_infobox：14% accent 混色背景 + 虚线外框 ═══ -->
+    <!-- ═══ rizui_infobox：14% accent 混色背景 + 虚线外框 + 优雅图文排版 ═══ -->
     <Style TargetType="local:RizInfoBox">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:RizInfoBox">
                     <Grid Margin="0,12" UseLayoutRounding="True">
+                        <!-- 内层背景及内容卡片 (padding: 12px 14px) -->
                         <Border x:Name="Root" Padding="14,12" CornerRadius="10">
                             <Grid ColumnSpacing="10">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="Icon" Grid.Column="0" FontSize="16" LineHeight="16" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" />
-                                <StackPanel Grid.Column="1" Spacing="0">
-                                    <TextBlock x:Name="Text" FontSize="13" LineHeight="20.8" TextWrapping="Wrap" />
-                                    <Border x:Name="Separator" Margin="0,8,0,8" BorderThickness="0,1,0,0" />
+                                <!-- 左侧图标容器：与单行/首行文本绝对基准垂直对齐 -->
+                                <Border Grid.Column="0" VerticalAlignment="Top" Width="20" Height="20">
+                                    <TextBlock x:Name="Icon" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <!-- 右侧文本与插槽 -->
+                                <StackPanel Grid.Column="1" Spacing="0" VerticalAlignment="Top">
+                                    <TextBlock x:Name="Text" FontSize="13" LineHeight="20" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap" />
+                                    <!-- stack 分割线：有 text 且带 slot 时显示 (1px dashed color-mix(accent 35%)) -->
+                                    <Border x:Name="Separator" Margin="0,8,0,8" Height="1" BorderThickness="0,1,0,0" />
                                     <ContentPresenter x:Name="ContentHost" Content="{TemplateBinding Content}" />
                                 </StackPanel>
                             </Grid>
                         </Border>
-                        <Rectangle x:Name="Outline" RadiusX="10" RadiusY="10" StrokeThickness="1" StrokeDashArray="3,2" IsHitTestVisible="False" />
+                        <!-- 1.5px 虚线边框 -->
+                        <Rectangle x:Name="Outline" RadiusX="10" RadiusY="10" StrokeThickness="1.5" StrokeDashArray="3,2" IsHitTestVisible="False" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <!-- ═══ rizui_dialog / rizui_toast：视觉由 Popup 宿主在 C# 中建立 ═══ -->
-    <Style TargetType="local:RizDialog" />
-    <Style TargetType="local:RizToast" />
+    <!-- ═══ rizui_dialog / rizui_toast：视觉由 Popup 宿主在 C# 中建立，在页面文档流中隐藏 ═══ -->
+    <Style TargetType="local:RizDialog">
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
+    <Style TargetType="local:RizToast">
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
 
     <!-- ═══ RizSliderNav：左侧固定列或悬浮层；条目树由 C# 基于 Items 生成 ═══ -->
     <Style TargetType="local:RizSliderNav">
@@ -118,11 +137,12 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ContentPresenter x:Name="ContentHost" Grid.Column="1" Content="{TemplateBinding Content}" />
-                        <Border x:Name="Nav" Grid.Column="0" Width="248" BorderThickness="0">
+                        <Border x:Name="Nav" Grid.Column="0" Width="248" BorderThickness="0" Background="{StaticResource RZ_BgSoft}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid x:Name="HeaderGrid" Padding="14,16,12,12">
                                     <Grid.ColumnDefinitions>
@@ -137,6 +157,8 @@
                                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                     <StackPanel x:Name="ItemsHost" Padding="0,4,0,12" />
                                 </ScrollViewer>
+                                <!-- 底部自适应/扩展操作区 -->
+                                <ContentPresenter x:Name="FooterHost" Grid.Row="2" Content="{TemplateBinding Footer}" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -145,7 +167,7 @@
         </Setter>
     </Style>
 
-    <!-- ═══ rizui_code：inline 与 block 共用一份 RichTextBlock 内容 ═══ -->
+    <!-- ═══ rizui_code：完美复刻 Web 端样式（内联胶囊 / 大代码块、语言标头、复制按钮与主题高亮） ═══ -->
     <Style TargetType="local:RizCode">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Template">
@@ -154,23 +176,50 @@
                     <Border x:Name="Root" BorderThickness="1" CornerRadius="10" UseLayoutRounding="True"
                             Padding="0" Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}">
                         <Grid>
-                            <TextBlock x:Name="InlineCode" Visibility="Collapsed" Padding="9,2" FontSize="12" TextWrapping="WrapWholeWords" />
+                            <!-- 单行内联胶囊模式 (block=false) -->
+                            <TextBlock x:Name="InlineCode" Visibility="Collapsed" Padding="6,2" FontSize="12"
+                                       FontFamily="Cascadia Code, Consolas, Courier New, monospace"
+                                       TextWrapping="WrapWholeWords" VerticalAlignment="Center" />
+
+                            <!-- 多行大代码块模式 (block=true) -->
                             <Grid x:Name="BlockRoot" Visibility="Collapsed">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <Grid x:Name="Header" Grid.Row="0" Padding="12,5,10,5" ColumnSpacing="8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="LangText" Grid.Column="0" FontSize="11" FontWeight="SemiBold" />
-                                    <Button x:Name="Copy" Grid.Column="1" Content="▣" Padding="8,3" FontSize="11" />
-                                    <Border x:Name="CopyBar" Grid.ColumnSpan="2" Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+
+                                <!-- 顶栏标头 -->
+                                <Grid x:Name="Header" Grid.Row="0">
+                                    <!-- 复制后 1.5s 平滑递增全顶栏淡色背景进度条 -->
+                                    <Border x:Name="CopyBar" HorizontalAlignment="Left" VerticalAlignment="Stretch"
+                                            Background="#2566CCFF" Visibility="Collapsed" IsHitTestVisible="False" />
+
+                                    <Grid Padding="12,5,10,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock x:Name="LangText" Grid.Column="0" FontSize="11" FontWeight="SemiBold"
+                                                   VerticalAlignment="Center" Foreground="{StaticResource RZ_Subtext}" />
+
+                                        <!-- 复制按钮 -->
+                                        <Border x:Name="CopyBtn" Grid.Column="1" CornerRadius="6" Padding="6,3"
+                                                Background="#1066CCFF" IsHitTestVisible="True">
+                                            <TextBlock x:Name="CopyIcon" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </Grid>
                                 </Grid>
-                                <ScrollViewer x:Name="CodeScroll" Grid.Row="1" Padding="12,10" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                                    <TextBlock x:Name="BlockCode" FontSize="12.5" TextWrapping="NoWrap" />
+
+                                <!-- 顶栏分割线 -->
+                                <Border x:Name="HeaderBorder" Grid.Row="0" Height="1" VerticalAlignment="Bottom"
+                                        BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
+
+                                <!-- 代码文本区 -->
+                                <ScrollViewer x:Name="CodeScroll" Grid.Row="1" Padding="12,10"
+                                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                    <TextBlock x:Name="BlockCode" FontSize="12.5" LineHeight="20"
+                                               FontFamily="Cascadia Code, Consolas, Courier New, monospace"
+                                               TextWrapping="NoWrap" />
                                 </ScrollViewer>
                             </Grid>
                         </Grid>
@@ -205,6 +254,486 @@
                                        Foreground="{StaticResource RZ_Text}" VerticalAlignment="Center" />
                         </StackPanel>
                     </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_switch：44x24 跑道 + 20x20 白色圆形滚轮 ═══ -->
+    <Style TargetType="local:RizSwitch">
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizSwitch">
+                    <Grid Width="44" Height="24" Background="Transparent">
+                        <!-- 跑道背景 -->
+                        <Border x:Name="Track" Width="44" Height="24" CornerRadius="12"
+                                Background="#888899" UseLayoutRounding="True" />
+                        <!-- 白色圆形滑动滚轮 -->
+                        <Border x:Name="Thumb" Width="20" Height="20" CornerRadius="10"
+                                Background="White" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                Margin="2,0,0,0" UseLayoutRounding="True">
+                            <!-- 滚轮柔和立体阴影 -->
+                            <Border.Shadow>
+                                <ThemeShadow />
+                            </Border.Shadow>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_slider：胶囊步进滑条（左右拖拽 + 点击长按 ± 连续步进） ═══ -->
+    <Style TargetType="local:RizSlider">
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizSlider">
+                    <Border x:Name="Root"
+                            Height="26"
+                            MinWidth="160"
+                            CornerRadius="13"
+                            BorderThickness="1.5"
+                            BorderBrush="{StaticResource RZ_Border}"
+                            Background="{StaticResource RZ_Bg}"
+                            UseLayoutRounding="True">
+                        <Grid CornerRadius="12">
+                            <!-- 进度填充层 -->
+                            <Border x:Name="Fill"
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="12"
+                                    UseLayoutRounding="True"
+                                    IsHitTestVisible="False" />
+
+                            <!-- 三列布局：[−] [数值居中] [+] -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="28" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="28" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border x:Name="BtnMinus"
+                                        Grid.Column="0"
+                                        Background="Transparent"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        IsHitTestVisible="True">
+                                    <TextBlock Text="−"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               IsHitTestVisible="False" />
+                                </Border>
+
+                                <TextBlock x:Name="ValueText"
+                                           Grid.Column="1"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           IsHitTestVisible="False" />
+
+                                <Border x:Name="BtnPlus"
+                                        Grid.Column="2"
+                                        Background="Transparent"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        IsHitTestVisible="True">
+                                    <TextBlock Text="+"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               IsHitTestVisible="False" />
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_mdeditor：Markdown 实时编辑器 ═══ -->
+    <Style TargetType="local:RizMdEditor">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizMdEditor">
+                    <Grid UseLayoutRounding="True">
+                        <!-- 主体卡片容器 (MinHeight 220 防止 auto 高度时发生塌陷) -->
+                        <Border x:Name="Root"
+                                BorderThickness="1.5"
+                                CornerRadius="14"
+                                MinHeight="220"
+                                BorderBrush="{StaticResource RZ_Border}"
+                                Background="{StaticResource RZ_Bg}">
+                            <Grid>
+                                <!-- 画布滚动容器（正文在上滑时可穿入浮动顶栏下方） -->
+                                <ScrollViewer x:Name="BodyScrollViewer"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              VerticalScrollBarVisibility="Auto"
+                                              MinHeight="220"
+                                              Padding="0">
+                                    <Grid x:Name="CanvasContainer" MinHeight="220">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Row 0: 顶栏悬浮胶囊预留占位区 (46px)，确保未滚动时首行正文在顶栏下方，不产生遮挡 -->
+                                        <Border Grid.Row="0" Height="46" Background="Transparent" IsHitTestVisible="False" />
+
+                                        <!-- 内容编辑区 (无原生下划线与清除按钮) -->
+                                        <TextBox x:Name="Editor"
+                                                 Grid.Row="1"
+                                                 Style="{StaticResource RizPlainTextBoxStyle}"
+                                                 Margin="14,4,14,14"
+                                                 Padding="0"
+                                                 MinHeight="160"
+                                                 FontSize="13"
+                                                 FontFamily="Cascadia Code, Consolas, monospace"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="Wrap"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalAlignment="Stretch" />
+
+                                        <!-- 内容预览区 (富文本排版) -->
+                                        <StackPanel x:Name="PreviewPanel"
+                                                    Grid.Row="1"
+                                                    Margin="16,4,16,16"
+                                                    MinHeight="160"
+                                                    Spacing="10"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Visibility="Collapsed" />
+                                    </Grid>
+                                </ScrollViewer>
+
+                                <!-- 浮动玻璃悬浮工具栏 (固定高度 36px，胶囊圆角 18px，严禁 999 避免变成挤压椭圆) -->
+                                <Border x:Name="Toolbar"
+                                        VerticalAlignment="Top"
+                                        Height="36"
+                                        Margin="10,8,10,0"
+                                        Padding="6,3"
+                                        CornerRadius="18"
+                                        BorderThickness="1"
+                                        BorderBrush="{StaticResource RZ_Border}"
+                                        Background="#E6FFFFFF">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- 工具栏按钮组 -->
+                                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                            <StackPanel x:Name="ToolbarBtns" Orientation="Horizontal" Spacing="2" />
+                                        </ScrollViewer>
+
+                                        <!-- 编辑 / 预览 滑动胶囊选项卡 (高度 28px，圆角 14px) -->
+                                        <Border x:Name="TabsWrapper"
+                                                Grid.Column="1"
+                                                Height="28"
+                                                CornerRadius="14"
+                                                Background="{StaticResource RZ_BgSoft}"
+                                                Padding="2">
+                                            <Grid Width="144" Height="24">
+                                                <!-- 滑块：左右滑动过渡 (高度 24px，圆角 12px) -->
+                                                <Border x:Name="TabSlider"
+                                                        Width="70"
+                                                        Height="24"
+                                                        CornerRadius="12"
+                                                        Background="{StaticResource RZ_Bg}"
+                                                        HorizontalAlignment="Left">
+                                                    <Border.RenderTransform>
+                                                        <TranslateTransform X="0" />
+                                                    </Border.RenderTransform>
+                                                    <Border.Shadow><ThemeShadow /></Border.Shadow>
+                                                </Border>
+
+                                                <!-- 左右两个按钮 -->
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="72" />
+                                                        <ColumnDefinition Width="72" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Button x:Name="TabEdit"
+                                                            Grid.Column="0"
+                                                            Padding="0"
+                                                            BorderThickness="0"
+                                                            Background="Transparent"
+                                                            HorizontalAlignment="Stretch"
+                                                            VerticalAlignment="Stretch"
+                                                            IsTabStop="False">
+                                                        <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock x:Name="TabEditIcon" FontSize="11" VerticalAlignment="Center" />
+                                                            <TextBlock x:Name="TabEditText" Text="编辑" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <Button x:Name="TabPreview"
+                                                            Grid.Column="1"
+                                                            Padding="0"
+                                                            BorderThickness="0"
+                                                            Background="Transparent"
+                                                            HorizontalAlignment="Stretch"
+                                                            VerticalAlignment="Stretch"
+                                                            IsTabStop="False">
+                                                        <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock x:Name="TabPreviewIcon" FontSize="11" VerticalAlignment="Center" />
+                                                            <TextBlock x:Name="TabPreviewText" Text="预览" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                        </StackPanel>
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- 编辑器聚焦时从中轴向两侧展开的主题色边框动画层 -->
+                        <Border x:Name="FocusGlow"
+                                BorderThickness="2"
+                                BorderBrush="{StaticResource RZ_Theme}"
+                                CornerRadius="14"
+                                Background="Transparent"
+                                IsHitTestVisible="False"
+                                RenderTransformOrigin="0.5, 0.5"
+                                Opacity="0">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0" ScaleY="1" />
+                            </Border.RenderTransform>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ 纯净透明 TextBox 样式（剥离 WinUI 原生底部下划线、DeleteButton 与原生聚焦背景） ═══ -->
+    <Style x:Key="RizPlainTextBoxStyle" TargetType="TextBox">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="SelectionHighlightColor" Value="{StaticResource RZ_Theme}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid Background="Transparent">
+                        <!-- 占位符提示文字 (使用与文本一致的 VerticalAlignment) -->
+                        <TextBlock x:Name="PlaceholderTextContentPresenter"
+                                   Text="{TemplateBinding PlaceholderText}"
+                                   Foreground="{StaticResource RZ_Subtext}"
+                                   TextAlignment="{TemplateBinding TextAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   HorizontalAlignment="Stretch"
+                                   Padding="{TemplateBinding Padding}"
+                                   IsHitTestVisible="False"
+                                   Visibility="Collapsed" />
+
+                        <ScrollViewer x:Name="ContentElement"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                                      VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
+                                      IsTabStop="False"
+                                      Margin="0"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      HorizontalAlignment="Stretch" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_text：单行/多行输入框，带中轴向两侧平滑展开的聚焦主题光晕 ═══ -->
+    <Style TargetType="local:RizText">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizText">
+                    <Grid UseLayoutRounding="True" VerticalAlignment="Center">
+                        <!-- 外层包装层 (静态边框) -->
+                        <Border x:Name="Wrap"
+                                BorderThickness="1.5"
+                                BorderBrush="{StaticResource RZ_Border}"
+                                Background="{StaticResource RZ_Bg}"
+                                CornerRadius="14"
+                                VerticalAlignment="Center">
+                            <Grid VerticalAlignment="Stretch">
+                                <!-- 单行输入框 (高度 28px，文本水平居中，垂直居中) -->
+                                <TextBox x:Name="SingleInput"
+                                         Style="{StaticResource RizPlainTextBoxStyle}"
+                                         Padding="10,0"
+                                         FontSize="12"
+                                         TextAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Center" />
+
+                                <!-- 多行输入框 (plaintext=true，居左对齐，顶端对齐，支持限制高度并自动滚动) -->
+                                <TextBox x:Name="MultiInput"
+                                         Style="{StaticResource RizPlainTextBoxStyle}"
+                                         Padding="10,8"
+                                         FontSize="12"
+                                         TextAlignment="Left"
+                                         VerticalContentAlignment="Top"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+
+                        <!-- 聚焦时从中轴向两侧展开的主题色光晕边框动画层 -->
+                        <Border x:Name="FocusGlow"
+                                BorderThickness="2"
+                                BorderBrush="{StaticResource RZ_Theme}"
+                                CornerRadius="14"
+                                Background="Transparent"
+                                IsHitTestVisible="False"
+                                RenderTransformOrigin="0.5, 0.5"
+                                VerticalAlignment="Center"
+                                Opacity="0">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0" ScaleY="1" />
+                            </Border.RenderTransform>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_colorpicker：胶囊色块触发器 ═══ -->
+    <Style TargetType="local:RizColorPicker">
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizColorPicker">
+                    <!-- 胶囊色块预览触发器 -->
+                    <Border x:Name="Swatch"
+                            Height="30"
+                            Padding="3,3,10,3"
+                            CornerRadius="15"
+                            BorderThickness="1.5"
+                            BorderBrush="{StaticResource RZ_Border}"
+                            Background="{StaticResource RZ_Bg}">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Border x:Name="SwatchDot" Width="22" Height="22" CornerRadius="11" BorderThickness="1.5" BorderBrush="#15000000" />
+                            <TextBlock x:Name="SwatchHex" FontSize="12" FontFamily="Cascadia Code, Consolas" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_timeline：带刻度线的时间轴控件 ═══ -->
+    <Style TargetType="local:RizTimeline">
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizTimeline">
+                    <Grid Padding="12,30,12,6" UseLayoutRounding="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="18" />
+                        </Grid.RowDefinitions>
+
+                        <!-- 点击与拖拽透明响应层 -->
+                        <Border x:Name="HitArea" Grid.Row="0" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                        <!-- 轨道 Canvas 层 -->
+                        <Canvas x:Name="TrackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
+                            <!-- 轨道底槽 -->
+                            <Border x:Name="TrackBar" Height="6" CornerRadius="3" Canvas.Top="13" />
+                            <!-- 填充条 -->
+                            <Border x:Name="FillBar" Height="6" CornerRadius="3,0,0,3" Canvas.Top="13" />
+
+                            <!-- 指示器（气泡标签 + 倒三角） -->
+                            <StackPanel x:Name="Indicator" Canvas.Top="-18" Width="48" HorizontalAlignment="Center" IsHitTestVisible="False">
+                                <Border x:Name="Bubble" CornerRadius="10" Padding="6,2" BorderThickness="1.5" HorizontalAlignment="Center">
+                                    <TextBlock x:Name="BubbleText" FontSize="11" LineHeight="14" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" />
+                                </Border>
+                                <Path x:Name="Arrow" Data="M0 0 L6 6 L12 0 Z" Width="12" Height="6" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Canvas>
+
+                        <!-- 底部时间刻度标签 Canvas -->
+                        <Canvas x:Name="LabelsCanvas" Grid.Row="1" HorizontalAlignment="Stretch" Height="18" Margin="0,4,0,0" IsHitTestVisible="False" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_dropdown：胶囊触发按钮 + 浮层下拉列表 ═══ -->
+    <Style TargetType="local:RizDropdown">
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizDropdown">
+                    <Grid>
+                        <!-- 胶囊触发按钮 (padding: 4px 14px, height: 30px, border-radius: 999px) -->
+                        <Border x:Name="Trigger"
+                                Height="30"
+                                Padding="14,4"
+                                CornerRadius="15"
+                                BorderThickness="1.5"
+                                BorderBrush="{StaticResource RZ_Border}"
+                                Background="{StaticResource RZ_Bg}"
+                                HorizontalAlignment="Stretch">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="Label" Grid.Column="0" FontSize="12" LineHeight="12"
+                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,12,0" />
+                                <Border Grid.Column="1" Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Path x:Name="Arrow" Data="M1 2 L5 6 L9 2" Stroke="{StaticResource RZ_Subtext}" StrokeThickness="1.5"
+                                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          Width="10" Height="8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- 下拉弹出浮层：动态计算正下方或上方展开 -->
+                        <Popup x:Name="DropPopup" IsLightDismissEnabled="True" VerticalOffset="36">
+                            <Border x:Name="DropBorder"
+                                    MinWidth="120"
+                                    Padding="4"
+                                    CornerRadius="10"
+                                    BorderThickness="1"
+                                    BorderBrush="{StaticResource RZ_Border}"
+                                    Background="{StaticResource RZ_Bg}">
+                                <Border.Shadow>
+                                    <ThemeShadow />
+                                </Border.Shadow>
+                                <StackPanel x:Name="ListHost" Spacing="2" />
+                            </Border>
+                        </Popup>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

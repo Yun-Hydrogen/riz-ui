@@ -1,34 +1,52 @@
+using System;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Text;
+using Microsoft.UI.Xaml.Shapes;
+using Path = Microsoft.UI.Xaml.Shapes.Path;
 
 namespace RizUI.Uwp.Controls;
 
 /// <summary>
-/// 原生实现的 rizui_dialog。Content 对应默认插槽，Footer 对应 footer 插槽。
+/// 原生实现的 rizui_dialog。
+/// 支持居中弹出、Scale &amp; Opacity 弹窗动画、遮罩毛玻璃渐变、右上角胶囊关闭按钮、底部倒计时进度条、图标与主题色定制。
+/// Content 对应主体内容插槽，Footer 对应底部按钮区插槽。
 /// </summary>
 public sealed class RizDialog : ContentControl
 {
     private Popup? _popup;
     private Grid? _overlay;
+    private Grid? _boxContainer;
     private Border? _box;
     private TextBlock? _icon;
     private TextBlock? _title;
-    private Button? _close;
-    private ContentPresenter? _body;
-    private ContentPresenter? _footer;
+    private Border? _closeButton;
+    private Path? _closePath;
+    private ContentPresenter? _bodyPresenter;
+    private ContentPresenter? _footerPresenter;
+    private Border? _progressBar;
+    private ScaleTransform? _progressScale;
+    private ScaleTransform? _boxScale;
+    private Storyboard? _enterStoryboard;
+    private Storyboard? _exitStoryboard;
+    private Storyboard? _progressStoryboard;
+    private DispatcherQueueTimer? _countdownTimer;
+    private FrameworkElement? _observedRoot;
     private bool _closing;
     private bool _notifyClose;
 
     public RizDialog()
     {
         DefaultStyleKey = typeof(RizDialog);
+        Visibility = Visibility.Collapsed;
         Loaded += (_, _) => { if (Show) OpenDialog(); };
         Unloaded += (_, _) => CloseDialog(false);
+        ActualThemeChanged += (_, _) => UpdateVisual();
         RegisterPropertyChangedCallback(ContentProperty, (_, _) => UpdateContent());
     }
 
@@ -58,7 +76,7 @@ public sealed class RizDialog : ContentControl
 
     public static readonly DependencyProperty WidthTextProperty =
         DependencyProperty.Register(nameof(WidthText), typeof(string), typeof(RizDialog), new PropertyMetadata("auto", OnVisualChanged));
-    /// <summary>对应 Vue 的 width prop；使用 WidthText 避免遮蔽 FrameworkElement.Width。</summary>
+    /// <summary>对话框宽度（如 360px、420px、auto）。</summary>
     public string WidthText { get => (string)GetValue(WidthTextProperty); set => SetValue(WidthTextProperty, value); }
 
     public static readonly DependencyProperty ClosableProperty =
@@ -72,6 +90,21 @@ public sealed class RizDialog : ContentControl
     public static readonly DependencyProperty ThemeProperty =
         DependencyProperty.Register(nameof(Theme), typeof(string), typeof(RizDialog), new PropertyMetadata("auto", OnVisualChanged));
     public string Theme { get => (string)GetValue(ThemeProperty); set => SetValue(ThemeProperty, value); }
+
+    public static readonly DependencyProperty CountdownProperty =
+        DependencyProperty.Register(nameof(Countdown), typeof(double), typeof(RizDialog), new PropertyMetadata(0d, OnVisualChanged));
+    /// <summary>自动关闭秒数；0 表示不自动关闭。大于 0 时自动在底部展示倒计时进度条并定时关闭。</summary>
+    public double Countdown { get => (double)GetValue(CountdownProperty); set => SetValue(CountdownProperty, value); }
+
+    public static readonly DependencyProperty ShowBarProperty =
+        DependencyProperty.Register(nameof(ShowBar), typeof(bool), typeof(RizDialog), new PropertyMetadata(false, OnVisualChanged));
+    /// <summary>是否显示底部进度条。当 Countdown > 0 时默认自动开启。</summary>
+    public bool ShowBar { get => (bool)GetValue(ShowBarProperty); set => SetValue(ShowBarProperty, value); }
+
+    public static readonly DependencyProperty ProgressProperty =
+        DependencyProperty.Register(nameof(Progress), typeof(double), typeof(RizDialog), new PropertyMetadata(-1d, OnVisualChanged));
+    /// <summary>手动设置进度值（0.0 ~ 1.0）。小于 0 时由 Countdown 倒计时自动驱动。</summary>
+    public double Progress { get => (double)GetValue(ProgressProperty); set => SetValue(ProgressProperty, value); }
 
     public static readonly DependencyProperty FooterProperty =
         DependencyProperty.Register(nameof(Footer), typeof(object), typeof(RizDialog), new PropertyMetadata(null, OnVisualChanged));
@@ -95,27 +128,33 @@ public sealed class RizDialog : ContentControl
         _closing = false;
         BuildPopup();
         _popup!.IsOpen = true;
+        AnimateEnter();
 
-        if (_overlay != null)
+        if (Countdown > 0)
         {
-            _overlay.Opacity = 0;
-            var storyboard = new Storyboard();
-            var animation = new DoubleAnimation { To = 1, Duration = new Duration(TimeSpan.FromMilliseconds(220)) };
-            Storyboard.SetTarget(animation, _overlay);
-            Storyboard.SetTargetProperty(animation, "Opacity");
-            storyboard.Children.Add(animation);
-            storyboard.Begin();
+            _countdownTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+            _countdownTimer.Interval = TimeSpan.FromSeconds(Countdown);
+            _countdownTimer.IsRepeating = false;
+            _countdownTimer.Tick += (_, _) => Close();
+            _countdownTimer.Start();
         }
     }
 
     private void BuildPopup()
     {
-        var contentRoot = XamlRoot?.Content as FrameworkElement;
-        var viewportWidth = Math.Max(1, contentRoot?.ActualWidth ?? 800);
-        var viewportHeight = Math.Max(1, contentRoot?.ActualHeight ?? 600);
+        _observedRoot = XamlRoot?.Content as FrameworkElement;
+        var viewportWidth = Math.Max(1, _observedRoot?.ActualWidth ?? 800);
+        var viewportHeight = Math.Max(1, _observedRoot?.ActualHeight ?? 600);
+        if (_observedRoot != null)
+        {
+            _observedRoot.SizeChanged -= OnRootSizeChanged;
+            _observedRoot.SizeChanged += OnRootSizeChanged;
+        }
+
         var dark = RizVisuals.IsDark(this, Theme);
         var accent = RizVisuals.ThemeColor(Color);
 
+        // 遮罩层：对齐 Web 的 rgba(15, 23, 42, 0.45) 浅色与 rgba(0,0,0,0.60) 暗色
         _overlay = new Grid
         {
             Width = viewportWidth,
@@ -128,121 +167,479 @@ public sealed class RizDialog : ContentControl
         };
         _overlay.PointerPressed += OnOverlayPressed;
 
+        // 弹窗外层容器：负责缩放与透明度动画以及多层柔和投影
+        _boxScale = new ScaleTransform { ScaleX = 0.92, ScaleY = 0.92, CenterX = 0.5, CenterY = 0.5 };
+        _boxContainer = new Grid
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            RenderTransformOrigin = new Windows.Foundation.Point(0.5, 0.5),
+            RenderTransform = _boxScale
+        };
+
+        var requestedWidth = RizVisuals.ParsePixels(WidthText, 0);
+        if (requestedWidth > 0)
+        {
+            _boxContainer.Width = Math.Min(requestedWidth, viewportWidth * 0.9);
+        }
+        else
+        {
+            _boxContainer.MinWidth = 280;
+            _boxContainer.MaxWidth = Math.Min(viewportWidth * 0.9, 640);
+        }
+
+        // 多层柔和立体阴影（对应 Web 的 box-shadow: 0 12px 40px var(--rz-shadow)）
+        var shadow1 = new Border
+        {
+            CornerRadius = new CornerRadius(16),
+            Margin = new Thickness(0, 10, 0, -10),
+            Background = RizVisuals.Brush(Windows.UI.Color.FromArgb(24, 0, 0, 0)),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
+        };
+        var shadow2 = new Border
+        {
+            CornerRadius = new CornerRadius(16),
+            Margin = new Thickness(0, 4, 0, -4),
+            Background = RizVisuals.Brush(Windows.UI.Color.FromArgb(16, 0, 0, 0)),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
+        };
+        _boxContainer.Children.Add(shadow1);
+        _boxContainer.Children.Add(shadow2);
+
+        // 主体卡片边框
         _box = new Border
         {
-            MinWidth = 280,
-            MaxWidth = viewportWidth * 0.9,
             Background = RizVisuals.Brush(RizVisuals.Surface(dark)),
             CornerRadius = new CornerRadius(16),
-            Padding = new Thickness(20, 16, 20, 16),
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
+            BorderThickness = new Thickness(1),
+            BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark)),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
         };
-        var requestedWidth = RizVisuals.ParsePixels(WidthText, 0);
-        if (requestedWidth > 0) _box.Width = Math.Min(requestedWidth, viewportWidth * 0.9);
 
-        var layout = new Grid { RowSpacing = 0 };
-        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        var layout = new Grid();
+        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Header
+        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Body
+        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Footer
+        layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Progress Bar
 
-        var header = new Grid { ColumnSpacing = 10 };
+        // 头部：图标 + 标题 + 胶囊关闭按钮（padding: 16px 20px 12px）
+        var header = new Grid
+        {
+            ColumnSpacing = 10,
+            Padding = new Thickness(20, 16, 16, 12)
+        };
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        _icon = new TextBlock { FontSize = 16, VerticalAlignment = VerticalAlignment.Center };
-        _title = new TextBlock { FontSize = 15, FontWeight = FontWeights.Bold, VerticalAlignment = VerticalAlignment.Center };
-        _close = new Button
+
+        _icon = new TextBlock
         {
-            Content = "×",
-            Width = 26,
-            Height = 26,
-            Padding = new Thickness(0),
-            FontSize = 18,
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center
+            FontSize = 16,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment = TextAlignment.Center
         };
-        _close.Click += (_, _) => Close();
+
+        _title = new TextBlock
+        {
+            FontSize = 15,
+            FontWeight = FontWeights.Bold,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis
+        };
+
+        var appFont = FontFamily ?? (_observedRoot as Control)?.FontFamily;
+        if (appFont == null && Application.Current?.Resources?.TryGetValue("UiFont", out var uf) == true)
+        {
+            appFont = uf as FontFamily;
+        }
+        if (appFont != null)
+        {
+            _title.FontFamily = appFont;
+            if (_bodyPresenter != null) _bodyPresenter.FontFamily = appFont;
+            if (_footerPresenter != null) _footerPresenter.FontFamily = appFont;
+        }
+
+        _closeButton = CreateCloseButton(dark, accent);
+
         Grid.SetColumn(_icon, 0);
         Grid.SetColumn(_title, 1);
-        Grid.SetColumn(_close, 2);
+        Grid.SetColumn(_closeButton, 2);
         header.Children.Add(_icon);
         header.Children.Add(_title);
-        header.Children.Add(_close);
+        header.Children.Add(_closeButton);
+        Grid.SetRow(header, 0);
         layout.Children.Add(header);
 
-        _body = new ContentPresenter { Content = Content, Margin = new Thickness(0, 12, 0, 8) };
-        Grid.SetRow(_body, 1);
-        layout.Children.Add(_body);
-        _footer = new ContentPresenter { Content = Footer, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 12, 0, 0) };
-        Grid.SetRow(_footer, 2);
-        layout.Children.Add(_footer);
-        _box.Child = layout;
-        Grid.SetColumn(_box, 0);
-        _overlay.Children.Add(_box);
+        // 主体内容区（padding: 0 20px 8px）
+        _bodyPresenter = new ContentPresenter
+        {
+            Content = Content,
+            Margin = new Thickness(20, 0, 20, 8),
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        Grid.SetRow(_bodyPresenter, 1);
+        layout.Children.Add(_bodyPresenter);
 
-        _popup = new Popup { Child = _overlay, IsLightDismissEnabled = false, XamlRoot = XamlRoot };
+        // 底部按钮区（padding: 12px 20px 16px）
+        _footerPresenter = new ContentPresenter
+        {
+            Content = Footer,
+            Margin = new Thickness(20, 8, 20, 16),
+            HorizontalAlignment = HorizontalAlignment.Right
+        };
+        Grid.SetRow(_footerPresenter, 2);
+        layout.Children.Add(_footerPresenter);
+
+        // 底部进度条容器与进度条（与卡片底部圆角完美吻合）
+        _progressScale = new ScaleTransform { ScaleX = 1, ScaleY = 1, CenterX = 0, CenterY = 0 };
+        _progressBar = new Border
+        {
+            Height = 4,
+            Background = RizVisuals.Brush(accent),
+            CornerRadius = new CornerRadius(0, 0, 16, 16),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            RenderTransformOrigin = new Windows.Foundation.Point(0, 0.5),
+            RenderTransform = _progressScale
+        };
+        Grid.SetRow(_progressBar, 2);
+        Grid.SetRowSpan(_progressBar, 2);
+        layout.Children.Add(_progressBar);
+
+        _box.Child = layout;
+        _boxContainer.Children.Add(_box);
+        _overlay.Children.Add(_boxContainer);
+
+        _popup = new Popup
+        {
+            Child = _overlay,
+            IsLightDismissEnabled = false,
+            XamlRoot = XamlRoot
+        };
+
         UpdateVisual();
+    }
+
+    private Border CreateCloseButton(bool dark, Windows.UI.Color accent)
+    {
+        var closeBorder = new Border
+        {
+            Width = 26,
+            Height = 26,
+            CornerRadius = new CornerRadius(13),
+            Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08)),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            IsHitTestVisible = true
+        };
+
+        _closePath = new Path
+        {
+            Data = new GeometryGroup
+            {
+                Children =
+                {
+                    new LineGeometry { StartPoint = new Windows.Foundation.Point(8, 8), EndPoint = new Windows.Foundation.Point(18, 18) },
+                    new LineGeometry { StartPoint = new Windows.Foundation.Point(18, 8), EndPoint = new Windows.Foundation.Point(8, 18) }
+                }
+            },
+            Stroke = RizVisuals.Brush(RizVisuals.Subtext(dark)),
+            StrokeThickness = 2,
+            StrokeStartLineCap = PenLineCap.Round,
+            StrokeEndLineCap = PenLineCap.Round,
+            Width = 26,
+            Height = 26,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        closeBorder.Child = _closePath;
+
+        closeBorder.PointerEntered += (_, _) =>
+        {
+            closeBorder.Background = RizVisuals.Brush(accent);
+            _closePath.Stroke = RizVisuals.Brush(Microsoft.UI.Colors.White);
+        };
+        closeBorder.PointerExited += (_, _) =>
+        {
+            var isDk = RizVisuals.IsDark(this, Theme);
+            closeBorder.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(isDk), RizVisuals.Surface(isDk), 0.08));
+            _closePath.Stroke = RizVisuals.Brush(RizVisuals.Subtext(isDk));
+        };
+        closeBorder.PointerPressed += (_, e) =>
+        {
+            e.Handled = true;
+            closeBorder.Background = RizVisuals.Brush(RizVisuals.Mix(accent, Microsoft.UI.Colors.Black, 0.85));
+        };
+        closeBorder.PointerReleased += (_, e) =>
+        {
+            e.Handled = true;
+            Close();
+        };
+
+        return closeBorder;
+    }
+
+    private void AnimateEnter()
+    {
+        if (_overlay == null || _boxContainer == null || _boxScale == null) return;
+
+        _overlay.Opacity = 0;
+        _boxContainer.Opacity = 0;
+        _boxScale.ScaleX = 0.92;
+        _boxScale.ScaleY = 0.92;
+
+        var cubicEase = new CubicEase { EasingMode = EasingMode.EaseOut };
+        var sb = new Storyboard();
+
+        var overlayFade = new DoubleAnimation
+        {
+            To = 1,
+            Duration = new Duration(TimeSpan.FromMilliseconds(220)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(overlayFade, _overlay);
+        Storyboard.SetTargetProperty(overlayFade, "Opacity");
+
+        var boxFade = new DoubleAnimation
+        {
+            To = 1,
+            Duration = new Duration(TimeSpan.FromMilliseconds(220)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(boxFade, _boxContainer);
+        Storyboard.SetTargetProperty(boxFade, "Opacity");
+
+        var scaleXAnim = new DoubleAnimation
+        {
+            To = 1,
+            Duration = new Duration(TimeSpan.FromMilliseconds(220)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(scaleXAnim, _boxScale);
+        Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
+
+        var scaleYAnim = new DoubleAnimation
+        {
+            To = 1,
+            Duration = new Duration(TimeSpan.FromMilliseconds(220)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(scaleYAnim, _boxScale);
+        Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
+
+        sb.Children.Add(overlayFade);
+        sb.Children.Add(boxFade);
+        sb.Children.Add(scaleXAnim);
+        sb.Children.Add(scaleYAnim);
+        _enterStoryboard = sb;
+        sb.Begin();
+
+        // 倒计时进度条动画：countdown > 0 时从 100% 线性递减到 0%
+        if (Countdown > 0 && _progressScale != null && (ShowBar || Countdown > 0))
+        {
+            _progressScale.ScaleX = 1;
+            var barSb = new Storyboard();
+            var barAnim = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = new Duration(TimeSpan.FromSeconds(Countdown)),
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(barAnim, _progressScale);
+            Storyboard.SetTargetProperty(barAnim, "ScaleX");
+            barSb.Children.Add(barAnim);
+            _progressStoryboard = barSb;
+            barSb.Begin();
+        }
+    }
+
+    private void OnRootSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_overlay == null || _boxContainer == null) return;
+        _overlay.Width = Math.Max(1, e.NewSize.Width);
+        _overlay.Height = Math.Max(1, e.NewSize.Height);
+
+        var requestedWidth = RizVisuals.ParsePixels(WidthText, 0);
+        if (requestedWidth > 0)
+        {
+            _boxContainer.Width = Math.Min(requestedWidth, e.NewSize.Width * 0.9);
+        }
+        else
+        {
+            _boxContainer.MaxWidth = Math.Min(e.NewSize.Width * 0.9, 640);
+        }
     }
 
     private void OnOverlayPressed(object sender, PointerRoutedEventArgs e)
     {
-        if (MaskClose && ReferenceEquals(e.OriginalSource, _overlay)) Close();
+        if (MaskClose && ReferenceEquals(e.OriginalSource, _overlay))
+        {
+            Close();
+        }
     }
 
     public void Close()
     {
         if (_popup?.IsOpen != true || _closing) return;
-        CloseDialog();
+        CloseDialog(true);
     }
 
     private void CloseDialog(bool notify = true)
     {
-        if (_popup?.IsOpen != true)
-            return;
-        
+        if (_countdownTimer != null)
+        {
+            _countdownTimer.Stop();
+            _countdownTimer = null;
+        }
+        _progressStoryboard?.Stop();
+        _progressStoryboard = null;
+
+        if (_popup?.IsOpen != true) return;
         if (_closing) return;
         _closing = true;
         _notifyClose = notify;
 
-        var storyboard = new Storyboard();
-        var animation = new DoubleAnimation { To = 0, Duration = new Duration(TimeSpan.FromMilliseconds(220)) };
-        Storyboard.SetTarget(animation, _overlay);
-        Storyboard.SetTargetProperty(animation, "Opacity");
-        storyboard.Children.Add(animation);
-        storyboard.Completed += (_, _) =>
+        if (_observedRoot != null)
         {
-            _popup!.IsOpen = false;
-            _popup = null;
-            _overlay = null;
-            _closing = false;
-            if (GetValue(ShowProperty) is bool shown && shown) SetValue(ShowProperty, false);
-            if (_notifyClose) Closed?.Invoke(this, EventArgs.Empty);
-            _notifyClose = false;
+            _observedRoot.SizeChanged -= OnRootSizeChanged;
+            _observedRoot = null;
+        }
+
+        if (_overlay == null || _boxContainer == null || _boxScale == null)
+        {
+            FinishClose();
+            return;
+        }
+
+        var cubicEase = new CubicEase { EasingMode = EasingMode.EaseIn };
+        var sb = new Storyboard();
+
+        var overlayFade = new DoubleAnimation
+        {
+            To = 0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = cubicEase
         };
-        storyboard.Begin();
+        Storyboard.SetTarget(overlayFade, _overlay);
+        Storyboard.SetTargetProperty(overlayFade, "Opacity");
+
+        var boxFade = new DoubleAnimation
+        {
+            To = 0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(boxFade, _boxContainer);
+        Storyboard.SetTargetProperty(boxFade, "Opacity");
+
+        var scaleXAnim = new DoubleAnimation
+        {
+            To = 0.92,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(scaleXAnim, _boxScale);
+        Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
+
+        var scaleYAnim = new DoubleAnimation
+        {
+            To = 0.92,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = cubicEase
+        };
+        Storyboard.SetTarget(scaleYAnim, _boxScale);
+        Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
+
+        sb.Children.Add(overlayFade);
+        sb.Children.Add(boxFade);
+        sb.Children.Add(scaleXAnim);
+        sb.Children.Add(scaleYAnim);
+        _exitStoryboard = sb;
+        sb.Completed += (_, _) => FinishClose();
+        sb.Begin();
+    }
+
+    private void FinishClose()
+    {
+        if (_popup != null)
+        {
+            _popup.IsOpen = false;
+            _popup = null;
+        }
+        _overlay = null;
+        _boxContainer = null;
+        _box = null;
+        _closing = false;
+
+        if (GetValue(ShowProperty) is bool shown && shown)
+        {
+            SetValue(ShowProperty, false);
+        }
+        if (_notifyClose)
+        {
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+        _notifyClose = false;
     }
 
     private void UpdateContent()
     {
-        if (_body != null) _body.Content = Content;
+        if (_bodyPresenter != null) _bodyPresenter.Content = Content;
     }
 
     private void UpdateVisual()
     {
-        if (_box == null || _title == null || _icon == null || _close == null || _body == null || _footer == null) return;
+        if (_box == null || _title == null || _icon == null || _closeButton == null) return;
         var dark = RizVisuals.IsDark(this, Theme);
         var accent = RizVisuals.ThemeColor(Color);
+
         _box.Background = RizVisuals.Brush(RizVisuals.Surface(dark));
+        _box.BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark));
+
         _title.Text = Title ?? string.Empty;
         _title.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
         _title.Style = TitleStyle;
-        RizVisuals.ApplyIcon(_icon, Icon, 16, accent);
-        if (IconStyle != null) _icon.Style = IconStyle;
-        _close.Visibility = Closable ? Visibility.Visible : Visibility.Collapsed;
-        _close.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08));
-        _close.Foreground = RizVisuals.Brush(RizVisuals.Subtext(dark));
-        _footer.Content = Footer;
-        _footer.Visibility = Footer is null ? Visibility.Collapsed : Visibility.Visible;
+
+        var hasIcon = !string.IsNullOrWhiteSpace(Icon);
+        _icon.Visibility = hasIcon ? Visibility.Visible : Visibility.Collapsed;
+        if (hasIcon)
+        {
+            RizVisuals.ApplyIcon(_icon, Icon, 16, accent);
+            if (IconStyle != null) _icon.Style = IconStyle;
+        }
+
+        _closeButton.Visibility = Closable ? Visibility.Visible : Visibility.Collapsed;
+        _closeButton.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08));
+        if (_closePath != null)
+        {
+            _closePath.Stroke = RizVisuals.Brush(RizVisuals.Subtext(dark));
+        }
+
+        if (_bodyPresenter != null)
+        {
+            _bodyPresenter.Content = Content;
+            _bodyPresenter.Visibility = Content is null ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        if (_footerPresenter != null)
+        {
+            _footerPresenter.Content = Footer;
+            _footerPresenter.Visibility = Footer is null ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        if (_progressBar != null && _progressScale != null)
+        {
+            var isBarVisible = ShowBar || Countdown > 0 || Progress >= 0;
+            _progressBar.Visibility = isBarVisible ? Visibility.Visible : Visibility.Collapsed;
+            _progressBar.Background = RizVisuals.Brush(accent);
+            if (Progress >= 0)
+            {
+                _progressScale.ScaleX = Math.Clamp(Progress, 0, 1);
+            }
+        }
     }
 }

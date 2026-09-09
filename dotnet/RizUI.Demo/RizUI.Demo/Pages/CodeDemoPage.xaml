@@ -3,29 +3,167 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
   <ScrollViewer FontFamily="{StaticResource UiFont}">
-    <StackPanel Padding="32" Spacing="12">
-      <TextBlock Text="RizCode" FontSize="26" FontWeight="Bold" />
-      <TextBlock Text="支持 inline / block、语言别名、轻量 token 高亮、复制和最大高度。" Opacity="0.7" />
-      <rizui:RizCard Title="Inline" Desc="适合插入在说明文字中的小段代码。" Icon="fa-solid fa-code">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <TextBlock Text="调用：" VerticalAlignment="Center" />
-          <rizui:RizCode Code="RizUI.ShowToast();" Lang="cs" />
+    <StackPanel Padding="32" Spacing="16">
+      <!-- 页面头部 -->
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="代码块" FontSize="26" FontWeight="Bold" />
+          <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock Text="RizCode" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+          </Border>
         </StackPanel>
-      </rizui:RizCard>
-      <rizui:RizCard Title="Block" Desc="点击右上角复制按钮查看复制反馈。" Icon="fa-solid fa-file-code">
-        <StackPanel>
-          <rizui:RizCode Block="True" Lang="cs" HeightText="180px" Copied="OnCopied">
-            <rizui:RizCode.Code><![CDATA[using RizUI.Uwp.Controls;
+        <TextBlock Text="支持行内单行胶囊与多行大代码块模式。支持数十种语言语法高亮、悬浮复制按钮、1.5s 进度条反馈、最大高度与滚动条、以及完整深浅色自适应。"
+                   Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
 
-var nav = new RizSliderNav
-{
-    Title = "RizUI Demo",
-    StyleMode = RizSliderNavStyle.Fixed
-};]]></rizui:RizCode.Code>
-          </rizui:RizCode>
-          <TextBlock x:Name="Status" Text="等待复制" Opacity="0.65" Margin="0,10,0,0" />
+      <!-- 示例展示 -->
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
         </StackPanel>
-      </rizui:RizCard>
+
+        <!-- 示例一：单行行内代码胶囊 -->
+        <rizui:RizCard Title="单行行内代码胶囊"
+                       Desc="适合嵌入段落文本或在行内突出显示命令、变量名或简短代码片段"
+                       Icon="fa-solid fa-code">
+          <StackPanel Spacing="10">
+            <rizui:RizCfgRow Label="行内变量" Hint="使用单行胶囊包裹">
+              <rizui:RizCode Code="var answer = 42;" Lang="cs" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Label="段落嵌入" Hint="与普通文本混合排版">
+              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <TextBlock Text="请在终端执行" VerticalAlignment="Center" />
+                <rizui:RizCode Code="schale-cli login --sensei" Lang="bash" />
+                <TextBlock Text="登入什亭之箱。" VerticalAlignment="Center" />
+              </StackPanel>
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind Card1Usage}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例二：大代码块模式与复制动画 -->
+        <rizui:RizCard Title="大代码块与复制动画"
+                       Desc="Block=True 呈现多行大代码块，顶栏展示语言名称与悬浮复制按钮，点击后触发 1.5s 进度条反馈"
+                       Icon="fa-solid fa-file-code">
+          <StackPanel Spacing="12">
+            <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind AronaCs}" Copied="OnCopied" />
+            <rizui:RizCode Block="True" Lang="html" Code="{x:Bind SchaleHtml}" Copied="OnCopied" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind Card2Usage}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例三：多语言语法高亮支持 -->
+        <rizui:RizCard Title="多语言语法高亮"
+                       Desc="支持 C#、HTML、Python、SQL、Bash、JSON、YAML 等数十种主流语言的关键字/字符串/注释/标签高亮"
+                       Icon="fa-solid fa-laptop-code">
+          <StackPanel Spacing="12">
+            <rizui:RizCode Block="True" Lang="py" Code="{x:Bind GameDevPy}" Copied="OnCopied" />
+            <rizui:RizCode Block="True" Lang="sql" Code="{x:Bind KivotosSql}" Copied="OnCopied" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind Card3Usage}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例四：高度限制与自定义配色 -->
+        <rizui:RizCard Title="最大高度与主题色定制"
+                       Desc="通过 HeightText 限制最大高度并启用滚动，Color 自定义边框与复制按钮高亮色"
+                       Icon="fa-solid fa-palette">
+          <StackPanel Spacing="12">
+            <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind AronaCs}" HeightText="130px" Color="#A855F7" Copied="OnCopied" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind Card4Usage}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+      </StackPanel>
+
+      <!-- 复制状态栏 -->
+      <Border Background="{StaticResource RZ_BgSoft}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="8" Padding="14,10">
+        <TextBlock x:Name="Status" Text="等待复制代码..." Opacity="0.75" FontSize="12" />
+      </Border>
+
+      <!-- 属性列表表格 (Properties Table) -->
+      <StackPanel Spacing="10" Margin="0,12,0,0">
+        <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
+        <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="140" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 表头 -->
+            <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
+            <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 1: Code -->
+            <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Code" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="代码文本内容（也是 ContentProperty 默认内容）" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 2: Block -->
+            <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Block" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="bool" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="false" Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="大代码块模式（多行展示 + 标头语言 + 复制按钮）" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 3: Lang -->
+            <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Lang" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="代码语言（cs / html / js / ts / py / sql / bash / json / yaml 等）" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 4: Color -->
+            <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Color" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="边框与复制按钮颜色，空则跟随 --rizui_themecolor" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 5: HeightText -->
+            <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="HeightText" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="最大高度限制（如 140px、200px），超出则滚动" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 6: Theme -->
+            <Border Grid.Row="6" Grid.ColumnSpan="4" />
+            <TextBlock Text="Theme" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='"auto"' Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+          </Grid>
+        </Border>
+      </StackPanel>
     </StackPanel>
   </ScrollViewer>
 </Page>

@@ -8,6 +8,39 @@ namespace RizUI.Uwp.Controls;
 /// </summary>
 public static class ColorUtil
 {
+    public static bool TryParseHex(string? hex, out Color color)
+    {
+        color = default;
+        hex = (hex ?? string.Empty).Trim();
+        if (!hex.StartsWith("#")) return false;
+        hex = hex.Substring(1);
+        if (hex.Length == 6)
+        {
+            try
+            {
+                color = Color.FromArgb(255,
+                    Convert.ToByte(hex.Substring(0, 2), 16),
+                    Convert.ToByte(hex.Substring(2, 2), 16),
+                    Convert.ToByte(hex.Substring(4, 2), 16));
+                return true;
+            }
+            catch { return false; }
+        }
+        else if (hex.Length == 3)
+        {
+            try
+            {
+                var r = Convert.ToByte(hex.Substring(0, 1) + hex.Substring(0, 1), 16);
+                var g = Convert.ToByte(hex.Substring(1, 1) + hex.Substring(1, 1), 16);
+                var b = Convert.ToByte(hex.Substring(2, 1) + hex.Substring(2, 1), 16);
+                color = Color.FromArgb(255, r, g, b);
+                return true;
+            }
+            catch { return false; }
+        }
+        return false;
+    }
+
     public static Color FromHex(string hex, Color fallback)
     {
         hex = (hex ?? string.Empty).Trim();

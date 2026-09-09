@@ -11,6 +11,16 @@
 
       <!-- Demo 页面统一字体（与 Vue Demo 的 UI.ttf 一致；组件库不内置该字体） -->
       <FontFamily x:Key="UiFont">ms-appx:///Assets/Fonts/UI.ttf#UI</FontFamily>
+
+      <Style TargetType="Page">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+      </Style>
+      <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+      </Style>
+      <Style TargetType="Control">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+      </Style>
     </ResourceDictionary>
   </Application.Resources>
 

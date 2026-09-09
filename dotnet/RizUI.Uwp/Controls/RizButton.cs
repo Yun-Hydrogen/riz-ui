@@ -26,6 +26,7 @@ public partial class RizButton : Control
     public RizButton()
     {
         DefaultStyleKey = typeof(RizButton);
+        ActualThemeChanged += (_, _) => ApplyVisual(false);
         RegisterPropertyChangedCallback(IsEnabledProperty, (_, _) =>
         {
             _pressed = false;
@@ -307,24 +308,55 @@ public partial class RizButton : Control
         _root.MinHeight = 30;
         _root.Opacity = IsEnabled ? 1 : 0.5;
 
+        var hasText = !string.IsNullOrWhiteSpace(Text);
+        var hasLIcon = !string.IsNullOrWhiteSpace(LIcon);
+        var hasRIcon = !string.IsNullOrWhiteSpace(RIcon);
+        var isIconOnly = !hasText && (hasLIcon ^ hasRIcon);
+
+        if (_root != null)
+        {
+            // 纯图标按钮采用正方形 30x30 紧凑布局；有文本时采用水平 padding 16px
+            if (isIconOnly)
+            {
+                _root.Width = 30;
+                _root.Height = 30;
+                _root.MinHeight = 30;
+                _root.Padding = new Thickness(0);
+            }
+            else
+            {
+                _root.ClearValue(WidthProperty);
+                _root.ClearValue(HeightProperty);
+                _root.MinHeight = 30;
+                _root.Padding = new Thickness(16, 6, 16, 6);
+            }
+        }
+
         if (_label != null)
         {
             _label.Text = Text ?? string.Empty;
+            _label.Visibility = hasText ? Visibility.Visible : Visibility.Collapsed;
             _label.Style = TextStyle;
             SetBrushColor(_label.Foreground, value => _label.Foreground = value, fg, animate);
         }
         if (_lIcon != null)
         {
-            _lIcon.Text = LIcon ?? string.Empty;
-            _lIcon.Visibility = string.IsNullOrEmpty(LIcon) ? Visibility.Collapsed : Visibility.Visible;
-            _lIcon.Style = LIconStyle;
+            _lIcon.Visibility = hasLIcon ? Visibility.Visible : Visibility.Collapsed;
+            if (hasLIcon)
+            {
+                RizVisuals.ApplyIcon(_lIcon, LIcon, 13, fg);
+                if (LIconStyle != null) _lIcon.Style = LIconStyle;
+            }
             SetBrushColor(_lIcon.Foreground, value => _lIcon.Foreground = value, fg, animate);
         }
         if (_rIcon != null)
         {
-            _rIcon.Text = RIcon ?? string.Empty;
-            _rIcon.Visibility = string.IsNullOrEmpty(RIcon) ? Visibility.Collapsed : Visibility.Visible;
-            _rIcon.Style = RIconStyle;
+            _rIcon.Visibility = hasRIcon ? Visibility.Visible : Visibility.Collapsed;
+            if (hasRIcon)
+            {
+                RizVisuals.ApplyIcon(_rIcon, RIcon, 13, fg);
+                if (RIconStyle != null) _rIcon.Style = RIconStyle;
+            }
             SetBrushColor(_rIcon.Foreground, value => _rIcon.Foreground = value, fg, animate);
         }
 

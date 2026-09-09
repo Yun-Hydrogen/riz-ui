@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
-      ═══ 主题语义资源：逐字映射原项目 CSS 变量 ═══
+      ═══ 主题语义资源：支持 ThemeDictionaries 明暗自适应 ═══
       rz-bg            → RZ_Bg
       rz-bg-soft       → RZ_BgSoft
       rz-border        → RZ_Border
@@ -12,14 +12,57 @@
       rz-shadow        → RZ_Shadow
       rizui_themecolor → RZ_Theme
     -->
-    <SolidColorBrush x:Key="RZ_Bg"       Color="#FFFFFF" />
-    <SolidColorBrush x:Key="RZ_BgSoft"   Color="#F6F8FB" />
-    <SolidColorBrush x:Key="RZ_Border"   Color="#E8ECF2" />
-    <SolidColorBrush x:Key="RZ_Text"     Color="#334455" />
-    <SolidColorBrush x:Key="RZ_Subtext"  Color="#999AAA" />
-    <SolidColorBrush x:Key="RZ_Theme"    Color="#66CCFF" />
+    <ResourceDictionary.ThemeDictionaries>
+        <!-- 浅色亮色主题字典 -->
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="RZ_Bg"       Color="#FFFFFF" />
+            <SolidColorBrush x:Key="RZ_BgSoft"   Color="#F8FAFC" />
+            <SolidColorBrush x:Key="RZ_Border"   Color="#E8ECF2" />
+            <SolidColorBrush x:Key="RZ_TableRowBorder" Color="#F0F2F6" />
+            <SolidColorBrush x:Key="RZ_Text"     Color="#333344" />
+            <SolidColorBrush x:Key="RZ_Subtext"  Color="#9999AA" />
+            <SolidColorBrush x:Key="RZ_Theme"    Color="#66CCFF" />
+            <SolidColorBrush x:Key="RZ_HoverFill" Color="#0F66CCFF" />
+            <SolidColorBrush x:Key="RZ_TrackOff"  Color="#B8BCC6" />
+            <SolidColorBrush x:Key="RZ_RowHover"  Color="#0F334455" />
+        </ResourceDictionary>
 
-    <!-- 组件内常用颜色（css color-mix 的近似直译） -->
+        <!-- 暗色深色主题字典 -->
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="RZ_Bg"       Color="#1E2630" />
+            <SolidColorBrush x:Key="RZ_BgSoft"   Color="#252F3C" />
+            <SolidColorBrush x:Key="RZ_Border"   Color="#323D4B" />
+            <SolidColorBrush x:Key="RZ_TableRowBorder" Color="#2A3542" />
+            <SolidColorBrush x:Key="RZ_Text"     Color="#E6EBF2" />
+            <SolidColorBrush x:Key="RZ_Subtext"  Color="#93A1B3" />
+            <SolidColorBrush x:Key="RZ_Theme"    Color="#66CCFF" />
+            <SolidColorBrush x:Key="RZ_HoverFill" Color="#1F66CCFF" />
+            <SolidColorBrush x:Key="RZ_TrackOff"  Color="#4B5665" />
+            <SolidColorBrush x:Key="RZ_RowHover"  Color="#1FE6EBF2" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Default">
+            <SolidColorBrush x:Key="RZ_Bg"       Color="#FFFFFF" />
+            <SolidColorBrush x:Key="RZ_BgSoft"   Color="#F8FAFC" />
+            <SolidColorBrush x:Key="RZ_Border"   Color="#E8ECF2" />
+            <SolidColorBrush x:Key="RZ_TableRowBorder" Color="#F0F2F6" />
+            <SolidColorBrush x:Key="RZ_Text"     Color="#333344" />
+            <SolidColorBrush x:Key="RZ_Subtext"  Color="#9999AA" />
+            <SolidColorBrush x:Key="RZ_Theme"    Color="#66CCFF" />
+            <SolidColorBrush x:Key="RZ_HoverFill" Color="#0F66CCFF" />
+            <SolidColorBrush x:Key="RZ_TrackOff"  Color="#B8BCC6" />
+            <SolidColorBrush x:Key="RZ_RowHover"  Color="#0F334455" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- 默认兜底笔刷 -->
+    <SolidColorBrush x:Key="RZ_Bg"       Color="#FFFFFF" />
+    <SolidColorBrush x:Key="RZ_BgSoft"   Color="#F8FAFC" />
+    <SolidColorBrush x:Key="RZ_Border"   Color="#E8ECF2" />
+    <SolidColorBrush x:Key="RZ_TableRowBorder" Color="#F0F2F6" />
+    <SolidColorBrush x:Key="RZ_Text"     Color="#333344" />
+    <SolidColorBrush x:Key="RZ_Subtext"  Color="#9999AA" />
+    <SolidColorBrush x:Key="RZ_Theme"    Color="#66CCFF" />
     <SolidColorBrush x:Key="RZ_HoverFill"  Color="#0F66CCFF" />
     <SolidColorBrush x:Key="RZ_TrackOff"   Color="#B8BCC6" />
     <SolidColorBrush x:Key="RZ_RowHover"   Color="#0F334455" />

@@ -3,22 +3,261 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
   <ScrollViewer FontFamily="{StaticResource UiFont}">
-    <StackPanel Padding="32" Spacing="12">
-      <TextBlock Text="RizCfgRow" FontSize="26" FontWeight="Bold" />
-      <TextBlock Text="默认将 Content 对齐在右侧；Stack=True 时 Content 放到说明文字下方。" Opacity="0.7" />
-      <rizui:RizCard Title="应用设置" Desc="配置行演示" Icon="fa-solid fa-gear">
+    <StackPanel Padding="32" Spacing="16">
+      <!-- 页面头部 -->
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="配置行" FontSize="26" FontWeight="Bold" />
+          <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock Text="RizCfgRow" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="用于设置面板、表单选项与属性配置的标准行容器。支持左右横向流式排版、上下堆叠布局（stack）、自定义图标和整行禁用态。"
+                   Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 示例展示 (完全复刻 Vue Web3 Demo) -->
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- 示例一：什亭之箱 · 基础终端设置（横向模式） -->
+        <rizui:RizCard Title="什亭之箱设置 | 横向模式"
+                       Desc="左侧标题与提示文字，右侧收纳各类轻量操作控件"
+                       Icon="fa-solid fa-gamepad">
+          <StackPanel>
+            <rizui:RizCfgRow Label="主控系统接入"
+                             Hint="连接沙勒的中央控制系统"
+                             Icon="fa-solid fa-satellite-dish">
+              <rizui:RizCfgRow.IconStyle>
+                <Style TargetType="TextBlock">
+                  <Setter Property="Foreground" Value="#66CCFF" />
+                </Style>
+              </rizui:RizCfgRow.IconStyle>
+              <rizui:RizSwitch IsOn="True" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Label="无限制决战"
+                             Hint="普拉娜&amp;阿罗娜合作下的更大指挥规模和更大蓄能上限"
+                             Icon="fa-solid fa-microchip fa-spin">
+              <rizui:RizSwitch IsOn="False" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Label="屏幕亮度"
+                             Hint="调节什亭之箱屏幕亮度"
+                             Icon="fa-regular fa-sun">
+              <rizui:RizSlider Width="160" Minimum="0" Maximum="100" Value="80" Display="%" VerticalAlignment="Center" />
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage1}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+      </StackPanel>
+
+      <!-- 示例二：任务行动日志（Stack 竖向模式） -->
+      <rizui:RizCard Title="任务行动日志 | Stack 竖向模式"
+                     Desc="stack 模式下控件换行置于下方，适合较长的输入框、复合控件或完整宽度的滑块"
+                     Icon="fa-solid fa-layer-group">
         <StackPanel>
-          <rizui:RizCfgRow Label="自动保存" Hint="默认布局，控件显示在行尾。" Icon="fa-solid fa-floppy-disk">
-            <rizui:RizCheckbox IsChecked="True" />
+          <rizui:RizCfgRow Label="工作备忘录"
+                           Hint="老师可以在这里记录需要注意的事项哦"
+                           Icon="fa-solid fa-clipboard-list"
+                           Stack="True">
+            <rizui:RizCfgRow.IconStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#66CCFF" />
+              </Style>
+            </rizui:RizCfgRow.IconStyle>
+            <rizui:RizText Placeholder="点击输入文本..." Margin="0,6,0,0" HorizontalAlignment="Stretch" />
           </rizui:RizCfgRow>
-          <rizui:RizCfgRow Label="主题色" Hint="Stack 布局适合内容宽度较大的控件。" Icon="fa-solid fa-palette" Stack="True">
-            <rizui:RizButton Text="选择主题色" Primary="True" Color="#39C5BB" />
+
+          <rizui:RizCfgRow Label="恢复体力点"
+                           Hint="拖动滑块使用青辉石恢复体力点（当前设定：360 体力点）"
+                           Icon="fa-solid fa-bolt"
+                           Stack="True">
+            <rizui:RizCfgRow.IconStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#5AE76B" />
+              </Style>
+            </rizui:RizCfgRow.IconStyle>
+            <rizui:RizSlider Minimum="100" Maximum="999" Value="360" Step="10" Display=" 体力点" Color="#5AE76B"
+                             HorizontalAlignment="Stretch" Margin="0,6,0,0" />
           </rizui:RizCfgRow>
-          <rizui:RizCfgRow Label="受限选项" Hint="Disabled 会禁用其 Content 命中测试。" Icon="fa-solid fa-lock" Disabled="True">
-            <rizui:RizButton Text="不可用" IsEnabled="False" />
+
+          <rizui:RizCfgRow Stack="True">
+            <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage2}" />
           </rizui:RizCfgRow>
         </StackPanel>
       </rizui:RizCard>
+
+      <!-- 示例三：安全协议与限制（Disabled 禁用态） -->
+      <rizui:RizCard Title="安全协议与限制 | Disabled 禁用态"
+                     Desc="设置 disabled 后其内部所有支持 disabled 的子控件均不可交互"
+                     Icon="fa-solid fa-shield-halved">
+        <StackPanel>
+          <rizui:RizCfgRow Label="关闭什亭之箱的保护场域"
+                           Hint="老师...请不要关闭保护场域，否则将无法抵御外部攻击！"
+                           Icon="fa-solid fa-lock"
+                           Disabled="True">
+            <rizui:RizCfgRow.IconStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#F56C6C" />
+              </Style>
+            </rizui:RizCfgRow.IconStyle>
+            <rizui:RizSwitch IsOn="True" IsEnabled="False" />
+          </rizui:RizCfgRow>
+
+          <rizui:RizCfgRow Label="进入总力战"
+                           Hint="基沃托斯正处于和平状态"
+                           Icon="fa-solid fa-triangle-exclamation"
+                           Disabled="True">
+            <rizui:RizButton Text="进入" Primary="True" IsEnabled="False" RIcon="→" />
+          </rizui:RizCfgRow>
+
+          <rizui:RizCfgRow Stack="True">
+            <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage3}" />
+          </rizui:RizCfgRow>
+        </StackPanel>
+      </rizui:RizCard>
+
+      <!-- 示例四：样式定制 (Custom Style) -->
+      <rizui:RizCard Title="样式定制 | Custom Style"
+                     Desc="支持传入 LabelStyle、HintStyle 与 IconStyle 精准定制各区域样式"
+                     Icon="fa-solid fa-palette">
+        <StackPanel>
+          <rizui:RizCfgRow Label="由普拉娜担任助手"
+                           Hint="我猜阿罗娜前辈又在睡懒觉了..."
+                           Icon="fa-solid fa-wand-magic-sparkles">
+            <rizui:RizCfgRow.IconStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#A855F7" />
+              </Style>
+            </rizui:RizCfgRow.IconStyle>
+            <rizui:RizCfgRow.LabelStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#A855F7" />
+                <Setter Property="FontWeight" Value="Bold" />
+              </Style>
+            </rizui:RizCfgRow.LabelStyle>
+            <rizui:RizCfgRow.HintStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#C084FC" />
+              </Style>
+            </rizui:RizCfgRow.HintStyle>
+            <rizui:RizSwitch IsOn="True" Color="#A855F7" />
+          </rizui:RizCfgRow>
+
+          <rizui:RizCfgRow Stack="True">
+            <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage4}" />
+          </rizui:RizCfgRow>
+        </StackPanel>
+      </rizui:RizCard>
+
+      <!-- 属性列表表格 (Properties Table) -->
+      <StackPanel Spacing="10" Margin="0,12,0,0">
+        <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
+        <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+              <RowDefinition Height="36" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="140" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 表头背景 -->
+            <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
+            <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 1: Label -->
+            <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Label" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="左栏标签标题文字" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 2: LabelStyle -->
+            <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="LabelStyle" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="Style" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="null" Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="标签文本 XAML 样式覆盖" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 3: Hint -->
+            <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Hint" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="标签下方提示小字说明" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 4: HintStyle -->
+            <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="HintStyle" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="Style" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="null" Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="提示小字 XAML 样式覆盖" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 5: Icon -->
+            <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Icon" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='""' Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="左侧图标（完整 Font Awesome 类名，如 fa-solid fa-bolt）" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 6: IconStyle -->
+            <Border Grid.Row="6" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="IconStyle" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="Style" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="null" Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="图标 XAML 样式覆盖（颜色、字号等）" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 7: Stack -->
+            <Border Grid.Row="7" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Stack" Grid.Row="7" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="bool" Grid.Row="7" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="false" Grid.Row="7" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="是否启用竖向堆叠布局（将控件置于标题下方）" Grid.Row="7" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 8: Disabled -->
+            <Border Grid.Row="8" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+            <TextBlock Text="Disabled" Grid.Row="8" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="bool" Grid.Row="8" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="false" Grid.Row="8" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="是否禁用整行（半透明展示并阻止子控件交互）" Grid.Row="8" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+            <!-- Row 9: Theme -->
+            <Border Grid.Row="9" Grid.ColumnSpan="4" />
+            <TextBlock Text="Theme" Grid.Row="9" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+            <TextBlock Text="string" Grid.Row="9" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text='"auto"' Grid.Row="9" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="9" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <!-- 插槽说明 -->
+      <StackPanel Spacing="6" Margin="0,8,0,0">
+        <TextBlock Text="插槽 / 内容 (Content)" FontSize="16" FontWeight="Bold" />
+        <TextBlock Text="• Content (默认内容)：行内的右侧操作控件（非 stack 模式）或下方通栏内容区域（stack 模式）。" FontSize="13" Opacity="0.75" />
+      </StackPanel>
     </StackPanel>
   </ScrollViewer>
 </Page>

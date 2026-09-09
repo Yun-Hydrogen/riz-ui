@@ -1,0 +1,90 @@
+<Page x:Class="RizUI.Demo.Pages.ThemeDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer FontFamily="{StaticResource UiFont}">
+    <StackPanel Padding="32" Spacing="16">
+      <!-- 页面头部 -->
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="主题色与明暗模式" FontSize="26" FontWeight="Bold" />
+          <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock Text="Theme &amp; Mode" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="全库统一定义主题色 #66CCFF（天依蓝），并通过语义画刷 RZ_Bg、RZ_Border、RZ_Text 与 ThemeDictionaries 支持即时平滑的亮暗色模式适配。"
+                   Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 示例展示 (完全复刻 Vue Web Demo) -->
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- 示例一：主题色画刷直接引用 -->
+        <rizui:RizCard Title="主题色画刷引用 | 零代码依赖"
+                       Desc="在 XAML 样式或控件中通过 {StaticResource RZ_Theme} 任意引用统一主题色"
+                       Icon="fa-solid fa-droplet">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Border Background="{StaticResource RZ_Theme}" CornerRadius="8" Padding="14,6">
+                <TextBlock Text="什亭之箱 · 主控" Foreground="White" FontWeight="SemiBold" />
+              </Border>
+              <Border Background="{StaticResource RZ_BgSoft}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="8" Padding="14,6">
+                <TextBlock Text="沙勒特别事务局" Foreground="{StaticResource RZ_Theme}" FontWeight="SemiBold" />
+              </Border>
+              <Border BorderBrush="{StaticResource RZ_Theme}" BorderThickness="1.5" CornerRadius="8" Padding="14,6">
+                <TextBlock Text="无限制决战" Foreground="{StaticResource RZ_Theme}" FontWeight="SemiBold" />
+              </Border>
+            </StackPanel>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind XamlUsage1}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例二：局部强制明暗模式覆盖 -->
+        <rizui:RizCard Title="组件级明暗覆盖 | Theme 属性"
+                       Desc="每个组件均支持 Theme='Dark' / 'Light' / 'auto'（默认跟随系统），可对单独卡片或区块强制锁定明暗"
+                       Icon="fa-solid fa-circle-half-stroke">
+          <StackPanel Spacing="12">
+            <!-- 强制暗色卡片展示 -->
+            <rizui:RizCard Title="普拉娜夜间终端（强制 Dark 模式）"
+                           Desc="即使全局为亮色模式，此卡片也将始终锁定为暗色深邃背景"
+                           Icon="fa-solid fa-moon"
+                           Theme="Dark">
+              <StackPanel>
+                <rizui:RizCfgRow Label="夜间静音巡查" Hint="Theme='Dark'" Theme="Dark">
+                  <rizui:RizSwitch IsOn="True" Theme="Dark" />
+                </rizui:RizCfgRow>
+                <rizui:RizCfgRow Label="紧急通讯" Hint="暗色按钮" Theme="Dark">
+                  <rizui:RizButton Text="发送" Primary="True" Theme="Dark" />
+                </rizui:RizCfgRow>
+              </StackPanel>
+            </rizui:RizCard>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind XamlUsage2}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例三：C# 代码控制与读取 -->
+        <rizui:RizCard Title="C# 动态读取与赋值"
+                       Desc="通过 RizVisuals 工具类或控件属性在后端代码中灵活操纵"
+                       Icon="fa-solid fa-code">
+          <StackPanel Spacing="10">
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CSharpUsage}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+      </StackPanel>
+
+      <!-- 说明提示 -->
+      <rizui:RizInfoBox Type="info" Text="提示：可以尝试点击左侧侧边栏最底部的外观下拉框，在 跟随系统 / 浅色模式 / 深色模式 之间自由无缝切换！" />
+    </StackPanel>
+  </ScrollViewer>
+</Page>

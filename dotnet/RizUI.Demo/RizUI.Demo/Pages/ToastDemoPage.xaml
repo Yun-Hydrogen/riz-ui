@@ -1,22 +1,206 @@
 <Page x:Class="RizUI.Demo.Pages.ToastDemoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:rizui="using:RizUI.Uwp.Controls"
-      FontFamily="{StaticResource UiFont}">
+      xmlns:rizui="using:RizUI.Uwp.Controls">
   <Grid x:Name="Host">
-    <ScrollViewer>
-      <StackPanel Padding="32" Spacing="12">
-        <TextBlock Text="RizToast" FontSize="26" FontWeight="Bold" />
-        <TextBlock Text="通知共享右上角队列，支持自动关闭、常驻、进度条与移除后的重排动画。" Opacity="0.7" />
-        <rizui:RizCard Title="通知队列" Desc="连续点击可观察多个 Toast 排队。" Icon="fa-solid fa-bell">
-          <StackPanel Orientation="Horizontal" Spacing="10">
-            <rizui:RizButton Text="Info" Primary="True" Click="OnInfo" />
-            <rizui:RizButton Text="Warn" Color="#E6A23C" Primary="True" Click="OnWarn" />
-            <rizui:RizButton Text="Error" Danger="True" Click="OnError" />
-            <rizui:RizButton Text="常驻" Click="OnPersistent" />
+    <ScrollViewer FontFamily="{StaticResource UiFont}">
+      <StackPanel Padding="32" Spacing="16">
+        <!-- 页面头部 -->
+        <StackPanel Spacing="4">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <TextBlock Text="Toast 通知" FontSize="26" FontWeight="Bold" />
+            <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+              <TextBlock Text="RizToast" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+            </Border>
           </StackPanel>
-        </rizui:RizCard>
-        <TextBlock x:Name="Status" Text="等待通知" Opacity="0.65" />
+          <TextBlock Text="右上角轻量级通知，支持 info / warn / error 预设配色、自定义颜色、倒计时进度条、独立关闭按钮、纵向排队栈与 FLIP 动态重排动画。"
+                     Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 示例展示 (复刻 Web Demo) -->
+        <StackPanel Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+            <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- 示例一：预设样式 -->
+          <rizui:RizCard Title="预设样式" Desc="Type 可为 info / warn / error，且 info 支持 Color 自定义" Icon="fa-solid fa-bell">
+            <StackPanel>
+              <rizui:RizCfgRow Label="普通 Toast (Info)" Hint="点击弹出默认主题色普通通知">
+                <rizui:RizButton Text="弹 Toast" Primary="True" Click="OnInfo" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="警告 Toast (Warn)" Hint="预设琥珀黄色警告样式通知">
+                <rizui:RizButton Text="弹 Toast" Primary="True" Color="#E6A23C" Click="OnWarn" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="错误 Toast (Error)" Hint="预设珊瑚红错误警报通知">
+                <rizui:RizButton Text="弹 Toast" Danger="True" Click="OnError" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="自定义配色 Toast" Hint="当类型为 info 时，Color 属性支持完全自定义配色（如 #E56161）">
+                <rizui:RizButton Text="弹 Toast" Primary="True" Color="#E56161" Click="OnColor" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Stack="True">
+                <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage1}" />
+              </rizui:RizCfgRow>
+            </StackPanel>
+          </rizui:RizCard>
+
+          <!-- 示例二：可配置功能 -->
+          <rizui:RizCard Title="可配置功能" Desc="关进度条 / 关关闭按钮 / 不自动关闭 / 长倒计时 / 带插槽" Icon="fa-solid fa-sliders">
+            <StackPanel>
+              <rizui:RizCfgRow Label="无进度条的 Toast" Hint="ShowBar=False 隐藏底部 3px 倒计时进度条">
+                <rizui:RizButton Text="弹 Toast" Click="OnNoBar" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="无关闭按钮的 Toast" Hint="Closable=False 隐藏右上角关闭按钮，等待倒计时结束自动关闭">
+                <rizui:RizButton Text="弹 Toast" Click="OnNoClose" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="常驻不自动关闭" Hint="Countdown=0，必须手动点击关闭按钮或点击通知本体关闭">
+                <rizui:RizButton Text="弹 Toast" Click="OnPersistent" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="30 秒长倒计时" Hint="Countdown=30，长倒计时平滑缩减进度条">
+                <rizui:RizButton Text="弹 Toast" Click="OnLongCountdown" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Label="带插槽的 Toast" Hint="Title/Hint 下方可排布输入框、按钮等业务控件" Stack="True">
+                <rizui:RizButton Text="弹出带回复栏的 Toast" Primary="True" Click="OnSlotToast" RIcon="fa-solid fa-message" Margin="0,4,0,0" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Stack="True">
+                <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage2}" />
+              </rizui:RizCfgRow>
+            </StackPanel>
+          </rizui:RizCard>
+
+          <!-- 示例三：排队栈与动态重排 -->
+          <rizui:RizCard Title="排队栈 (FLIP 自动重排)" Desc="多条通知在右上角自动排队，关闭其中一条时剩余通知平滑上移" Icon="fa-solid fa-layer-group">
+            <StackPanel>
+              <rizui:RizCfgRow Label="一键三连排队" Hint="连续触发 3 条通知，观察右上角纵向入栈与移除后的上移动画">
+                <rizui:RizButton Text="一键弹出 3 条" Primary="True" Click="OnQueue" RIcon="fa-solid fa-rocket" />
+              </rizui:RizCfgRow>
+            </StackPanel>
+          </rizui:RizCard>
+
+          <!-- 示例四：自定义点击事件 -->
+          <rizui:RizCard Title="自定义 Click 事件" Desc="Click 事件可绑定任意业务行为（如奖励领取、弹窗联动）" Icon="fa-solid fa-hand-pointer">
+            <StackPanel>
+              <rizui:RizCfgRow Label="点击领取 24000 青辉石" Hint="为老师准备的周年礼物，点击通知本体直接领取">
+                <rizui:RizButton Text="领取青辉石" Primary="True" Color="#39C5BB" Click="OnClickToast" RIcon="fa-solid fa-gift" />
+              </rizui:RizCfgRow>
+
+              <rizui:RizCfgRow Stack="True">
+                <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage3}" />
+              </rizui:RizCfgRow>
+            </StackPanel>
+          </rizui:RizCard>
+        </StackPanel>
+
+        <!-- 交互状态栏 -->
+        <Border Background="{StaticResource RZ_BgSoft}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="8" Padding="14,10">
+          <TextBlock x:Name="Status" Text="状态：等待操作..." Opacity="0.75" FontSize="12" />
+        </Border>
+
+        <!-- 属性列表表格 (Properties Table) -->
+        <StackPanel Spacing="10" Margin="0,12,0,0">
+          <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
+          <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+
+              <!-- 表头 -->
+              <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
+              <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 1: Type -->
+              <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="Type" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="string" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text='"info"' Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="预设类型：info / warn / error" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 2: Title -->
+              <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="Title" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="string" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text='""' Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="通知主标题文字" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 3: Hint -->
+              <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="Hint" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="string" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text='""' Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="说明提示小字" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 4: Countdown -->
+              <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="Countdown" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="double" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="3" Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="自动关闭秒数，0 为不自动关闭（常驻）" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 5: Closable -->
+              <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="Closable" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="bool" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="true" Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="是否显示右上角圆形关闭按钮" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 6: ShowBar -->
+              <Border Grid.Row="6" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="ShowBar" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="bool" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="true" Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="是否显示底部倒计时进度条" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 7: Color -->
+              <Border Grid.Row="7" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="Color" Grid.Row="7" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="string" Grid.Row="7" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text='""' Grid.Row="7" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="仅在 Type='info' 时生效，自定义主题色" Grid.Row="7" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 8: WidthText -->
+              <Border Grid.Row="8" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
+              <TextBlock Text="WidthText" Grid.Row="8" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="string" Grid.Row="8" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text='""' Grid.Row="8" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="自定义通知宽度（如 360px、400px，默认 320px）" Grid.Row="8" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+              <!-- Row 9: Theme -->
+              <Border Grid.Row="9" Grid.ColumnSpan="4" />
+              <TextBlock Text="Theme" Grid.Row="9" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
+              <TextBlock Text="string" Grid.Row="9" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text='"auto"' Grid.Row="9" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="9" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
+            </Grid>
+          </Border>
+        </StackPanel>
       </StackPanel>
     </ScrollViewer>
   </Grid>

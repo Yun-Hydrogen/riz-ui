@@ -18,6 +18,7 @@ public sealed class RizInfoBox : ContentControl
     public RizInfoBox()
     {
         DefaultStyleKey = typeof(RizInfoBox);
+        ActualThemeChanged += (_, _) => ApplyVisual();
         RegisterPropertyChangedCallback(ContentProperty, (_, _) => ApplyVisual());
     }
 
@@ -76,7 +77,8 @@ public sealed class RizInfoBox : ContentControl
         if (_outline != null) _outline.Stroke = RizVisuals.Brush(accent);
         if (_icon != null)
         {
-            RizVisuals.ApplyIcon(_icon, string.IsNullOrWhiteSpace(Icon) ? defaultIcon : Icon, 16, accent);
+            var iconToUse = string.IsNullOrWhiteSpace(Icon) ? defaultIcon : Icon;
+            RizVisuals.ApplyIcon(_icon, iconToUse, 16, accent);
             if (IconStyle != null) _icon.Style = IconStyle;
         }
         if (_text != null)
@@ -84,7 +86,7 @@ public sealed class RizInfoBox : ContentControl
             _text.Text = Text ?? string.Empty;
             _text.Visibility = hasText ? Visibility.Visible : Visibility.Collapsed;
             _text.Style = TextStyle;
-            _text.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
+            if (TextStyle == null) _text.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
         }
         if (_separator != null)
         {

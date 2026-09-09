@@ -6,6 +6,8 @@ namespace RizUI.Uwp.Controls;
 /// <summary>原生实现的 rizui_card；<see cref="Content"/> 对应 Vue 默认插槽。</summary>
 public sealed class RizCard : ContentControl
 {
+    private Border? _shadow1;
+    private Border? _shadow2;
     private Border? _root;
     private TextBlock? _icon;
     private TextBlock? _title;
@@ -15,6 +17,7 @@ public sealed class RizCard : ContentControl
     public RizCard()
     {
         DefaultStyleKey = typeof(RizCard);
+        ActualThemeChanged += (_, _) => ApplyVisual();
         RegisterPropertyChangedCallback(ContentProperty, (_, _) => ApplyVisual());
     }
 
@@ -49,6 +52,8 @@ public sealed class RizCard : ContentControl
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
+        _shadow1 = GetTemplateChild("Shadow1") as Border;
+        _shadow2 = GetTemplateChild("Shadow2") as Border;
         _root = GetTemplateChild("Root") as Border;
         _icon = GetTemplateChild("Icon") as TextBlock;
         _title = GetTemplateChild("Title") as TextBlock;
@@ -62,6 +67,10 @@ public sealed class RizCard : ContentControl
     private void ApplyVisual()
     {
         var dark = RizVisuals.IsDark(this, Theme);
+        if (_shadow1 != null)
+            _shadow1.Background = RizVisuals.Brush(dark ? Windows.UI.Color.FromArgb(40, 0, 0, 0) : Windows.UI.Color.FromArgb(15, 30, 41, 59));
+        if (_shadow2 != null)
+            _shadow2.Background = RizVisuals.Brush(dark ? Windows.UI.Color.FromArgb(25, 0, 0, 0) : Windows.UI.Color.FromArgb(8, 30, 41, 59));
         if (_root != null)
         {
             _root.Background = RizVisuals.Brush(RizVisuals.SurfaceSoft(dark));
