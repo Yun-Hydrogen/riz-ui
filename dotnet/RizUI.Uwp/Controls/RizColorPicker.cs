@@ -29,7 +29,7 @@ public sealed class RizColorPicker : Control
     private Canvas? _hueCanvas;
     private Border? _hueThumb;
     private Border? _previewDot;
-    private TextBox? _hexInput;
+    private RizText? _hexInput;
     private Border? _btnConfirm;
     private Border? _btnClose;
 
@@ -332,17 +332,16 @@ public sealed class RizColorPicker : Control
         };
         Grid.SetColumn(_previewDot, 0);
 
-        _hexInput = new TextBox
+        _hexInput = new RizText
         {
-            Height = 28,
-            FontSize = 12,
-            FontFamily = new FontFamily("Cascadia Code, Consolas, monospace"),
+            HeightText = "28px",
+            Placeholder = "#HEX",
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
-        _hexInput.TextChanged += (_, _) =>
+        _hexInput.TextChanged += (_, newText) =>
         {
-            var text = _hexInput.Text?.Trim() ?? string.Empty;
+            var text = newText?.Trim() ?? string.Empty;
             if (!text.StartsWith("#")) text = "#" + text;
             if (ColorUtil.TryParseHex(text, out var c))
             {

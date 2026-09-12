@@ -22,6 +22,7 @@ public sealed partial class MainPage : Page
         ["dropdown"] = typeof(Pages.DropdownDemoPage),
         ["timeline"] = typeof(Pages.TimelineDemoPage),
         ["colorpicker"] = typeof(Pages.ColorPickerDemoPage),
+        ["table"] = typeof(Pages.TableDemoPage),
         ["text"] = typeof(Pages.TextDemoPage),
         ["mdeditor"] = typeof(Pages.MdEditorDemoPage),
         ["theme"] = typeof(Pages.ThemeDemoPage),
@@ -76,6 +77,7 @@ public sealed partial class MainPage : Page
             Key = "inputs", Text = "输入组件", Icon = "fa-solid fa-i-cursor", IsExpanded = true,
             Children =
             {
+                new() { Key = "table", Text = "Table 表格", Icon = "fa-solid fa-table-cells" },
                 new() { Key = "text", Text = "Text 文本框", Icon = "fa-solid fa-font" },
                 new() { Key = "mdeditor", Text = "MdEditor 编辑器", Icon = "fa-solid fa-file-pen" }
             }

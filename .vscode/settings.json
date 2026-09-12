@@ -1,0 +1,7 @@
+{
+    "dotnet.defaultSolution": "dotnet/RizUI.Demo/RizUI.Demo.sln",
+    "files.associations": {
+        "*.xaml": "xaml"
+    },
+    "xaml.format.enable": true
+}

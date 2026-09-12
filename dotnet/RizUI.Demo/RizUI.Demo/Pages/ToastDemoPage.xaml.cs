@@ -198,7 +198,7 @@ Host.Children.Add(rewardToast);";
     {
         if (XamlRoot is null) return;
         var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Microsoft.UI.Xaml.Thickness(0, 4, 0, 0) };
-        var input = new TextBox { PlaceholderText = "在此快速回复...", Width = 220, HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch };
+        var input = new RizText { Placeholder = "在此快速回复...", Width = 220, HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch };
         var btn = new RizButton { Primary = true, RIcon = "fa-solid fa-paper-plane" };
         panel.Children.Add(input);
         panel.Children.Add(btn);

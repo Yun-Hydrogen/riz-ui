@@ -128,7 +128,7 @@ public sealed class RizSwitch : Control
         var targetBg = IsOn ? activeBg : inactiveBg;
 
         _track.Background = RizVisuals.Brush(targetBg);
-        Opacity = IsEnabled ? 1 : 0.45;
+        Opacity = IsEnabled ? 1 : 0.65;
 
         // 滑块位移：从 0 滑动到 20px
         var targetX = IsOn ? 20d : 0d;

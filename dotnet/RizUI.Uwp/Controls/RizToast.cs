@@ -315,6 +315,7 @@ public sealed class RizToast : ContentControl
         _visual.Children.Add(_closeBorder);
 
         _visual.PointerPressed += OnVisualPressed;
+        ActualThemeChanged += (_, _) => UpdateVisual();
         UpdateVisual();
     }
 
@@ -413,6 +414,10 @@ public sealed class RizToast : ContentControl
 
         _card.Background = RizVisuals.Brush(RizVisuals.Surface(dark));
         _card.BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark));
+        if (_card.Child is Grid innerGrid)
+        {
+            innerGrid.Background = RizVisuals.Brush(RizVisuals.Surface(dark));
+        }
 
         var iconToUse = !string.IsNullOrWhiteSpace(Icon) ? Icon : GetDefaultIcon();
         RizVisuals.ApplyIcon(_icon, iconToUse, 18, accent);

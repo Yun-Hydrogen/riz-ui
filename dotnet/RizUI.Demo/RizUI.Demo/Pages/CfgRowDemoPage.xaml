@@ -71,7 +71,7 @@
                 <Setter Property="Foreground" Value="#66CCFF" />
               </Style>
             </rizui:RizCfgRow.IconStyle>
-            <rizui:RizText Placeholder="点击输入文本..." Margin="0,6,0,0" HorizontalAlignment="Stretch" />
+            <rizui:RizText Placeholder="点击输入文本..." Margin="0,6,0,0" HorizontalAlignment="Stretch" Plaintext="true" />
           </rizui:RizCfgRow>
 
           <rizui:RizCfgRow Label="恢复体力点"

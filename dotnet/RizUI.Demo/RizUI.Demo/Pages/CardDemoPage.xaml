@@ -24,7 +24,7 @@
         
         <!-- 示例一：MomoTalk 信箱 -->
         <rizui:RizCard Title="MomoTalk 信箱"
-                       Desc="老师，您有 3 条未读消息 · 最近来自游戏开发部"
+                       Desc="MoMoTalk · 2条未读信息"
                        Icon="fa-solid fa-envelope-open-text">
           <rizui:RizCard.IconStyle>
             <Style TargetType="TextBlock">
@@ -33,8 +33,12 @@
             </Style>
           </rizui:RizCard.IconStyle>
           <StackPanel>
-            <rizui:RizCfgRow Label="天童爱丽丝" Hint="邦邦卡邦！老师，周末来游戏开发部一起打游戏吧！" />
-            <rizui:RizCfgRow Label="小鸟游星野" Hint="老师要不要再来阿拜多斯体验大叔的枕头呀~" />
+            <rizui:RizCfgRow Label="天童爱丽丝" Hint="邦邦卡邦！老师，周末来游戏开发部一起打游戏吧！">
+              <rizui:RizButton Text="回复" RIcon="fa-solid fa-paper-plane" Primary="True" />
+            </rizui:RizCfgRow>
+            <rizui:RizCfgRow Label="小鸟游星野" Hint="老师要不要再来阿拜多斯体验大叔的枕头呀~" >
+              <rizui:RizButton Text="回复" RIcon="fa-solid fa-paper-plane" Primary="True" />
+            </rizui:RizCfgRow>
             <rizui:RizCfgRow Stack="True">
               <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage1}" />
             </rizui:RizCfgRow>

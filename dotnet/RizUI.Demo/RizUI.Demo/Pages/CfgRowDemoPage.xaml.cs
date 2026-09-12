@@ -29,7 +29,7 @@ var row = new RizCfgRow
     Hint = ""老师可以在这里记录需要注意的事项哦"",
     Icon = ""fa-solid fa-clipboard-list"",
     Stack = true,
-    Content = new TextBox { PlaceholderText = ""点击输入文本"" }
+    Content = new RizText { Placeholder = ""点击输入文本"" }
 };
 
 <!-- XAML 声明写法 -->

@@ -95,8 +95,8 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <!-- 左侧图标容器：与单行/首行文本绝对基准垂直对齐 -->
-                                <Border Grid.Column="0" VerticalAlignment="Top" Width="20" Height="20">
+                                <!-- 左侧图标容器：与单行/首行文本绝对基准垂直对齐 (Margin Top 2px微调，消除文字排版上沿间隙，确保文字与图标完全居中对齐) -->
+                                <Border Grid.Column="0" VerticalAlignment="Top" Width="18" Height="18" Margin="0,2,0,0">
                                     <TextBlock x:Name="Icon" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <!-- 右侧文本与插槽 -->
@@ -773,6 +773,42 @@
                             </Grid>
                         </Border>
                         <TextBlock x:Name="LabelR" FontSize="13" Foreground="{StaticResource RZ_Text}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ rizui_table：属性表格/通用数据表格控件 ═══ -->
+    <Style TargetType="local:RizTable">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RizTable">
+                    <StackPanel Spacing="8">
+                        <Border x:Name="Root"
+                                Background="{StaticResource RZ_Bg}"
+                                BorderBrush="{StaticResource RZ_Border}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="0">
+                            <Grid x:Name="TableGrid" HorizontalAlignment="Stretch" />
+                        </Border>
+                        <!-- 操作栏：添加行/添加列 -->
+                        <StackPanel x:Name="ActionsPanel" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button x:Name="BtnAddRow" Padding="10,4" CornerRadius="6" Background="{StaticResource RZ_BgSoft}" BorderThickness="1" BorderBrush="{StaticResource RZ_Border}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="+" FontSize="12" FontWeight="Bold" Foreground="{StaticResource RZ_Subtext}" />
+                                    <TextBlock Text="添加行" FontSize="12" Foreground="{StaticResource RZ_Subtext}" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="BtnAddCol" Padding="10,4" CornerRadius="6" Background="{StaticResource RZ_BgSoft}" BorderThickness="1" BorderBrush="{StaticResource RZ_Border}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="+" FontSize="12" FontWeight="Bold" Foreground="{StaticResource RZ_Subtext}" />
+                                    <TextBlock Text="添加列" FontSize="12" Foreground="{StaticResource RZ_Subtext}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>

@@ -23,6 +23,7 @@
             "command": "dotnet",
             "args": [
                 "watch",
+                "--no-hot-reload",
                 "--project",
                 "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo/RizUI.Demo.csproj"
             ],

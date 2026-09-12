@@ -45,5 +45,16 @@ public sealed partial class InfoBoxDemoPage : Page
     public InfoBoxDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Type", "string", "\"info\"", "预设类型：info / warn / error" },
+            new() { "Text", "string", "\"\"", "提示框主要展示文本" },
+            new() { "TextStyle", "Style", "null", "主要文本的 XAML 样式覆盖" },
+            new() { "Icon", "string", "\"\"", "自定义左侧图标（空则根据 Type 自动匹配）" },
+            new() { "IconStyle", "Style", "null", "左侧图标的 XAML 样式覆盖" },
+            new() { "Color", "string", "\"\"", "自定义主题色（仅在 Type='info' 时生效）" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

@@ -273,8 +273,25 @@ public partial class RizButton : Control
         var fg = filled ? Microsoft.UI.Colors.White : GetTextColor();
         var bd = filled ? c : GetBorderColor();
 
-        // Vue: :hover 变主题色；filled 使用 brightness(1.08)。
-        if (_hover)
+        // 禁用状态下在浅色模式的对比度优化
+        if (!IsEnabled)
+        {
+            var isDark = RizVisuals.IsDark(this, Theme);
+            if (filled)
+            {
+                // 浅色模式下，白色文字在淡化的背景上会因过曝而模糊一片，微调文字或背景确保字迹清晰
+                bg = isDark ? MultiplyBrightness(c, 0.75) : MultiplyBrightness(c, 0.90);
+                fg = isDark ? Windows.UI.Color.FromArgb(240, 255, 255, 255) : Windows.UI.Color.FromArgb(245, 255, 255, 255);
+                bd = bg;
+            }
+            else
+            {
+                fg = RizVisuals.Subtext(isDark);
+                bd = RizVisuals.Border(isDark);
+                bg = GetSurfaceColor();
+            }
+        }
+        else if (_hover)
         {
             if (filled)
             {
@@ -288,9 +305,7 @@ public partial class RizButton : Control
                 fg = c;
             }
         }
-
-        // Vue: :active { filter: brightness(.92) }。
-        if (_pressed)
+        else if (_pressed)
         {
             bg = MultiplyBrightness(bg, 0.92);
             bd = MultiplyBrightness(bd, 0.92);
@@ -306,7 +321,7 @@ public partial class RizButton : Control
         // 因此对 30px 高的按钮显式使用 15px，避免 long 按钮变成椭圆。
         _root.CornerRadius = new CornerRadius(15);
         _root.MinHeight = 30;
-        _root.Opacity = IsEnabled ? 1 : 0.5;
+        _root.Opacity = IsEnabled ? 1 : 0.65;
 
         var hasText = !string.IsNullOrWhiteSpace(Text);
         var hasLIcon = !string.IsNullOrWhiteSpace(LIcon);

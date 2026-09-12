@@ -33,16 +33,16 @@ card.Content = new StackPanel
 var card = new RizCard();
 card.Content = new RizCfgRow
 {
-    Label = ""干净的背景板"",
-    Hint = ""想放什么就放什么""
+    Label = ""干净的卡片"",
+    Hint = ""GunMu""
 };";
 
     public string CodeUsage3 { get; } =
-@"// 3. 图标动效：支持全部 FA class，加个 fa-spin 就能一直转
+@"// 3. 图标动效：支持全部 FA class，加个 fa-spin 就能一直转~
 var card = new RizCard
 {
     Title = ""总力战 · 备战中"",
-    Desc = ""icon 支持全部 FA class，加个 fa-spin 就能一直转"",
+    Desc = ""icon 支持全部 FA class，加个 fa-spin 就能一直旋转图标~"",
     Icon = ""fa-solid fa-gear fa-spin""
 };";
 

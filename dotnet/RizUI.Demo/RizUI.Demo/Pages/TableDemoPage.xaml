@@ -1,0 +1,55 @@
+<Page x:Class="RizUI.Demo.Pages.TableDemoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:rizui="using:RizUI.Uwp.Controls">
+  <ScrollViewer FontFamily="{StaticResource UiFont}">
+    <StackPanel Padding="32" Spacing="16">
+      <!-- 页面头部 -->
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="表格输入与展示" FontSize="26" FontWeight="Bold" />
+          <Border Background="#EBF5FF" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock Text="RizTable" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="现代数据表格控件，支持交互式编辑（默认）、只读展示、动态添加行/列、最大行/列数限制，以及深浅色模式深度自适应。"
+                   Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 示例展示 -->
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="示例" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- 示例一：交互编辑表格（可动态增删行/列） -->
+        <rizui:RizCard Title="可编辑表格（默认交互模式）" Desc="每个单元格均可实时点击编辑，底部提供快捷添加行与添加列按钮" Icon="fa-solid fa-table-cells">
+          <StackPanel Spacing="12">
+            <rizui:RizTable x:Name="EditableTable" MaxRows="8" MaxColumns="6" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind CodeUsage1}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
+        <!-- 示例二：只读展示模式 -->
+        <rizui:RizCard Title="只读展示模式 (IsReadOnly=True)" Desc="纯净无边框编辑框，适合作为属性表、数据明细查看等场景" Icon="fa-solid fa-eye">
+          <StackPanel Spacing="12">
+            <rizui:RizTable x:Name="ReadOnlyTable" IsReadOnly="True" />
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="html" Code="{x:Bind CodeUsage2}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+      </StackPanel>
+
+      <!-- 属性列表表格 (Properties Table) -->
+      <StackPanel Spacing="10" Margin="0,12,0,0">
+        <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
+        <rizui:RizTable x:Name="PropsTable" IsReadOnly="True" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</Page>
