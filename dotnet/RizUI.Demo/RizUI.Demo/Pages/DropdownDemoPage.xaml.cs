@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml.Controls;
 using RizUI.Uwp.Controls;
@@ -35,5 +35,13 @@ var options = new List<RizDropdownItem>
     public DropdownDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "SelectedValue", "string", "\"\"", "当前选中的选项值（对应 Vue 的 modelValue）" },
+            new() { "Options", "IList", "null", "下拉选项列表（RizDropdownItem 集合）" },
+            new() { "Color", "string", "\"\"", "主题色覆盖，空则跟随 --rizui_themecolor" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

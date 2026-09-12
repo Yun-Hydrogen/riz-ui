@@ -178,8 +178,6 @@ public sealed class RizColorPicker : Control
             Padding = new Thickness(18, 16, 18, 16),
             CornerRadius = new CornerRadius(16),
             Background = RizVisuals.Brush(RizVisuals.Surface(dark)),
-            BorderThickness = new Thickness(1),
-            BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark)),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center
         };
@@ -206,9 +204,7 @@ public sealed class RizColorPicker : Control
         var svBorder = new Border
         {
             Height = 140,
-            CornerRadius = new CornerRadius(8),
-            BorderThickness = new Thickness(1),
-            BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark))
+            CornerRadius = new CornerRadius(8)
         };
 
         var svGrid = new Grid

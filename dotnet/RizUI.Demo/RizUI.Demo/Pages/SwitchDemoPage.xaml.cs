@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml.Controls;
 
 namespace RizUI.Demo.Pages;
@@ -24,5 +24,12 @@ public sealed partial class SwitchDemoPage : Page
     public SwitchDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "IsOn", "bool", "false", "开关当前状态（对应 Vue 的 modelValue）" },
+            new() { "Color", "string", "\"\"", "开启时主题色，空则跟随 --rizui_themecolor" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

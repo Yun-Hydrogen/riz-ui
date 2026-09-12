@@ -1,4 +1,4 @@
-<Page x:Class="RizUI.Demo.Pages.SliderNavDemoPage"
+﻿<Page x:Class="RizUI.Demo.Pages.SliderNavDemoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
@@ -38,98 +38,14 @@
       <!-- 属性列表表格 (Properties Table) -->
       <StackPanel Spacing="10" Margin="0,12,0,0">
         <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
-        <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="150" />
-              <ColumnDefinition Width="120" />
-              <ColumnDefinition Width="110" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <rizui:RizTable x:Name="PropsTable" IsReadOnly="True" />
+      </StackPanel>
 
-            <!-- 表头 -->
-            <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
-            <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 1: Items -->
-            <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Items" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="IList&lt;RizSliderNavItem&gt;" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="null" Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="侧边栏树状数据源，支持任意层级嵌套展开" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 2: SelectedItem -->
-            <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="SelectedItem" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='""' Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="当前选中的条目 Key（支持双向绑定）" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 3: DefaultSelectedItem -->
-            <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="DefaultSelectedItem" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='""' Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="首次载入时默认激活的高亮条目 Key" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 4: StyleMode -->
-            <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="StyleMode" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="RizSliderNavStyle" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="Fixed" Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="导航布局模式：Fixed 固定并排 / Floating 悬浮于内容之上" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 5: Title -->
-            <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Title" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='"RizUI"' Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="侧边栏顶端品牌标题文案" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 6: Icon -->
-            <Border Grid.Row="6" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Icon" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='"fa-solid fa-layer-group"' Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="顶端品牌图标（支持完整 Font Awesome 类名）" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 7: IsCollapsible -->
-            <Border Grid.Row="7" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="IsCollapsible" Grid.Row="7" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="bool" Grid.Row="7" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="true" Grid.Row="7" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="是否显示折叠按钮并允许展开/收起切换" Grid.Row="7" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 8: IsCollapsed -->
-            <Border Grid.Row="8" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="IsCollapsed" Grid.Row="8" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="bool" Grid.Row="8" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="false" Grid.Row="8" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="当前折叠状态（可双向绑定）" Grid.Row="8" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 9: Footer -->
-            <Border Grid.Row="9" Grid.ColumnSpan="4" />
-            <TextBlock Text="Footer" Grid.Row="9" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="object" Grid.Row="9" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="null" Grid.Row="9" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="侧边栏底部插槽内容（如版权信息、模式切换按钮等）" Grid.Row="9" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-          </Grid>
-        </Border>
+      <!-- 事件说明 (Events) -->
+      <StackPanel Spacing="6" Margin="0,8,0,0">
+        <TextBlock Text="事件 (Events)" FontSize="16" FontWeight="Bold" />
+        <TextBlock Text="• SelectionChanged：切换选中导航项时触发，参数为对应的 RizSliderNavItem（可读取 Key / Text）。" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
+        <TextBlock Text="C# 订阅：nav.SelectionChanged += (s, item) => { ... };" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
       </StackPanel>
     </StackPanel>
   </ScrollViewer>

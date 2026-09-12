@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml.Controls;
 
 namespace RizUI.Demo.Pages;
@@ -24,5 +24,16 @@ public sealed partial class SliderDemoPage : Page
     public SliderDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Value", "double", "0", "当前滑块数值（对应 Vue 的 modelValue）" },
+            new() { "Minimum", "double", "0", "滑块最小值" },
+            new() { "Maximum", "double", "100", "滑块最大值" },
+            new() { "Step", "double", "1", "步进数值" },
+            new() { "Display", "string", "\"\"", "数值后缀单位文案（如 %、倍速、AP）" },
+            new() { "Color", "string", "\"\"", "主题色，空则跟随 --rizui_themecolor" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

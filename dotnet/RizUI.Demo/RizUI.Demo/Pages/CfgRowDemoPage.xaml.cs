@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 namespace RizUI.Demo.Pages;
 
@@ -107,5 +107,18 @@ var row = new RizCfgRow
     public CfgRowDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Label", "string", "\"\"", "左栏标签标题文字" },
+            new() { "LabelStyle", "Style", "null", "标签文本 XAML 样式覆盖" },
+            new() { "Hint", "string", "\"\"", "标签下方提示小字说明" },
+            new() { "HintStyle", "Style", "null", "提示小字 XAML 样式覆盖" },
+            new() { "Icon", "string", "\"\"", "左侧图标（完整 Font Awesome 类名，如 fa-solid fa-bolt）" },
+            new() { "IconStyle", "Style", "null", "图标 XAML 样式覆盖（颜色、字号等）" },
+            new() { "Stack", "bool", "false", "是否启用竖向堆叠布局（将控件置于标题下方）" },
+            new() { "Disabled", "bool", "false", "是否禁用整行（半透明展示并阻止子控件交互）" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

@@ -1,4 +1,4 @@
-<Page x:Class="RizUI.Demo.Pages.TableDemoPage"
+﻿<Page x:Class="RizUI.Demo.Pages.TableDemoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
@@ -49,6 +49,13 @@
       <StackPanel Spacing="10" Margin="0,12,0,0">
         <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
         <rizui:RizTable x:Name="PropsTable" IsReadOnly="True" />
+      </StackPanel>
+
+      <!-- 事件说明 (Events) -->
+      <StackPanel Spacing="6" Margin="0,8,0,0">
+        <TextBlock Text="事件 (Events)" FontSize="16" FontWeight="Bold" />
+        <TextBlock Text="• DataChanged：单元格编辑、新增行或新增列后触发，可据此同步业务数据。" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
+        <TextBlock Text="C# 订阅：table.DataChanged += (s, e) => { ... };" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
       </StackPanel>
     </StackPanel>
   </ScrollViewer>

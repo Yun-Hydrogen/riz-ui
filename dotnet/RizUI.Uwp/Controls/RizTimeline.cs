@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Shapes;
 using Path = Microsoft.UI.Xaml.Shapes.Path;
 
@@ -258,9 +259,31 @@ public sealed class RizTimeline : Control
         var range = Maximum - Minimum;
         var pct = range > 0 ? Math.Clamp((Value - Minimum) / range, 0, 1) : 0;
 
-        _fillBar.Width = pct * totalWidth;
         var posX = pct * totalWidth;
-        Canvas.SetLeft(_indicator, posX - 24);
+        // 拖动/点击时平滑跟随（80ms 缓动，对应 Web 的 transition: width/left 0.08s ease）
+        RizVisuals.AnimateDouble(_fillBar, FrameworkElement.WidthProperty, "Width", posX, 80);
+
+        var indicatorTransform = _indicator.RenderTransform as TranslateTransform;
+        if (indicatorTransform == null)
+        {
+            // 必须显式初始化 X：Uno 中对从未赋值的依赖属性启动动画会拿 UnsetValue 转换而抛 InvalidCastException
+            indicatorTransform = new TranslateTransform { X = 0 };
+            _indicator.RenderTransform = indicatorTransform;
+        }
+        Canvas.SetLeft(_indicator, 0);
+        // 指示器位移：从当前值出发的渲染层平滑追赶（对应 Web 的 transition: left 0.08s ease）
+        var indicatorAnimation = new DoubleAnimation
+        {
+            From = indicatorTransform.X,
+            To = posX - 24,
+            Duration = new Duration(TimeSpan.FromMilliseconds(80)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+        Storyboard.SetTarget(indicatorAnimation, indicatorTransform);
+        Storyboard.SetTargetProperty(indicatorAnimation, "X");
+        var indicatorStoryboard = new Storyboard();
+        indicatorStoryboard.Children.Add(indicatorAnimation);
+        indicatorStoryboard.Begin();
 
         var s = (int)Math.Max(0, Math.Round(Value));
         _bubbleText.Text = $"{s / 60}:{s % 60:D2}";

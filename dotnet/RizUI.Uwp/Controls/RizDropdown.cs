@@ -25,6 +25,8 @@ public sealed class RizDropdown : Control
     private StackPanel? _listHost;
     private bool _isOpen;
     private bool _templateApplied;
+    private bool _outsideHooked;
+    private PointerEventHandler? _outsideHandler;
 
     public RizDropdown()
     {
@@ -129,6 +131,15 @@ public sealed class RizDropdown : Control
             };
         }
 
+        Unloaded += (_, _) =>
+        {
+            UnhookOutside();
+            if (_popup != null)
+            {
+                _popup.IsOpen = false;
+            }
+        };
+
         _templateApplied = true;
         UpdateVisual();
         UpdateLabel();
@@ -181,48 +192,83 @@ public sealed class RizDropdown : Control
             _isDropUp = false;
         }
 
-        // 设置垂直偏移量：向下弹出为 +36（高度30+间距6），向上弹出为 -(popupHeight + 6)
+        // 设置垂直偏移量：向下弹出为 +36（触发器高 30 + 间距 6）
         _popup.VerticalOffset = _isDropUp ? -(popupHeight + 6) : 36;
         _popup.IsOpen = true;
+        HookOutside();
 
-        if (_dropBorder != null)
+        // 打开后再用真实高度修正向上弹出的偏移：首次打开只能用估算高度，估算偏大会导致与触发器间距过大。
+        // 修正完成后再播放进场动画（此时透明度为 0，用户看不到位置跳变）。
+        DispatcherQueue.TryEnqueue(() =>
         {
-            double startY = _isDropUp ? 6 : -6;
-            var transform = new TranslateTransform { Y = startY };
-            _dropBorder.RenderTransform = transform;
-            _dropBorder.Opacity = 0;
+            if (_popup == null || !_isOpen) return;
+            if (_isDropUp && _dropBorder != null && _dropBorder.ActualHeight > 0)
+            {
+                var corrected = -(_dropBorder.ActualHeight + 6);
+                if (Math.Abs(_popup.VerticalOffset - corrected) > 0.5)
+                {
+                    _popup.VerticalOffset = corrected;
+                }
+            }
+            StartEnterAnimation();
+        });
+    }
 
-            var sb = new Storyboard();
-            var fade = new DoubleAnimation { To = 1, Duration = new Duration(TimeSpan.FromMilliseconds(150)) };
-            Storyboard.SetTarget(fade, _dropBorder);
-            Storyboard.SetTargetProperty(fade, "Opacity");
+    private void StartEnterAnimation()
+    {
+        if (_dropBorder == null) return;
+        double startY = _isDropUp ? 6 : -6;
+        var transform = new TranslateTransform { Y = startY };
+        _dropBorder.RenderTransform = transform;
+        _dropBorder.Opacity = 0;
 
-            var move = new DoubleAnimation { To = 0, Duration = new Duration(TimeSpan.FromMilliseconds(150)), EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
-            Storyboard.SetTarget(move, transform);
-            Storyboard.SetTargetProperty(move, "Y");
+        var sb = new Storyboard();
+        var fade = new DoubleAnimation { To = 1, Duration = new Duration(TimeSpan.FromMilliseconds(150)) };
+        Storyboard.SetTarget(fade, _dropBorder);
+        Storyboard.SetTargetProperty(fade, "Opacity");
 
-            sb.Children.Add(fade);
-            sb.Children.Add(move);
-            sb.Begin();
-        }
+        var move = new DoubleAnimation { To = 0, Duration = new Duration(TimeSpan.FromMilliseconds(150)), EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+        Storyboard.SetTarget(move, transform);
+        Storyboard.SetTargetProperty(move, "Y");
+
+        sb.Children.Add(fade);
+        sb.Children.Add(move);
+        sb.Begin();
     }
 
     private void Close()
     {
         if (_popup == null || !_isOpen) return;
         _isOpen = false;
+        UnhookOutside();
         UpdateTriggerVisual();
         if (_dropBorder != null)
         {
-            var transform = _dropBorder.RenderTransform as TranslateTransform ?? new TranslateTransform();
-            _dropBorder.RenderTransform = transform;
+            var transform = _dropBorder.RenderTransform as TranslateTransform;
+            if (transform == null)
+            {
+                // 显式初始化 Y：Uno 中对从未赋值的属性启动动画会读 UnsetValue 而抛 InvalidCastException
+                transform = new TranslateTransform { Y = _isDropUp ? 6 : -6 };
+                _dropBorder.RenderTransform = transform;
+            }
             var sb = new Storyboard();
-            var fade = new DoubleAnimation { To = 0, Duration = new Duration(TimeSpan.FromMilliseconds(120)) };
+            var fade = new DoubleAnimation
+            {
+                From = _dropBorder.Opacity,
+                To = 0,
+                Duration = new Duration(TimeSpan.FromMilliseconds(120))
+            };
             Storyboard.SetTarget(fade, _dropBorder);
             Storyboard.SetTargetProperty(fade, "Opacity");
 
             double endY = _isDropUp ? 6 : -6;
-            var move = new DoubleAnimation { To = endY, Duration = new Duration(TimeSpan.FromMilliseconds(120)), EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn } };
+            var move = new DoubleAnimation
+            {
+                From = transform.Y,
+                To = endY,
+                Duration = new Duration(TimeSpan.FromMilliseconds(120)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
             Storyboard.SetTarget(move, transform);
             Storyboard.SetTargetProperty(move, "Y");
 
@@ -272,13 +318,66 @@ public sealed class RizDropdown : Control
         _label.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
         _arrow.Stroke = RizVisuals.Brush(RizVisuals.Subtext(dark));
 
-        var arrowTransform = _arrow.RenderTransform as RotateTransform ?? new RotateTransform { CenterX = 5, CenterY = 4 };
-        _arrow.RenderTransform = arrowTransform;
-        arrowTransform.CenterX = 5;
-        arrowTransform.CenterY = 4;
-        arrowTransform.Angle = _isOpen ? 180 : 0;
+        var arrowTransform = _arrow.RenderTransform as RotateTransform;
+        var targetAngle = _isOpen ? 180 : 0;
+        if (arrowTransform == null)
+        {
+            // 显式初始化 Angle，后续才能安全地对 Angle 做动画
+            arrowTransform = new RotateTransform { CenterX = 5, CenterY = 4, Angle = targetAngle };
+            _arrow.RenderTransform = arrowTransform;
+        }
+        else
+        {
+            arrowTransform.CenterX = 5;
+            arrowTransform.CenterY = 4;
+            if (Math.Abs(arrowTransform.Angle - targetAngle) > 0.5)
+            {
+                // 箭头旋转动画（对应 Web 的 transition: transform 0.2s）
+                var rotateAnimation = new DoubleAnimation
+                {
+                    From = arrowTransform.Angle,
+                    To = targetAngle,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                };
+                Storyboard.SetTarget(rotateAnimation, arrowTransform);
+                Storyboard.SetTargetProperty(rotateAnimation, "Angle");
+                var rotateStoryboard = new Storyboard();
+                rotateStoryboard.Children.Add(rotateAnimation);
+                rotateStoryboard.Begin();
+            }
+        }
 
         Opacity = IsEnabled ? 1 : 0.45;
+    }
+
+    /// <summary>收起动画需要自己掌控，因此关闭原生 light-dismiss，改为监听根节点的点击：点在与控件无关的位置时播放收起动画。</summary>
+    private void HookOutside()
+    {
+        if (_outsideHooked) return;
+        if (XamlRoot?.Content is not UIElement root) return;
+        _outsideHandler ??= OnRootPointerPressed;
+        root.AddHandler(UIElement.PointerPressedEvent, _outsideHandler, true);
+        _outsideHooked = true;
+    }
+
+    private void UnhookOutside()
+    {
+        if (!_outsideHooked) return;
+        if (XamlRoot?.Content is UIElement root && _outsideHandler != null)
+        {
+            root.RemoveHandler(UIElement.PointerPressedEvent, _outsideHandler);
+        }
+        _outsideHooked = false;
+    }
+
+    private void OnRootPointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        if (!_isOpen) return;
+        // 点在触发器（控件本体）上的交给 Trigger 自己 Toggle；弹层内部的点击不会冒泡到这里
+        var point = e.GetCurrentPoint(this).Position;
+        if (point.X >= 0 && point.Y >= 0 && point.X <= ActualWidth && point.Y <= ActualHeight) return;
+        Close();
     }
 
     private void RebuildOptions()

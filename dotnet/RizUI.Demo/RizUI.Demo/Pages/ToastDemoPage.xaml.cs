@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml.Controls;
 using RizUI.Uwp.Controls;
 
@@ -63,6 +63,19 @@ Host.Children.Add(rewardToast);";
     public ToastDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Type", "string", "\"info\"", "预设类型：info / warn / error" },
+            new() { "Title", "string", "\"\"", "通知主标题文字" },
+            new() { "Hint", "string", "\"\"", "说明提示小字" },
+            new() { "Countdown", "double", "3", "自动关闭秒数，0 为不自动关闭（常驻）" },
+            new() { "Closable", "bool", "true", "是否显示右上角圆形关闭按钮" },
+            new() { "ShowBar", "bool", "true", "是否显示底部倒计时进度条" },
+            new() { "Color", "string", "\"\"", "仅在 Type='info' 时生效，自定义主题色" },
+            new() { "WidthText", "string", "\"\"", "自定义通知宽度（如 360px、400px，默认 320px）" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 
     private void OnInfo(object s, EventArgs e)
@@ -210,7 +223,7 @@ Host.Children.Add(rewardToast);";
             Title = "MomoTalk",
             Hint = "爱丽丝：邦邦卡邦！老师快来游戏开发部一趟！",
             Icon = "fa-solid fa-message",
-            WidthText = "400px",
+            WidthText = "380px",
             Countdown = 0,
             Content = panel
         };
@@ -253,7 +266,7 @@ Host.Children.Add(rewardToast);";
             var root = XamlRoot;
             if (root != null)
             {
-                RizToast.ShowToast(root, "领取成功！", "24000 青辉石已发放至沙勒邮箱。", color: "#39C5BB");
+                RizToast.ShowToast(root, "谨防上当受骗！", "NEVER GONNA GIVE YOU UP", color: "#39C5BB");
             }
         };
         Host.Children.Add(toast);

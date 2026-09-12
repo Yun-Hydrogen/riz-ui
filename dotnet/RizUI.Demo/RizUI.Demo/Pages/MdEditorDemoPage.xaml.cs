@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml.Controls;
 
 namespace RizUI.Demo.Pages;
@@ -44,5 +44,14 @@ public sealed partial class MdEditorDemoPage : Page
     public MdEditorDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Value", "string", "\"\"", "Markdown 源码文本（双向绑定，对应 Vue 的 modelValue）" },
+            new() { "Placeholder", "string", "\"在此输入…\"", "编辑区域占位提示文字" },
+            new() { "IsReadOnly", "bool", "false", "是否只读状态（隐藏工具栏与编辑框，仅呈现渲染预览）" },
+            new() { "HeightText", "string", "\"320px\"", "编辑器整体高度，如 360px、400px" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

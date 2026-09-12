@@ -1,4 +1,4 @@
-<Page x:Class="RizUI.Demo.Pages.TextDemoPage"
+﻿<Page x:Class="RizUI.Demo.Pages.TextDemoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
@@ -83,74 +83,15 @@
       <!-- 属性列表表格 (Properties Table) -->
       <StackPanel Spacing="10" Margin="0,12,0,0">
         <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
-        <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-              <RowDefinition Height="36" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="140" />
-              <ColumnDefinition Width="100" />
-              <ColumnDefinition Width="100" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <rizui:RizTable x:Name="PropsTable" IsReadOnly="True" />
+      </StackPanel>
 
-            <!-- 表头 -->
-            <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
-            <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 1: Text -->
-            <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Text" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='""' Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="当前输入文本内容（双向绑定，对应 Vue 的 modelValue）" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 2: Placeholder -->
-            <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Placeholder" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='""' Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="占位提示文字" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 3: Plaintext -->
-            <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Plaintext" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="bool" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="false" Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="是否多行纯文本编辑模式（textarea）" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 4: IsReadOnly -->
-            <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="IsReadOnly" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="bool" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="false" Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="是否只读状态" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 5: Color -->
-            <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-            <TextBlock Text="Color" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='""' Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="聚焦边框高亮主题色，空则跟随 --rizui_themecolor" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-            <!-- Row 6: Theme -->
-            <Border Grid.Row="6" Grid.ColumnSpan="4" />
-            <TextBlock Text="Theme" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-            <TextBlock Text="string" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text='"auto"' Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-          </Grid>
-        </Border>
+      <!-- 事件说明 (Events) -->
+      <StackPanel Spacing="6" Margin="0,8,0,0">
+        <TextBlock Text="事件 (Events)" FontSize="16" FontWeight="Bold" />
+        <TextBlock Text="• TextChanged：输入内容变化时触发，参数为最新文本。" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
+        <TextBlock Text="• Enter：单行模式下按下回车时触发（多行 plaintext 模式不触发）。" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
+        <TextBlock Text="C# 订阅：input.TextChanged += (s, text) => { ... };" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
       </StackPanel>
     </StackPanel>
   </ScrollViewer>

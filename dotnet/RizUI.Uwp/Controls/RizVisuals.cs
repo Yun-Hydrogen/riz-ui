@@ -230,6 +230,69 @@ internal static class RizVisuals
         }
     }
 
+    /// <summary>hover 等状态切换时对纯色画刷做平滑颜色过渡（淡入淡出）。</summary>
+    public static void AnimateColor(SolidColorBrush brush, Windows.UI.Color to, double durationMs = 200, EasingMode mode = EasingMode.EaseOut)
+    {
+        var animation = new ColorAnimation
+        {
+            To = to,
+            Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
+            EasingFunction = new CubicEase { EasingMode = mode }
+        };
+        Storyboard.SetTarget(animation, brush);
+        Storyboard.SetTargetProperty(animation, "Color");
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(animation);
+        storyboard.Completed += (_, _) =>
+        {
+            brush.Color = to;
+            storyboard.Stop();
+        };
+        storyboard.Begin();
+    }
+
+    /// <summary>
+    /// 对数值型属性做短促平滑动画（填充条宽度、指示器位移等）。
+    /// 从当前值出发（支持拖动中连续追赶）；动画完成后先落定最终值再停止，避免 Stop 回退到旧值导致跳变。
+    /// </summary>
+    public static void AnimateDouble(DependencyObject target, DependencyProperty property, string propertyPath, double to, double durationMs, bool dependent = true, EasingMode mode = EasingMode.EaseOut)
+    {
+        double from;
+        try
+        {
+            from = Convert.ToDouble(target.GetValue(property));
+        }
+        catch
+        {
+            // 属性从未赋值（UnsetValue）时无法参与插值，直接落值避免动画报错
+            target.SetValue(property, to);
+            return;
+        }
+
+        if (double.IsNaN(from)) from = 0;
+        if (Math.Abs(from - to) < 0.05) return;
+
+        var animation = new DoubleAnimation
+        {
+            From = from,
+            To = to,
+            Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
+            EnableDependentAnimation = dependent,
+            EasingFunction = new CubicEase { EasingMode = mode }
+        };
+        Storyboard.SetTarget(animation, target);
+        Storyboard.SetTargetProperty(animation, propertyPath);
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(animation);
+        storyboard.Completed += (_, _) =>
+        {
+            // 先落最终值再停动画，避免 Stop 瞬间回退到旧基础值造成闪烁
+            target.SetValue(property, to);
+            storyboard.Stop();
+        };
+        storyboard.Begin();
+    }
+
     public static double ParsePixels(string? value, double fallback)
     {
         if (string.IsNullOrWhiteSpace(value)) return fallback;

@@ -281,7 +281,8 @@ public sealed class RizSlider : Control
         var range = Maximum - Minimum;
         var ratio = range > 0 ? Math.Clamp((Value - Minimum) / range, 0, 1) : 0;
         var width = _root.ActualWidth > 0 ? _root.ActualWidth : 160;
-        _fill.Width = width * ratio;
+        // 拖动/步进时平滑跟随（80ms 缓动，对应 Web 的 0.08s 过渡）
+        RizVisuals.AnimateDouble(_fill, FrameworkElement.WidthProperty, "Width", width * ratio, 80);
         _fill.Background = RizVisuals.Brush(RizVisuals.Mix(accent, RizVisuals.Surface(dark), 0.22));
 
         // 文案显示

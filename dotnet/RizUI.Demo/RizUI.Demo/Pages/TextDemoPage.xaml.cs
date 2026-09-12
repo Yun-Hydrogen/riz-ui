@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml.Controls;
 
 namespace RizUI.Demo.Pages;
@@ -31,5 +31,15 @@ public sealed partial class TextDemoPage : Page
     public TextDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Text", "string", "\"\"", "当前输入文本内容（双向绑定，对应 Vue 的 modelValue）" },
+            new() { "Placeholder", "string", "\"\"", "占位提示文字" },
+            new() { "Plaintext", "bool", "false", "是否多行纯文本编辑模式（textarea）" },
+            new() { "IsReadOnly", "bool", "false", "是否只读状态" },
+            new() { "Color", "string", "\"\"", "聚焦边框高亮主题色，空则跟随 --rizui_themecolor" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 }

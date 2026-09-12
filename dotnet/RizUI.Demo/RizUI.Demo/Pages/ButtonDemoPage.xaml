@@ -1,4 +1,4 @@
-<Page x:Class="RizUI.Demo.Pages.ButtonDemoPage"
+﻿<Page x:Class="RizUI.Demo.Pages.ButtonDemoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
@@ -65,7 +65,7 @@
             <rizui:RizCfgRow Label="纯图标快捷操作" Hint="Text 留空时渲染为紧凑胶囊图标按钮">
               <StackPanel Orientation="Horizontal" Spacing="10">
                 <rizui:RizButton LIcon="fa-solid fa-plus" Primary="True" Click="OnClick" />
-                <rizui:RizButton LIcon="fa-solid fa-rotate-right" Click="OnClick" />
+                <rizui:RizButton LIcon="fa-regular fa-address-card" Click="OnClick" />
                 <rizui:RizButton LIcon="fa-solid fa-heart" Danger="True" Click="OnClick" />
               </StackPanel>
             </rizui:RizCfgRow>
@@ -109,6 +109,13 @@
       <StackPanel Spacing="10" Margin="0,12,0,0">
         <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
         <rizui:RizTable x:Name="PropsTable" IsReadOnly="True" />
+      </StackPanel>
+
+      <!-- 事件说明 (Events) -->
+      <StackPanel Spacing="6" Margin="0,8,0,0">
+        <TextBlock Text="事件 (Events)" FontSize="16" FontWeight="Bold" />
+        <TextBlock Text="• Click：按钮完成一次点击（按下并释放）时触发。" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
+        <TextBlock Text="XAML 中可直接绑定 Click=&quot;OnClick&quot;，或在 C# 中订阅：btn.Click += (s, e) => { ... };" FontSize="13" Opacity="0.75" TextWrapping="Wrap" />
       </StackPanel>
     </StackPanel>
   </ScrollViewer>

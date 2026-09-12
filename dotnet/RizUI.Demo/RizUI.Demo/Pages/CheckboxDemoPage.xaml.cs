@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml.Controls;
 using RizUI.Uwp.Controls;
 
@@ -25,6 +25,17 @@ public sealed partial class CheckboxDemoPage : Page
     public CheckboxDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "IsChecked", "bool", "false", "选中状态（双向绑定首选属性，对应 Vue 的 modelValue）" },
+            new() { "IsOn", "bool", "false", "兼容旧版 API 的开关状态别名属性" },
+            new() { "LLabel", "string", "\"\"", "左侧标签文字" },
+            new() { "RLabel", "string", "\"\"", "右侧标签文字" },
+            new() { "Color", "string", "\"\"", "选中激活主题色，空则跟随全局 --rizui_themecolor" },
+            new() { "Command", "ICommand", "null", "切换状态时执行的 MVVM 命令" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" }
+        };
     }
 
     private void OnToggled(object sender, EventArgs e)

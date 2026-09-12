@@ -23,18 +23,37 @@
                                 Background="{StaticResource RZ_BgSoft}"
                                 BorderBrush="{StaticResource RZ_Border}">
                             <StackPanel Spacing="0">
-                                <Grid ColumnSpacing="14">
+                                <Grid x:Name="Header" ColumnSpacing="14" Background="Transparent">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock x:Name="Icon" Grid.Column="0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     <StackPanel Grid.Column="1" Spacing="0" VerticalAlignment="Center">
                                         <TextBlock x:Name="Title" FontSize="14" FontWeight="Bold" Margin="0,0,0,4" TextWrapping="Wrap" />
                                         <TextBlock x:Name="Desc" FontSize="12" LineHeight="18" TextWrapping="Wrap" />
                                     </StackPanel>
+                                    <!-- 折叠指示箭头（仅 Foldable=True 时可见；展开朝上、折叠朝下，状态切换时旋转） -->
+                                    <Border x:Name="FoldBtn" Grid.Column="2" Width="26" Height="26" CornerRadius="13" Background="Transparent"
+                                            Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                        <Path x:Name="FoldArrow" Data="M1 2 L5 6 L9 2" Stroke="{StaticResource RZ_Subtext}" StrokeThickness="1.5"
+                                              StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                              Width="10" Height="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Path.RenderTransform>
+                                                <RotateTransform Angle="180" CenterX="5" CenterY="4" />
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Border>
                                 </Grid>
-                                <ContentPresenter x:Name="ContentHost" Content="{TemplateBinding Content}" Margin="0,12,0,0" />
+                                <!-- 可折叠内容区：ScrollViewer 天然裁剪超出内容，保证高度动画期间内容不会溢出卡片
+                                     注意：HorizontalScrollBarVisibility 必须为 Disabled，否则 Uno 会将子元素可用宽度设为 Infinity 导致横向无限撑大 -->
+                                <ScrollViewer x:Name="FoldHost" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Hidden"
+                                              HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled"
+                                              HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                                              IsTabStop="False">
+                                    <ContentPresenter x:Name="ContentHost" Content="{TemplateBinding Content}" Margin="0,12,0,0" />
+                                </ScrollViewer>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -95,13 +114,22 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <!-- 左侧图标容器：与单行/首行文本绝对基准垂直对齐 (Margin Top 2px微调，消除文字排版上沿间隙，确保文字与图标完全居中对齐) -->
-                                <Border Grid.Column="0" VerticalAlignment="Top" Width="18" Height="18" Margin="0,2,0,0">
-                                    <TextBlock x:Name="Icon" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <!-- 左侧图标容器：严格对齐 Web 的 .inbx-icon（font-size:16px + line-height:1 → 16px 盒 + margin-top:2px）
+                                     图标视觉中心 = 2 + 8 = 10px，与 13px 字号、line-height 20 的首行文字行盒中心完全重合 -->
+                                <Border Grid.Column="0" VerticalAlignment="Top" Width="16" Height="16" Margin="0,2,0,0">
+                                    <TextBlock x:Name="Icon" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <!-- 右侧文本与插槽 -->
                                 <StackPanel Grid.Column="1" Spacing="0" VerticalAlignment="Top">
-                                    <TextBlock x:Name="Text" FontSize="13" LineHeight="20" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap" />
+                                    <!-- Uno Skia 基线规则（LineStackingStrategy.MaxHeight，默认）：自定义 LineHeight 时基线固定在字体
+                                         自然 Ascent（UI.ttf@13px = 11.908px），多出行高全部堆在行底 → 字形比 CSS 半行距规则偏高 ≈3px。
+                                         TranslateY=3 纯渲染层补偿（不影响布局高度）：字形视觉中心 = 11.908 − 5(CJK 字形中心) + 3 ≈ 10px，
+                                         与左侧图标（16px 盒 + margin-top 2 → 中心 10px）精确重合。 -->
+                                    <TextBlock x:Name="Text" FontSize="13" LineHeight="20" VerticalAlignment="Top" TextWrapping="Wrap">
+                                        <TextBlock.RenderTransform>
+                                            <TranslateTransform Y="3" />
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
                                     <!-- stack 分割线：有 text 且带 slot 时显示 (1px dashed color-mix(accent 35%)) -->
                                     <Border x:Name="Separator" Margin="0,8,0,8" Height="1" BorderThickness="0,1,0,0" />
                                     <ContentPresenter x:Name="ContentHost" Content="{TemplateBinding Content}" />
@@ -176,8 +204,9 @@
                     <Border x:Name="Root" BorderThickness="1" CornerRadius="10" UseLayoutRounding="True"
                             Padding="0" Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}">
                         <Grid>
-                            <!-- 单行内联胶囊模式 (block=false) -->
+                            <!-- 单行内联胶囊模式 (block=false；允许选中复制) -->
                             <TextBlock x:Name="InlineCode" Visibility="Collapsed" Padding="6,2" FontSize="12"
+                                       IsTextSelectionEnabled="True"
                                        FontFamily="Cascadia Code, Consolas, Courier New, monospace"
                                        TextWrapping="WrapWholeWords" VerticalAlignment="Center" />
 
@@ -186,6 +215,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <!-- 顶栏标头 -->
@@ -214,13 +244,29 @@
                                 <Border x:Name="HeaderBorder" Grid.Row="0" Height="1" VerticalAlignment="Bottom"
                                         BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
 
-                                <!-- 代码文本区 -->
+                                <!-- 代码文本区（允许选中复制，长行横向滚动） -->
                                 <ScrollViewer x:Name="CodeScroll" Grid.Row="1" Padding="12,10"
-                                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                              HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Hidden"
+                                              VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
                                     <TextBlock x:Name="BlockCode" FontSize="12.5" LineHeight="20"
+                                               HorizontalAlignment="Left"
+                                               IsTextSelectionEnabled="True"
                                                FontFamily="Cascadia Code, Consolas, Courier New, monospace"
                                                TextWrapping="NoWrap" />
                                 </ScrollViewer>
+
+                                <!-- 始终可见的自绘水平滚动条（对齐 Web 滚动条样式：高 6px，圆角 3px，底槽淡色，滑块主题色透明度 35%） -->
+                                <Border x:Name="HBarTrack" Grid.Row="2" Height="6" Margin="12,0,12,8"
+                                        CornerRadius="3" Background="#15808080" Visibility="Collapsed">
+                                    <Canvas x:Name="HBarCanvas" Height="6" HorizontalAlignment="Stretch">
+                                        <Border x:Name="HBarThumb" Height="6" CornerRadius="3"
+                                                Background="#5566CCFF" IsHitTestVisible="True">
+                                            <Border.RenderTransform>
+                                                <TranslateTransform X="0" />
+                                            </Border.RenderTransform>
+                                        </Border>
+                                    </Canvas>
+                                </Border>
                             </Grid>
                         </Grid>
                     </Border>
@@ -305,6 +351,7 @@
                         <Grid CornerRadius="12">
                             <!-- 进度填充层 -->
                             <Border x:Name="Fill"
+                                    Width="0"
                                     HorizontalAlignment="Left"
                                     CornerRadius="12"
                                     UseLayoutRounding="True"
@@ -613,6 +660,11 @@
                                 <ScaleTransform ScaleX="0" ScaleY="1" />
                             </Border.RenderTransform>
                         </Border>
+
+                        <!-- 点击控件外部时承接焦点的隐藏占位（用于让输入框自动失焦） -->
+                        <ContentControl x:Name="BlurSink" Width="0" Height="0" Opacity="0"
+                                        IsTabStop="True" IsHitTestVisible="False"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -666,7 +718,7 @@
                             <!-- 轨道底槽 -->
                             <Border x:Name="TrackBar" Height="6" CornerRadius="3" Canvas.Top="13" />
                             <!-- 填充条 -->
-                            <Border x:Name="FillBar" Height="6" CornerRadius="3,0,0,3" Canvas.Top="13" />
+                            <Border x:Name="FillBar" Width="0" Height="6" CornerRadius="3,0,0,3" Canvas.Top="13" />
 
                             <!-- 指示器（气泡标签 + 倒三角） -->
                             <StackPanel x:Name="Indicator" Canvas.Top="-18" Width="48" HorizontalAlignment="Center" IsHitTestVisible="False">
@@ -718,12 +770,13 @@
                             </Grid>
                         </Border>
 
-                        <!-- 下拉弹出浮层：动态计算正下方或上方展开 -->
-                        <Popup x:Name="DropPopup" IsLightDismissEnabled="True" VerticalOffset="36">
+                        <!-- 下拉弹出浮层：动态计算正下方或上方展开（关闭 light-dismiss，由控件自行播放收起动画） -->
+                        <Popup x:Name="DropPopup" IsLightDismissEnabled="False" VerticalOffset="36">
                             <Border x:Name="DropBorder"
                                     MinWidth="120"
                                     Padding="4"
                                     CornerRadius="10"
+                                    Opacity="1"
                                     BorderThickness="1"
                                     BorderBrush="{StaticResource RZ_Border}"
                                     Background="{StaticResource RZ_Bg}">

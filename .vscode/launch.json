@@ -26,6 +26,26 @@
             "cwd": "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo",
             "console": "internalConsole",
             "stopAtEntry": false
+        },
+        {
+            // 热重载专用：不附加调试器。
+            // Uno 客户端热重载（dev-server 下发的 IL/Metadata delta）在 Debugger.IsAttached 时会被主动跳过，
+            // 因此 F5 调试会话里会看到 "Hot Reload is not supported when the debugger is attached."。
+            // 用本配置（或 Ctrl+F5）运行，编辑 XAML/C# 即可热重载。
+            "name": "Uno Platform Desktop Hot Reload（无调试器）",
+            "type": "coreclr",
+            "request": "launch",
+            "noDebug": true,
+            "preLaunchTask": "build-desktop",
+            "program": "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo/bin/Debug/net10.0-desktop/RizUI.Demo.dll",
+            "args": [],
+            "launchSettingsProfile": "RizUI.Demo (Desktop)",
+            "env": {
+                "DOTNET_MODIFIABLE_ASSEMBLIES": "debug"
+            },
+            "cwd": "${workspaceFolder}/dotnet/RizUI.Demo/RizUI.Demo",
+            "console": "internalConsole",
+            "stopAtEntry": false
         }
     ]
 }

@@ -1,4 +1,4 @@
-<Page x:Class="RizUI.Demo.Pages.DialogDemoPage"
+﻿<Page x:Class="RizUI.Demo.Pages.DialogDemoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:rizui="using:RizUI.Uwp.Controls">
@@ -13,7 +13,7 @@
               <TextBlock Text="RizDialog" Foreground="#0080FF" FontSize="12" FontWeight="SemiBold" />
             </Border>
           </StackPanel>
-          <TextBlock Text="居中弹出对话框，支持 Scale 弹性过渡动画、遮罩关闭、圆形胶囊关闭按钮、底部倒计时进度条、图标与主题色定制。"
+          <TextBlock Text="居中弹出对话框，采用顶层 Popup 挂载（对齐 Web Teleport），支持 Scale 弹性过渡动画、遮罩关闭、圆形胶囊关闭按钮、底部倒计时进度条、图标与主题色定制。"
                      Opacity="0.65" FontSize="13" TextWrapping="Wrap" />
         </StackPanel>
 
@@ -103,133 +103,66 @@
           </StackPanel>
         </rizui:RizCard>
 
+        <!-- 示例五：顶层挂载（Teleport 的 C# 等价实现） -->
+        <rizui:RizCard Title="顶层挂载 | Teleport"
+                       Desc="Web 的 Teleport 在 C# 中由 Popup + XamlRoot 承接：弹窗内容脱离页面视觉树，永不被父级裁剪"
+                       Icon="fa-solid fa-arrow-up-from-bracket">
+          <StackPanel>
+            <rizui:RizCfgRow Label="在裁剪容器内打开"
+                             Hint="下方 160×48 的小容器里就声明着该对话框实例；打开后它依然覆盖整个窗口，因为 Popup 已把内容挂到了 XamlRoot 顶层（等价 Teleport 到 body）">
+              <rizui:RizButton Text="打开" Primary="True" Click="OpenTeleport" />
+            </rizui:RizCfgRow>
+
+            <!-- 故意声明在狭小/裁剪容器内：证明弹窗会脱离该容器 -->
+            <Border Width="160" Height="48" CornerRadius="8" HorizontalAlignment="Left" Margin="0,0,0,4"
+                    Background="#0F000000" BorderBrush="#22808080" BorderThickness="1">
+              <Grid>
+                <TextBlock Text="弹窗实例所在容器" FontSize="11" Opacity="0.6" TextWrapping="Wrap" TextAlignment="Center"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <rizui:RizDialog x:Name="TeleportDialog"
+                                 Title="顶层挂载 (Teleport)"
+                                 Icon="fa-solid fa-arrow-up-from-bracket"
+                                 Color="#0080FF"
+                                 WidthText="380px">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="这个对话框的 XAML 声明位置，在页面里一个 160×48 的小容器中。" TextWrapping="Wrap" />
+                    <TextBlock Text="它之所以能铺满整个窗口，是因为内容挂在 XamlRoot 的顶层弹层（Popup）而不是页面视觉树里——等价于 Web 的 &lt;Teleport to=&quot;body&quot;&gt;。"
+                               TextWrapping="Wrap" Opacity="0.8" />
+                    <rizui:RizInfoBox Type="info" Text="因此父级的 ScrollViewer 裁剪、overflow: hidden、z-index 层叠都不会影响它。" />
+                  </StackPanel>
+                  <rizui:RizDialog.Footer>
+                    <rizui:RizButton Text="知道了" Primary="True" Long="True" Click="CloseTeleport" />
+                  </rizui:RizDialog.Footer>
+                </rizui:RizDialog>
+              </Grid>
+            </Border>
+
+            <rizui:RizCfgRow Stack="True">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Web → C# 机制对照" FontSize="13" FontWeight="SemiBold" />
+                <TextBlock FontSize="13" Opacity="0.75" TextWrapping="Wrap"
+                           Text="• 挂载点：Web 用 &lt;Teleport to=&quot;body&quot;&gt; 把「遮罩 + 弹窗」搬出组件树；C# 用 new Popup { XamlRoot = XamlRoot }，内容挂到 XamlRoot 的顶层弹层，同样脱离页面视觉树（等价 body 级挂载 + z-index: 9990）。" />
+                <TextBlock FontSize="13" Opacity="0.75" TextWrapping="Wrap"
+                           Text="• 铺满视口：CSS 的 position: fixed; inset: 0 ↔ C# 里遮罩尺寸跟随 XamlRoot.Content 的 ActualWidth / ActualHeight（SizeChanged 同步）。" />
+                <TextBlock FontSize="13" Opacity="0.75" TextWrapping="Wrap"
+                           Text="• 遮罩关闭：CSS 的 @click.self ↔ C# 在遮罩 PointerPressed 中判断 e.OriginalSource 是否等于遮罩自身。" />
+                <TextBlock FontSize="13" Opacity="0.75" TextWrapping="Wrap"
+                           Text="• 退场卸载：Vue 的 &lt;Transition&gt; @after-leave ↔ C# 等退场 Storyboard.Completed 后才把 Popup.IsOpen 置为 false。" />
+                <TextBlock FontSize="13" Opacity="0.75" TextWrapping="Wrap"
+                           Text="• 差异：WinUI 没有 DOM 与选择器，故本组件不提供 teleport 锚点属性；如需「锚定到某个容器」，需按目标容器矩形自行定位（Web 端非 body 目标会切换为 position: absolute）。" />
+              </StackPanel>
+            </rizui:RizCfgRow>
+
+            <rizui:RizCfgRow Stack="True">
+              <rizui:RizCode Block="True" Lang="cs" Code="{x:Bind CodeUsage5}" />
+            </rizui:RizCfgRow>
+          </StackPanel>
+        </rizui:RizCard>
+
         <!-- 属性列表表格 (Properties Table) -->
         <StackPanel Spacing="10" Margin="0,12,0,0">
           <TextBlock Text="属性列表 (Properties)" FontSize="16" FontWeight="Bold" />
-          <Border Background="{StaticResource RZ_Bg}" BorderBrush="{StaticResource RZ_Border}" BorderThickness="1" CornerRadius="10" Padding="0">
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-                <RowDefinition Height="36" />
-              </Grid.RowDefinitions>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="*" />
-              </Grid.ColumnDefinitions>
-
-              <!-- 表头背景 -->
-              <Border Grid.Row="0" Grid.ColumnSpan="4" Background="{StaticResource RZ_BgSoft}" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_Border}" />
-              <TextBlock Text="属性" Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="类型" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="默认值" Grid.Row="0" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="说明" Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Foreground="{StaticResource RZ_Subtext}" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 1: Show -->
-              <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Show" Grid.Row="1" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="bool" Grid.Row="1" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="false" Grid.Row="1" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="控制对话框显示与隐藏" Grid.Row="1" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 2: Title -->
-              <Border Grid.Row="2" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Title" Grid.Row="2" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="string" Grid.Row="2" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text='""' Grid.Row="2" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="对话框标题文字" Grid.Row="2" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 3: TitleStyle -->
-              <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="TitleStyle" Grid.Row="3" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="Style" Grid.Row="3" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="null" Grid.Row="3" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="标题文本 XAML 样式覆盖" Grid.Row="3" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 4: Icon -->
-              <Border Grid.Row="4" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Icon" Grid.Row="4" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="string" Grid.Row="4" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text='""' Grid.Row="4" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="标题左侧 Font Awesome 图标类名" Grid.Row="4" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 5: IconStyle -->
-              <Border Grid.Row="5" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="IconStyle" Grid.Row="5" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="Style" Grid.Row="5" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="null" Grid.Row="5" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="图标 XAML 样式覆盖" Grid.Row="5" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 6: Color -->
-              <Border Grid.Row="6" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Color" Grid.Row="6" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="string" Grid.Row="6" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text='""' Grid.Row="6" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="主题色，空则跟随全局 --rizui_themecolor" Grid.Row="6" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 7: WidthText -->
-              <Border Grid.Row="7" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="WidthText" Grid.Row="7" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="string" Grid.Row="7" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text='"auto"' Grid.Row="7" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="对话框宽度（如 360px、420px、auto）" Grid.Row="7" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 8: Closable -->
-              <Border Grid.Row="8" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Closable" Grid.Row="8" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="bool" Grid.Row="8" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="true" Grid.Row="8" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="是否显示右上角胶囊关闭按钮" Grid.Row="8" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 9: MaskClose -->
-              <Border Grid.Row="9" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="MaskClose" Grid.Row="9" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="bool" Grid.Row="9" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="true" Grid.Row="9" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="点击背景遮罩是否关闭对话框" Grid.Row="9" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 10: Countdown -->
-              <Border Grid.Row="10" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Countdown" Grid.Row="10" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="double" Grid.Row="10" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="0" Grid.Row="10" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="自动关闭倒计时（秒），大于 0 时底部展示进度条" Grid.Row="10" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 11: ShowBar -->
-              <Border Grid.Row="11" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="ShowBar" Grid.Row="11" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="bool" Grid.Row="11" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="false" Grid.Row="11" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="是否显示底部进度条（Countdown > 0 时默认自动开启）" Grid.Row="11" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 12: Progress -->
-              <Border Grid.Row="12" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource RZ_TableRowBorder}" />
-              <TextBlock Text="Progress" Grid.Row="12" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="double" Grid.Row="12" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="-1" Grid.Row="12" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="手动进度值（0.0 ~ 1.0），小于 0 时由 Countdown 驱动" Grid.Row="12" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-
-              <!-- Row 13: Theme -->
-              <Border Grid.Row="13" Grid.ColumnSpan="4" />
-              <TextBlock Text="Theme" Grid.Row="13" Grid.Column="0" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#D63384" VerticalAlignment="Center" Margin="14,0,0,0" />
-              <TextBlock Text="string" Grid.Row="13" Grid.Column="1" FontFamily="Cascadia Code, Consolas" FontSize="12" Foreground="#007ACC" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text='"auto"' Grid.Row="13" Grid.Column="2" FontFamily="Cascadia Code, Consolas" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-              <TextBlock Text="Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" Grid.Row="13" Grid.Column="3" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0" />
-            </Grid>
-          </Border>
+          <rizui:RizTable x:Name="PropsTable" IsReadOnly="True" />
         </StackPanel>
 
         <!-- 插槽与事件说明 -->
@@ -250,8 +183,8 @@
                      Icon="fa-solid fa-circle-info"
                      WidthText="380px">
       <StackPanel Spacing="8">
-        <TextBlock Text="这是原生移植的 RizDialog 组件。" FontWeight="SemiBold" />
-        <TextBlock Text="支持 Teleport 顶层挂载、Scale 弹性弹出/收起动画、遮罩关闭与主题色适配。"
+        <TextBlock Text="老师，欢迎回来！" FontWeight="SemiBold" />
+        <TextBlock Text="我等您很久了！"
                    TextWrapping="Wrap" Opacity="0.8" />
         <rizui:RizInfoBox Type="info" Text="点击右上角胶囊按钮、半透明背景遮罩或下方取消都可平滑关闭。" />
       </StackPanel>
@@ -267,7 +200,8 @@
     <rizui:RizDialog x:Name="NoCloseDialog"
                      Title="无关闭按钮"
                      Closable="False"
-                     WidthText="360px">
+                     WidthText="360px"
+                     Icon="fa-regular fa-circle-xmark">
       <TextBlock Text="该对话框没有右上角关闭按钮，只能通过下方按钮或遮罩关闭。" TextWrapping="Wrap" />
       <rizui:RizDialog.Footer>
         <rizui:RizButton Text="知道了" Primary="True" Long="True" Click="CloseNoClose" />
@@ -278,7 +212,8 @@
     <rizui:RizDialog x:Name="NoMaskDialog"
                      Title="禁用遮罩关闭"
                      MaskClose="False"
-                     WidthText="360px">
+                     WidthText="360px"
+                     Icon="fa-regular fa-circle-xmark">
       <TextBlock Text="点击外部半透明遮罩不会关闭此对话框，请使用右上角关闭按钮或下方操作按钮。" TextWrapping="Wrap" />
       <rizui:RizDialog.Footer>
         <rizui:RizButton Text="关闭" Primary="True" Long="True" Click="CloseNoMask" />
@@ -314,11 +249,11 @@
                      WidthText="400px">
       <StackPanel Spacing="8">
         <TextBlock Text="数据正在上传沙勒云端..." FontWeight="SemiBold" />
-        <TextBlock Text="请注意弹窗卡片最底部，有 4px 高亮的动态倒计时进度条，正从 100% 线性递减至 0%。倒计时结束时将自动平滑收起此对话框。" TextWrapping="Wrap" Opacity="0.8" />
-        <rizui:RizInfoBox Type="info" Color="#39C5BB" Text="您也可以随时点击右下方按钮提前保存关闭。" />
+        <TextBlock Text="关闭对话框不影响数据上传过程。" TextWrapping="Wrap" Opacity="0.8" />
+        <rizui:RizInfoBox Type="info" Color="#39C5BB" Text="您也可以随时点击右下方按钮提前关闭。" />
       </StackPanel>
       <rizui:RizDialog.Footer>
-        <rizui:RizButton Text="立即完成" Primary="True" Color="#39C5BB" Click="CloseCountdown" />
+        <rizui:RizButton Text="后台处理" Primary="True" Color="#39C5BB" Click="CloseCountdown" />
       </rizui:RizDialog.Footer>
     </rizui:RizDialog>
 

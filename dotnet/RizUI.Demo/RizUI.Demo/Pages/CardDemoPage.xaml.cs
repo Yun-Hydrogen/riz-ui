@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 namespace RizUI.Demo.Pages;
 
@@ -98,8 +98,30 @@ var card = new RizCard
   <rizui:RizCfgRow Label=""阿洛娜"" Hint=""老师，今天也要元气满满地处理联邦学生会的事务哦～"" />
 </rizui:RizCard>";
 
+    public string CodeUsage5 { get; } =
+@"<!-- 5. 可折叠卡片：Foldable=True，点击标题栏平滑折叠/展开 -->
+<rizui:RizCard Title=""可折叠卡片"" Foldable=""True""
+               Desc=""点击标题栏即可折叠 / 展开内容区""
+               Icon=""fa-solid fa-folder-tree"">
+  <StackPanel>
+    <rizui:RizCfgRow Label=""阿洛娜的任务清单"" Hint=""折叠动画由高度 + 透明度双层缓动驱动"" />
+  </StackPanel>
+</rizui:RizCard>";
+
     public CardDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Title", "string", "\"\"", "卡片主标题文字" },
+            new() { "TitleStyle", "Style", "null", "标题 XAML 样式覆盖" },
+            new() { "Desc", "string", "\"\"", "卡片副标题/描述文字" },
+            new() { "DescStyle", "Style", "null", "描述 XAML 样式覆盖" },
+            new() { "Icon", "string", "\"\"", "Font Awesome 类名（如 fa-solid fa-envelope）" },
+            new() { "IconStyle", "Style", "null", "图标 XAML 样式覆盖（颜色/字号等）" },
+            new() { "Theme", "string", "\"auto\"", "Dark 强制暗色 / Light 强制亮色 / auto 跟随系统" },
+            new() { "Foldable", "bool", "false", "是否可折叠：点击标题栏折叠/展开内容区，带平滑高度动画" }
+        };
     }
 }

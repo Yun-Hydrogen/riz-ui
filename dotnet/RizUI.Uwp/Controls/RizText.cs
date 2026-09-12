@@ -19,6 +19,10 @@ public sealed class RizText : Control
     private TextBox? _multiInput;
     private ScaleTransform? _focusScale;
     private bool _templateApplied;
+    private ContentControl? _blurSink;
+    private bool _inputFocused;
+    private bool _outsideHooked;
+    private PointerEventHandler? _outsidePressedHandler;
 
     public RizText()
     {
@@ -143,6 +147,7 @@ public sealed class RizText : Control
         _focusGlow = GetTemplateChild("FocusGlow") as Border;
         _singleInput = GetTemplateChild("SingleInput") as TextBox;
         _multiInput = GetTemplateChild("MultiInput") as TextBox;
+        _blurSink = GetTemplateChild("BlurSink") as ContentControl;
 
         if (_focusGlow != null)
         {
@@ -159,13 +164,16 @@ public sealed class RizText : Control
         UpdateMode();
         SyncTextToInputs();
         UpdateVisual();
+
+        Loaded += (_, _) => HookOutsideClick();
+        Unloaded += (_, _) => UnhookOutsideClick();
     }
 
     private void HookEvents(TextBox? tb)
     {
         if (tb == null) return;
-        tb.GotFocus += (_, _) => AnimateFocusGlow(true);
-        tb.LostFocus += (_, _) => AnimateFocusGlow(false);
+        tb.GotFocus += (_, _) => { _inputFocused = true; AnimateFocusGlow(true); };
+        tb.LostFocus += (_, _) => { _inputFocused = false; AnimateFocusGlow(false); };
         tb.TextChanged += (_, _) =>
         {
             if (!string.Equals(Text, tb.Text, StringComparison.Ordinal))
@@ -212,6 +220,34 @@ public sealed class RizText : Control
         sb.Children.Add(scaleX);
         sb.Children.Add(fade);
         sb.Begin();
+    }
+
+    private void HookOutsideClick()
+    {
+        if (_outsideHooked) return;
+        if (XamlRoot?.Content is not UIElement root) return;
+        _outsidePressedHandler ??= OnOutsidePointerPressed;
+        root.AddHandler(UIElement.PointerPressedEvent, _outsidePressedHandler, true);
+        _outsideHooked = true;
+    }
+
+    private void UnhookOutsideClick()
+    {
+        if (!_outsideHooked) return;
+        if (XamlRoot?.Content is UIElement root && _outsidePressedHandler != null)
+        {
+            root.RemoveHandler(UIElement.PointerPressedEvent, _outsidePressedHandler);
+        }
+        _outsideHooked = false;
+    }
+
+    /// <summary>焦点在输入框内时，点击控件区域以外的位置自动失焦（对齐 Web 的 blur 行为）。</summary>
+    private void OnOutsidePointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        if (!_inputFocused || _blurSink == null) return;
+        var point = e.GetCurrentPoint(this).Position;
+        if (point.X >= 0 && point.Y >= 0 && point.X <= ActualWidth && point.Y <= ActualHeight) return;
+        _blurSink.Focus(FocusState.Programmatic);
     }
 
     private void SyncTextToInputs()

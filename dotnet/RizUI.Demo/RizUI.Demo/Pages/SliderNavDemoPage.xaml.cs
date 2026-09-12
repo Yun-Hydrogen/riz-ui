@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.UI.Xaml.Controls;
 using RizUI.Uwp.Controls;
 namespace RizUI.Demo.Pages;
@@ -37,6 +37,19 @@ public sealed partial class SliderNavDemoPage : Page
     public SliderNavDemoPage()
     {
         InitializeComponent();
+        PropsTable.Headers = new System.Collections.ObjectModel.ObservableCollection<string> { "属性", "类型", "默认值", "说明" };
+        PropsTable.Rows = new System.Collections.ObjectModel.ObservableCollection<System.Collections.ObjectModel.ObservableCollection<string>>
+        {
+            new() { "Items", "IList<RizSliderNavItem>", "null", "侧边栏树状数据源，支持任意层级嵌套展开" },
+            new() { "SelectedItem", "string", "\"\"", "当前选中的条目 Key（支持双向绑定）" },
+            new() { "DefaultSelectedItem", "string", "\"\"", "首次载入时默认激活的高亮条目 Key" },
+            new() { "StyleMode", "RizSliderNavStyle", "Fixed", "导航布局模式：Fixed 固定并排 / Floating 悬浮于内容之上" },
+            new() { "Title", "string", "\"RizUI\"", "侧边栏顶端品牌标题文案" },
+            new() { "Icon", "string", "\"fa-solid fa-layer-group\"", "顶端品牌图标（支持完整 Font Awesome 类名）" },
+            new() { "IsCollapsible", "bool", "true", "是否显示折叠按钮并允许展开/收起切换" },
+            new() { "IsCollapsed", "bool", "false", "当前折叠状态（可双向绑定）" },
+            new() { "Footer", "object", "null", "侧边栏底部插槽内容（如版权信息、模式切换按钮等）" }
+        };
         FixedNav.Items = Items();
         FloatingNav.Items = Items();
     }

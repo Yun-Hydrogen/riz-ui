@@ -27,10 +27,14 @@ public sealed class RizDialog : ContentControl
     private TextBlock? _title;
     private Border? _closeButton;
     private Path? _closePath;
+    private SolidColorBrush? _closeBgBrush;
+    private SolidColorBrush? _closeStrokeBrush;
     private ContentPresenter? _bodyPresenter;
     private ContentPresenter? _footerPresenter;
     private Border? _progressBar;
-    private ScaleTransform? _progressScale;
+    private double _barFullWidth;
+    private bool _barAnimPending;
+    private double _manualProgress = -1;
     private ScaleTransform? _boxScale;
     private Storyboard? _enterStoryboard;
     private Storyboard? _exitStoryboard;
@@ -188,38 +192,17 @@ public sealed class RizDialog : ContentControl
             _boxContainer.MaxWidth = Math.Min(viewportWidth * 0.9, 640);
         }
 
-        // 多层柔和立体阴影（对应 Web 的 box-shadow: 0 12px 40px var(--rz-shadow)）
-        var shadow1 = new Border
-        {
-            CornerRadius = new CornerRadius(16),
-            Margin = new Thickness(0, 10, 0, -10),
-            Background = RizVisuals.Brush(Windows.UI.Color.FromArgb(24, 0, 0, 0)),
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
-        var shadow2 = new Border
-        {
-            CornerRadius = new CornerRadius(16),
-            Margin = new Thickness(0, 4, 0, -4),
-            Background = RizVisuals.Brush(Windows.UI.Color.FromArgb(16, 0, 0, 0)),
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
-        _boxContainer.Children.Add(shadow1);
-        _boxContainer.Children.Add(shadow2);
-
-        // 主体卡片边框
+        // 主体卡片：对齐 Web .cdlg-box（纯色背景 + 16px 圆角，无阴影、无描边），
+        // 避免半透明假阴影的廉价感，以及浅色 1px 描边在深色遮罩上产生的抗锯齿细线
         _box = new Border
         {
             Background = RizVisuals.Brush(RizVisuals.Surface(dark)),
             CornerRadius = new CornerRadius(16),
-            BorderThickness = new Thickness(1),
-            BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark)),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
         };
 
-        var layout = new Grid();
+        var layout = new Grid { CornerRadius = new CornerRadius(16) };
         layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Header
         layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Body
         layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Footer
@@ -293,21 +276,20 @@ public sealed class RizDialog : ContentControl
         Grid.SetRow(_footerPresenter, 2);
         layout.Children.Add(_footerPresenter);
 
-        // 底部进度条容器与进度条（与卡片底部圆角完美吻合）
-        _progressScale = new ScaleTransform { ScaleX = 1, ScaleY = 1, CenterX = 0, CenterY = 0 };
+        // 底部进度条：用“宽度动画”而不是缩放动画 —— 圆角不会被横向压扁，
+        // 右端为对称半圆端帽（圆角 = 高度一半），任何进度下端点都是正圆
         _progressBar = new Border
         {
             Height = 4,
             Background = RizVisuals.Brush(accent),
-            CornerRadius = new CornerRadius(0, 0, 16, 16),
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Bottom,
-            RenderTransformOrigin = new Windows.Foundation.Point(0, 0.5),
-            RenderTransform = _progressScale
+            CornerRadius = new CornerRadius(0, 2, 2, 2),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Bottom
         };
         Grid.SetRow(_progressBar, 2);
         Grid.SetRowSpan(_progressBar, 2);
         layout.Children.Add(_progressBar);
+        layout.SizeChanged += OnBarLayoutSizeChanged;
 
         _box.Child = layout;
         _boxContainer.Children.Add(_box);
@@ -325,12 +307,16 @@ public sealed class RizDialog : ContentControl
 
     private Border CreateCloseButton(bool dark, Windows.UI.Color accent)
     {
+        // 专属画刷：hover 状态用颜色动画淡入淡出（对齐 Web 的 0.2s 过渡）
+        _closeBgBrush = new SolidColorBrush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08));
+        _closeStrokeBrush = new SolidColorBrush(RizVisuals.Subtext(dark));
+
         var closeBorder = new Border
         {
             Width = 26,
             Height = 26,
             CornerRadius = new CornerRadius(13),
-            Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08)),
+            Background = _closeBgBrush,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             IsHitTestVisible = true
@@ -346,7 +332,7 @@ public sealed class RizDialog : ContentControl
                     new LineGeometry { StartPoint = new Windows.Foundation.Point(18, 8), EndPoint = new Windows.Foundation.Point(8, 18) }
                 }
             },
-            Stroke = RizVisuals.Brush(RizVisuals.Subtext(dark)),
+            Stroke = _closeStrokeBrush,
             StrokeThickness = 2,
             StrokeStartLineCap = PenLineCap.Round,
             StrokeEndLineCap = PenLineCap.Round,
@@ -359,19 +345,24 @@ public sealed class RizDialog : ContentControl
 
         closeBorder.PointerEntered += (_, _) =>
         {
-            closeBorder.Background = RizVisuals.Brush(accent);
-            _closePath.Stroke = RizVisuals.Brush(Microsoft.UI.Colors.White);
+            if (_closeBgBrush == null || _closeStrokeBrush == null) return;
+            RizVisuals.AnimateColor(_closeBgBrush, accent, 180);
+            RizVisuals.AnimateColor(_closeStrokeBrush, Microsoft.UI.Colors.White, 180);
         };
         closeBorder.PointerExited += (_, _) =>
         {
+            if (_closeBgBrush == null || _closeStrokeBrush == null) return;
             var isDk = RizVisuals.IsDark(this, Theme);
-            closeBorder.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(isDk), RizVisuals.Surface(isDk), 0.08));
-            _closePath.Stroke = RizVisuals.Brush(RizVisuals.Subtext(isDk));
+            RizVisuals.AnimateColor(_closeBgBrush, RizVisuals.Mix(RizVisuals.Text(isDk), RizVisuals.Surface(isDk), 0.08), 220);
+            RizVisuals.AnimateColor(_closeStrokeBrush, RizVisuals.Subtext(isDk), 220);
         };
         closeBorder.PointerPressed += (_, e) =>
         {
             e.Handled = true;
-            closeBorder.Background = RizVisuals.Brush(RizVisuals.Mix(accent, Microsoft.UI.Colors.Black, 0.85));
+            if (_closeBgBrush != null)
+            {
+                RizVisuals.AnimateColor(_closeBgBrush, RizVisuals.Mix(accent, Microsoft.UI.Colors.Black, 0.85), 100);
+            }
         };
         closeBorder.PointerReleased += (_, e) =>
         {
@@ -437,24 +428,51 @@ public sealed class RizDialog : ContentControl
         _enterStoryboard = sb;
         sb.Begin();
 
-        // 倒计时进度条动画：countdown > 0 时从 100% 线性递减到 0%
-        if (Countdown > 0 && _progressScale != null && (ShowBar || Countdown > 0))
+        // 倒计时进度条：countdown > 0 时从满宽线性收窄到 0（宽度动画，端帽圆角始终为正圆）
+        if (Countdown > 0 && _progressBar != null && (ShowBar || Countdown > 0))
         {
-            _progressScale.ScaleX = 1;
-            var barSb = new Storyboard();
-            var barAnim = new DoubleAnimation
-            {
-                From = 1,
-                To = 0,
-                Duration = new Duration(TimeSpan.FromSeconds(Countdown)),
-                EnableDependentAnimation = true
-            };
-            Storyboard.SetTarget(barAnim, _progressScale);
-            Storyboard.SetTargetProperty(barAnim, "ScaleX");
-            barSb.Children.Add(barAnim);
-            _progressStoryboard = barSb;
-            barSb.Begin();
+            StartProgressAnimation();
         }
+    }
+
+    private void OnBarLayoutSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        _barFullWidth = e.NewSize.Width;
+        if (_barAnimPending)
+        {
+            StartProgressAnimation();
+        }
+        else if (_progressBar != null && _manualProgress >= 0)
+        {
+            _progressBar.Width = _manualProgress * _barFullWidth;
+        }
+    }
+
+    // 进度条宽度动画：不用 ScaleX 缩放，因此右端半圆端帽在任何进度下都不变形
+    private void StartProgressAnimation()
+    {
+        if (_progressBar == null || Countdown <= 0) return;
+        if (_barFullWidth < 1)
+        {
+            _barAnimPending = true; // 等首次布局拿到满宽后再启动
+            return;
+        }
+
+        _barAnimPending = false;
+        _progressBar.Width = _barFullWidth;
+        var barAnim = new DoubleAnimation
+        {
+            From = _barFullWidth,
+            To = 0,
+            Duration = new Duration(TimeSpan.FromSeconds(Countdown)),
+            EnableDependentAnimation = true
+        };
+        Storyboard.SetTarget(barAnim, _progressBar);
+        Storyboard.SetTargetProperty(barAnim, "Width");
+        var barSb = new Storyboard();
+        barSb.Children.Add(barAnim);
+        _progressStoryboard = barSb;
+        barSb.Begin();
     }
 
     private void OnRootSizeChanged(object sender, SizeChangedEventArgs e)
@@ -495,8 +513,17 @@ public sealed class RizDialog : ContentControl
             _countdownTimer.Stop();
             _countdownTimer = null;
         }
-        _progressStoryboard?.Stop();
-        _progressStoryboard = null;
+        if (_progressStoryboard != null)
+        {
+            // 冻结当前宽度到基础值后再停止动画：直接 Stop 会让进度条瞬间回弹到 100% 而“闪一下”
+            var frozen = _progressBar?.Width ?? 0;
+            _progressStoryboard.Stop();
+            if (_progressBar != null)
+            {
+                _progressBar.Width = frozen;
+            }
+            _progressStoryboard = null;
+        }
 
         if (_popup?.IsOpen != true) return;
         if (_closing) return;
@@ -573,6 +600,11 @@ public sealed class RizDialog : ContentControl
         _overlay = null;
         _boxContainer = null;
         _box = null;
+        _progressBar = null;
+        _progressStoryboard = null;
+        _barFullWidth = 0;
+        _barAnimPending = false;
+        _manualProgress = -1;
         _closing = false;
 
         if (GetValue(ShowProperty) is bool shown && shown)
@@ -598,7 +630,6 @@ public sealed class RizDialog : ContentControl
         var accent = RizVisuals.ThemeColor(Color);
 
         _box.Background = RizVisuals.Brush(RizVisuals.Surface(dark));
-        _box.BorderBrush = RizVisuals.Brush(RizVisuals.Border(dark));
 
         _title.Text = Title ?? string.Empty;
         _title.Foreground = RizVisuals.Brush(RizVisuals.Text(dark));
@@ -613,10 +644,13 @@ public sealed class RizDialog : ContentControl
         }
 
         _closeButton.Visibility = Closable ? Visibility.Visible : Visibility.Collapsed;
-        _closeButton.Background = RizVisuals.Brush(RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08));
-        if (_closePath != null)
+        if (_closeBgBrush != null)
         {
-            _closePath.Stroke = RizVisuals.Brush(RizVisuals.Subtext(dark));
+            _closeBgBrush.Color = RizVisuals.Mix(RizVisuals.Text(dark), RizVisuals.Surface(dark), 0.08);
+        }
+        if (_closeStrokeBrush != null)
+        {
+            _closeStrokeBrush.Color = RizVisuals.Subtext(dark);
         }
 
         if (_bodyPresenter != null)
@@ -631,14 +665,18 @@ public sealed class RizDialog : ContentControl
             _footerPresenter.Visibility = Footer is null ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        if (_progressBar != null && _progressScale != null)
+        if (_progressBar != null)
         {
             var isBarVisible = ShowBar || Countdown > 0 || Progress >= 0;
             _progressBar.Visibility = isBarVisible ? Visibility.Visible : Visibility.Collapsed;
             _progressBar.Background = RizVisuals.Brush(accent);
             if (Progress >= 0)
             {
-                _progressScale.ScaleX = Math.Clamp(Progress, 0, 1);
+                _manualProgress = Math.Clamp(Progress, 0, 1);
+                if (_barFullWidth >= 1)
+                {
+                    _progressBar.Width = _manualProgress * _barFullWidth;
+                }
             }
         }
     }
