@@ -18,6 +18,7 @@ import rizui_colorpicker_demo from './pages/demos/control/rizui_colorpicker_demo
 import rizui_timeline_demo from './pages/demos/control/rizui_timeline_demo.vue'
 import rizui_button_demo from './pages/demos/control/rizui_button_demo.vue'
 import rizui_checkbox_demo from './pages/demos/control/rizui_checkbox_demo.vue'
+import rizui_progress_demo from './pages/demos/control/rizui_progress_demo.vue'
 import rizui_text_demo from './pages/demos/input/rizui_text_demo.vue'
 import rizui_mdeditor_demo from './pages/demos/input/rizui_mdeditor_demo.vue'
 import UiCard_demo    from './pages/demos/old/UiCard_demo.vue'
@@ -48,6 +49,7 @@ const routes = [
   { path: '/demo/rizui-timeline',     name: 'rizui_timeline',   component: rizui_timeline_demo },
   { path: '/demo/rizui-button',       name: 'rizui_button',     component: rizui_button_demo },
   { path: '/demo/rizui-checkbox',     name: 'rizui_checkbox',   component: rizui_checkbox_demo },
+  { path: '/demo/rizui-progress',     name: 'rizui_progress',   component: rizui_progress_demo },
   { path: '/demo/rizui-text',         name: 'rizui_text',       component: rizui_text_demo },
   { path: '/demo/rizui-mdeditor',     name: 'rizui_mdeditor',   component: rizui_mdeditor_demo },
   { path: '/demo/ui-card',             name: 'UiCard',            component: UiCard_demo },

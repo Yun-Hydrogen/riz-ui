@@ -55,7 +55,8 @@ const categories = [
       {route: '/demo/rizui-colorpicker', zhName: '取色器', deprecated: false},
       {route: '/demo/rizui-timeline', zhName: '时间轴', deprecated: false},
       {route: '/demo/rizui-button', zhName: '按钮', deprecated: false},
-      {route: '/demo/rizui-checkbox', zhName: '复选框', deprecated: false}
+      {route: '/demo/rizui-checkbox', zhName: '复选框', deprecated: false},
+      {route: '/demo/rizui-progress', zhName: '进度条', deprecated: false}
     ]
   },
   {

@@ -29,6 +29,18 @@
           <div v-if="$slots.footer" class="cdlg-footer">
             <slot name="footer" />
           </div>
+
+          <!-- 底部倒计时进度条：默认不启用 (showBar=false) -->
+          <div v-if="showBar" class="cdlg-bar">
+            <div
+              class="cdlg-bar-inner"
+              :class="{
+                'cdlg-bar-full': !(countdown > 0) && progress === undefined && !indeterminate,
+                'cdlg-bar-indeterminate': indeterminate
+              }"
+              :style="barInnerStyle"
+            ></div>
+          </div>
         </div>
       </div>
     </Transition>
@@ -36,7 +48,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch, onBeforeUnmount } from 'vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -61,11 +73,19 @@ const props = defineProps({
   closable:     { type: Boolean, default: true },
   /** 点击遮罩关闭 Close on mask click */
   maskClose:    { type: Boolean, default: true },
+  /** 显示底部倒计时/进度条，默认 false（不启用）Show bottom countdown/progress bar */
+  showBar:      { type: Boolean, default: false },
+  /** 自动关闭倒计时秒数，0 为不自动关 Countdown seconds for auto-close (0 = never) */
+  countdown:    { type: Number,  default: 0 },
+  /** 自定义进度百分比 (0~100) Custom progress percentage (0~100) */
+  progress:     { type: Number,  default: undefined },
+  /** 不定进度模式（未知进度/加载中）Indeterminate progress mode */
+  indeterminate:{ type: Boolean, default: false },
   /** 主题模式：Dark 强制暗色 / Light 强制亮色 / auto 跟随全局 Theme mode */
   theme:       { type: String,  default: 'auto' }
 })
 
-const emit = defineEmits(['update:show'])
+const emit = defineEmits(['update:show', 'close', 'timeout'])
 
 /* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
 const themeAttr = computed(() => {
@@ -81,11 +101,60 @@ const cssColor = computed(() => props.color || 'var(--rizui_themecolor)')
 
 const boxStyle = computed(() => ({
   width: props.width,
-  '--cdlg-color': cssColor.value
+  '--cdlg-color': cssColor.value,
+  '--cdlg-countdown': `${props.countdown}s`
 }))
 
+const barInnerStyle = computed(() => {
+  if (props.progress !== undefined) {
+    return {
+      width: `${Math.max(0, Math.min(100, props.progress))}%`,
+      animation: 'none',
+      transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    }
+  }
+  return {}
+})
+
+let timer = null
+
+function clearTimer() {
+  if (timer) {
+    clearTimeout(timer)
+    timer = null
+  }
+}
+
+function startTimer() {
+  clearTimer()
+  if (props.show && props.countdown > 0) {
+    timer = setTimeout(() => {
+      emit('timeout')
+      close()
+    }, props.countdown * 1000)
+  }
+}
+
+watch(
+  () => [props.show, props.countdown],
+  ([newShow]) => {
+    if (newShow) {
+      startTimer()
+    } else {
+      clearTimer()
+    }
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => {
+  clearTimer()
+})
+
 function close() {
+  clearTimer()
   emit('update:show', false)
+  emit('close')
 }
 
 function onMaskClick() {
@@ -143,6 +212,7 @@ function onMaskClick() {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 /* ── 头部：图标 + 标题 + 关闭按钮 ── */
@@ -205,5 +275,56 @@ function onMaskClick() {
   justify-content: flex-end;
   gap: 10px;
   padding: 12px 20px 16px;
+}
+
+/* ── 底部倒计时 / 进度条 ── */
+.cdlg-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: color-mix(in srgb, var(--cdlg-color) 35%, transparent);
+  pointer-events: none;
+}
+
+.cdlg-bar-inner {
+  height: 100%;
+  width: 100%;
+  background: var(--cdlg-color);
+}
+
+/* 倒计时自动收缩动画（仅在未指定固定进度、非全满、非不定进度时执行） */
+.cdlg-bar-inner:not(.cdlg-bar-full):not(.cdlg-bar-indeterminate) {
+  animation: cdlg-shrink var(--cdlg-countdown) linear forwards;
+}
+
+@keyframes cdlg-shrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* 不定进度模式（类似 toast / progress 流动加载） */
+.cdlg-bar-inner.cdlg-bar-indeterminate {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 35%;
+  animation: cdlg-indeterminate 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes cdlg-indeterminate {
+  0% {
+    left: -40%;
+    width: 35%;
+  }
+  45% {
+    left: 20%;
+    width: 55%;
+  }
+  100% {
+    left: 100%;
+    width: 35%;
+  }
 }
 </style>

@@ -52,7 +52,7 @@ export declare const rizui_infobox: DefineComponent<{
   iconStyle?: Instyle
 }>
 
-/** 对话框：Teleport + 遮罩关闭 + 图标 */
+/** 对话框：Teleport + 遮罩关闭 + 图标 + 底部倒计时进度条 */
 export declare const rizui_dialog: DefineComponent<
   {
     show?: boolean
@@ -67,8 +67,16 @@ export declare const rizui_dialog: DefineComponent<
     width?: string
     closable?: boolean
     maskClose?: boolean
+    /** 是否显示底部倒计时/进度条，默认 false（不启用） */
+    showBar?: boolean
+    /** 自动关闭倒计时秒数，0 为不自动关 */
+    countdown?: number
+    /** 自定义进度百分比 (0~100) */
+    progress?: number
+    /** 不定进度模式（未知进度/加载中） */
+    indeterminate?: boolean
   },
-  {},
+  { 'update:show': (val: boolean) => void, close: () => void, timeout: () => void },
   { default: () => any, footer: () => any }
 >
 
@@ -198,6 +206,38 @@ export declare const rizui_button: DefineComponent<
   { click: (e: MouseEvent) => void },
   {}
 >
+
+/** 长条进度条：支持普通进度与不定进度（indeterminate）模式 */
+export declare const rizui_progress: DefineComponent<{
+  modelValue?: number
+  value?: number
+  min?: number
+  max?: number
+  /** 是否为不定进度模式（未知进度/加载中） */
+  indeterminate?: boolean
+  /** 自定义颜色，支持 CSS 颜色值或渐变；为空跟随全局主题色 */
+  color?: string
+  /** 自定义轨道底色 */
+  trackColor?: string
+  /** 预设状态配色：'info' | 'success' | 'warn' | 'error' */
+  status?: 'info' | 'success' | 'warn' | 'error' | string
+  /** 进度条高度（默认 10） */
+  height?: number | string
+  /** 胶囊圆角 */
+  rounded?: boolean
+  /** 是否显示进度文本 */
+  showText?: boolean
+  /** 文本是否内嵌在进度条内 */
+  textInside?: boolean
+  /** 自定义文案覆盖 */
+  text?: string
+  /** 外部文本样式覆盖 */
+  textStyle?: Instyle
+  /** 文本格式化函数 */
+  format?: (value: number, percentage: number) => string
+  /** 主题模式 Dark/Light/auto */
+  theme?: string
+}>
 
 /* ═══════════════════════════ Input ═══════════════════════════ */
 

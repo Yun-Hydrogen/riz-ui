@@ -9,10 +9,11 @@
 | `rizui_card` | 卡片容器，标题 + 描述 + 内容插槽 |
 | `rizui_cfgrow` | 配置行，左侧标签 + 右侧控件，支持 stack 布局 |
 | `rizui_infobox` | 提示框，虚线边框 + 预设 info/warn/error 配色 |
-| `rizui_dialog` | 对话框，Teleport + Transition + 遮罩关闭 + 图标 |
+| `rizui_dialog` | 对话框，Teleport + Transition + 遮罩关闭 + 图标 + 底部倒计时进度条 |
 | `rizui_toast` | 通知，info/warn/error + 标题/说明 + 倒计时进度条，Teleport 右上角排队 |
 | `rizui_code` | 代码块，行内胶囊 / 大代码块，22 种语言高亮 + 复制按钮 |
 | `rizui_button` | 胶囊按钮，主题色填充 / 通栏 / 左右图标 / 禁用 |
+| `rizui_progress` | 长条进度条，支持普通进度与不定进度（indeterminate）模式 |
 | `rizui_switch` | 纯 CSS 开关，支持 v-model 和主题色 |
 | `rizui_checkbox` | 纯 CSS 复选框，支持 v-model、主题色和 label 文字 |
 | `rizui_slider` | 步进滑条，支持拖拽 / 长按 ± 快速增减 |

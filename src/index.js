@@ -29,6 +29,7 @@ export { default as rizui_colorpicker } from './components/Control/rizui_colorpi
 export { default as rizui_timeline }   from './components/Control/rizui_timeline.vue'
 export { default as rizui_button }     from './components/Control/rizui_button.vue'
 export { default as rizui_checkbox }   from './components/Control/rizui_checkbox.vue'
+export { default as rizui_progress }   from './components/Control/rizui_progress.vue'
 
 export { default as rizui_text }        from './components/Input/rizui_text.vue'
 export { default as rizui_mdeditor }    from './components/Input/rizui_mdeditor.vue'
