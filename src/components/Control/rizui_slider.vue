@@ -2,12 +2,16 @@
   <div
     ref="rootRef"
     class="csl-root"
-    :class="{ 'csl-dragging': isDragging }"
+    :class="{
+      'csl-dragging': isDragging,
+      'csl-repeating': isRepeating
+    }"
     :data-rizui-theme="themeAttr"
     :style="rootStyle"
     @mousedown.left="startDrag"
     @touchstart.prevent="startDrag"
   >
+    <div class="csl-fill" :style="fillStyle"></div>
     <button class="csl-btn csl-minus">−</button>
     <span class="csl-value">{{ displayText }}</span>
     <button class="csl-btn csl-plus">+</button>
@@ -50,8 +54,12 @@ const fillPct = computed(() => {
 })
 
 const rootStyle = computed(() => ({
-  background: `linear-gradient(to right, color-mix(in srgb, ${cssColor.value} 20%, transparent) ${fillPct.value}%, transparent ${fillPct.value}%)`,
+  '--csl-color': cssColor.value,
   borderColor: cssColor.value
+}))
+
+const fillStyle = computed(() => ({
+  width: `${fillPct.value}%`
 }))
 
 /* 组件级主题覆盖：Dark / Light 输出到根节点 data-rizui-theme */
@@ -75,6 +83,8 @@ function change(delta) {
 }
 
 const isDragging = ref(false)
+const isPointerDown = ref(false)
+const isRepeating = ref(false)
 
 function clientXToValue(cx) {
   if (!rootRef.value) return props.modelValue
@@ -86,27 +96,36 @@ function clientXToValue(cx) {
 }
 
 function startDrag(e) {
-  isDragging.value = true
   const target = e.target
   const isMinus = target.closest('.csl-minus')
   const isPlus  = target.closest('.csl-plus')
 
-  if (isMinus) { change(-1); startRepeat(-1) }
-  else if (isPlus) { change(1); startRepeat(1) }
-  else {
+  if (isMinus) {
+    change(-1)
+    startRepeat(-1)
+  } else if (isPlus) {
+    change(1)
+    startRepeat(1)
+  } else {
+    isPointerDown.value = true
     const val = clientXToValue(e.clientX || e.touches?.[0]?.clientX || 0)
     if (val !== props.modelValue) emit('update:modelValue', val)
   }
 }
 
 function onDragMove(e) {
-  if (!isDragging.value) return
+  if (!isPointerDown.value) return
+  isDragging.value = true
   stopRepeat()
   const val = clientXToValue(e.clientX || e.touches?.[0]?.clientX || 0)
   if (val !== props.modelValue) emit('update:modelValue', val)
 }
 
-function onDragEnd() { isDragging.value = false; stopRepeat() }
+function onDragEnd() {
+  isPointerDown.value = false
+  isDragging.value = false
+  stopRepeat()
+}
 
 const repeatTimer = ref(null)
 const REPEAT_DELAY = 400, REPEAT_RATE = 60
@@ -114,6 +133,7 @@ const REPEAT_DELAY = 400, REPEAT_RATE = 60
 function startRepeat(dir) {
   stopRepeat()
   repeatTimer.value = setTimeout(() => {
+    isRepeating.value = true
     repeatTimer.value = setInterval(() => change(dir), REPEAT_RATE)
   }, REPEAT_DELAY)
 }
@@ -124,6 +144,7 @@ function stopRepeat() {
     clearInterval(repeatTimer.value)
     repeatTimer.value = null
   }
+  isRepeating.value = false
 }
 
 onMounted(() => {
@@ -150,6 +171,7 @@ const displayText = computed(() => {
 
 <style scoped>
 .csl-root {
+  position: relative;
   display: inline-flex;
   align-items: center;
   height: 26px;
@@ -160,9 +182,33 @@ const displayText = computed(() => {
   overflow: hidden;
   user-select: none;
   cursor: col-resize;
+  box-sizing: border-box;
+}
+
+/* 滑块填充层：支持平滑宽度动画过渡 */
+.csl-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--csl-color) 20%, transparent);
+  pointer-events: none;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 拖拽过程中禁用动画过渡，保证 1:1 跟手无延迟 */
+.csl-dragging .csl-fill {
+  transition: none;
+}
+
+/* 长按连续增减时使用超短线性过渡，平滑且不落后定时器 */
+.csl-repeating .csl-fill {
+  transition: width 0.06s linear;
 }
 
 .csl-btn {
+  position: relative;
+  z-index: 1;
   width: 28px;
   height: 100%;
   border: none;
@@ -187,6 +233,8 @@ const displayText = computed(() => {
 }
 
 .csl-value {
+  position: relative;
+  z-index: 1;
   flex: 1;
   text-align: center;
   font-size: 13px;

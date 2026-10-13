@@ -21,6 +21,9 @@ export { default as rizui_infobox }    from './components/Container/rizui_infobo
 export { default as rizui_dialog }     from './components/Container/rizui_dialog.vue'
 export { default as rizui_toast }      from './components/Container/rizui_toast.vue'
 export { default as rizui_code }       from './components/Container/rizui_code.vue'
+export { default as rizui_nav }        from './components/Container/rizui_nav.vue'
+export { default as rizui_sidebar }    from './components/Container/rizui_nav.vue'
+export { default as rizui_nav_item }   from './components/Container/rizui_nav_item.vue'
 
 export { default as rizui_switch }     from './components/Control/rizui_switch.vue'
 export { default as rizui_slider }     from './components/Control/rizui_slider.vue'
@@ -30,6 +33,8 @@ export { default as rizui_timeline }   from './components/Control/rizui_timeline
 export { default as rizui_button }     from './components/Control/rizui_button.vue'
 export { default as rizui_checkbox }   from './components/Control/rizui_checkbox.vue'
 export { default as rizui_progress }   from './components/Control/rizui_progress.vue'
+export { default as rizui_circle_progress } from './components/Control/rizui_circle_progress.vue'
+export { default as rizui_progress_circle } from './components/Control/rizui_circle_progress.vue'
 
 export { default as rizui_text }        from './components/Input/rizui_text.vue'
 export { default as rizui_mdeditor }    from './components/Input/rizui_mdeditor.vue'

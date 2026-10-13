@@ -92,6 +92,74 @@ export declare const rizui_code: DefineComponent<{
   theme?: string
 }>
 
+export interface NavItem {
+  id?: string | number
+  label?: string
+  name?: string
+  zhName?: string
+  icon?: string
+  iconStyle?: Instyle
+  labelStyle?: Instyle
+  route?: string
+  href?: string
+  target?: string
+  disabled?: boolean
+  badge?: string | number
+  badgeColor?: string
+  tag?: string
+  deprecated?: boolean
+  children?: NavItem[]
+  comps?: NavItem[]
+}
+
+/** 导航栏 / 侧边栏：支持树状多级子目录、折叠/展开、文字旁图标与 WinUI 3 风格胶囊指示动效 */
+export declare const rizui_nav: DefineComponent<
+  {
+    items?: NavItem[]
+    modelValue?: string | number
+    collapsed?: boolean
+    collapsible?: boolean
+    title?: string
+    icon?: string
+    width?: number | string
+    collapsedWidth?: number | string
+    /** 导航栏高度，默认为页面高度 '100vh' */
+    height?: number | string
+    /** 是否固定定位在页面左侧（position: fixed） */
+    fixed?: boolean
+    /** 是否浮动在页面上方（Overlay 模式：不占用页面排版空间；为 false 时占用固定页面空间） */
+    floating?: boolean
+    /** 悬浮岛边距（与视口四周边缘的间距，默认 12px） */
+    inset?: number | string
+    /** 固定定位时的顶部偏移量（默认 0） */
+    top?: number | string
+    /** 固定定位时的底部偏移量（默认 0） */
+    bottom?: number | string
+    color?: string
+    defaultExpandedKeys?: Array<string | number>
+    accordion?: boolean
+    bordered?: boolean
+    /** 主题模式 Dark/Light/auto */
+    theme?: string
+  },
+  {
+    'update:modelValue': (val: string | number) => void
+    'update:collapsed': (val: boolean) => void
+    select: (item: NavItem) => void
+    toggle: (payload: { item: NavItem, expanded: boolean }) => void
+    'brand-click': () => void
+  },
+  {
+    header: (scope: { collapsed: boolean, toggleCollapse: () => void }) => any
+    footer: (scope: { collapsed: boolean, toggleCollapse: () => void }) => any
+    icon: (scope: { item: NavItem, active: boolean }) => any
+    label: (scope: { item: NavItem, active: boolean }) => any
+    default: (scope: { items: NavItem[], activeId: string | number, collapsed: boolean }) => any
+  }
+>
+
+export declare const rizui_sidebar: typeof rizui_nav
+
 /** 通知：info/warn/error + 倒计时进度条，Teleport 右上角排队 */
 export declare const rizui_toast: DefineComponent<
   {
@@ -238,6 +306,46 @@ export declare const rizui_progress: DefineComponent<{
   /** 主题模式 Dark/Light/auto */
   theme?: string
 }>
+
+/** 环形进度条：支持常规进度、不定进度（indeterminate）模式、渐变色与自定义中心内容 */
+export declare const rizui_circle_progress: DefineComponent<
+  {
+    modelValue?: number
+    value?: number
+    min?: number
+    max?: number
+    /** 是否为不定进度模式（未知进度/加载中） */
+    indeterminate?: boolean
+    /** 环形直径（默认 120） */
+    size?: number | string
+    /** 线条宽度（默认 8） */
+    strokeWidth?: number
+    /** 环端样式：'round' | 'butt' | 'square' */
+    strokeLinecap?: 'round' | 'butt' | 'square' | string
+    /** 自定义颜色，支持 CSS 颜色值、数组或渐变；为空跟随全局主题色 */
+    color?: string | string[]
+    /** 自定义底环轨道颜色 */
+    trackColor?: string
+    /** 预设状态配色：'info' | 'success' | 'warn' | 'error' */
+    status?: 'info' | 'success' | 'warn' | 'error' | string
+    /** 是否顺时针绘制（默认 true） */
+    clockwise?: boolean
+    /** 是否显示中心文案 */
+    showText?: boolean
+    /** 自定义中心文案覆盖 */
+    text?: string
+    /** 中心文字样式覆盖 */
+    textStyle?: Instyle
+    /** 文本格式化函数 */
+    format?: (value: number, percentage: number) => string
+    /** 主题模式 Dark/Light/auto */
+    theme?: string
+  },
+  {},
+  { default: (scope: { value: number, percentage: number }) => any }
+>
+
+export declare const rizui_progress_circle: typeof rizui_circle_progress
 
 /* ═══════════════════════════ Input ═══════════════════════════ */
 

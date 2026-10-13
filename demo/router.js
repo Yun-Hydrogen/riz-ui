@@ -9,6 +9,7 @@ import rizui_infobox_demo from './pages/demos/container/rizui_infobox_demo.vue'
 import rizui_dialog_demo from './pages/demos/container/rizui_dialog_demo.vue'
 import rizui_toast_demo from './pages/demos/container/rizui_toast_demo.vue'
 import rizui_code_demo from './pages/demos/container/rizui_code_demo.vue'
+import rizui_nav_demo from './pages/demos/container/rizui_nav_demo.vue'
 import ThemeColor_demo from './pages/demos/other/ThemeColor_demo.vue'
 import OpenURL_demo from './pages/demos/other/OpenURL_demo.vue'
 import rizui_switch_demo from './pages/demos/control/rizui_switch_demo.vue'
@@ -19,6 +20,7 @@ import rizui_timeline_demo from './pages/demos/control/rizui_timeline_demo.vue'
 import rizui_button_demo from './pages/demos/control/rizui_button_demo.vue'
 import rizui_checkbox_demo from './pages/demos/control/rizui_checkbox_demo.vue'
 import rizui_progress_demo from './pages/demos/control/rizui_progress_demo.vue'
+import rizui_circle_progress_demo from './pages/demos/control/rizui_circle_progress_demo.vue'
 import rizui_text_demo from './pages/demos/input/rizui_text_demo.vue'
 import rizui_mdeditor_demo from './pages/demos/input/rizui_mdeditor_demo.vue'
 import UiCard_demo    from './pages/demos/old/UiCard_demo.vue'
@@ -40,6 +42,7 @@ const routes = [
   { path: '/demo/rizui-dialog',       name: 'rizui_dialog',       component: rizui_dialog_demo },
   { path: '/demo/rizui-toast',        name: 'rizui_toast',      component: rizui_toast_demo },
   { path: '/demo/rizui-code',         name: 'rizui_code',       component: rizui_code_demo },
+  { path: '/demo/rizui-nav',          name: 'rizui_nav',        component: rizui_nav_demo },
   { path: '/demo/theme-color',        name: 'ThemeColor',      component: ThemeColor_demo },
   { path: '/demo/open-url',           name: 'OpenURL',         component: OpenURL_demo },
   { path: '/demo/rizui-switch',       name: 'rizui_switch',      component: rizui_switch_demo },
@@ -50,6 +53,7 @@ const routes = [
   { path: '/demo/rizui-button',       name: 'rizui_button',     component: rizui_button_demo },
   { path: '/demo/rizui-checkbox',     name: 'rizui_checkbox',   component: rizui_checkbox_demo },
   { path: '/demo/rizui-progress',     name: 'rizui_progress',   component: rizui_progress_demo },
+  { path: '/demo/rizui-circle-progress', name: 'rizui_circle_progress', component: rizui_circle_progress_demo },
   { path: '/demo/rizui-text',         name: 'rizui_text',       component: rizui_text_demo },
   { path: '/demo/rizui-mdeditor',     name: 'rizui_mdeditor',   component: rizui_mdeditor_demo },
   { path: '/demo/ui-card',             name: 'UiCard',            component: UiCard_demo },

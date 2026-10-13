@@ -2,11 +2,15 @@
   <div
     ref="rootRef"
     class="uist-root"
-    :class="{ 'uist-dragging': isDragging }"
+    :class="{
+      'uist-dragging': isDragging,
+      'uist-repeating': isRepeating
+    }"
     :style="rootStyle"
     @mousedown.left="startDrag"
     @touchstart.prevent="startDrag"
   >
+    <div class="uist-fill" :style="fillStyle"></div>
     <button class="uist-btn uist-minus">−</button>
     <span class="uist-value">{{ displayText }}</span>
     <button class="uist-btn uist-plus">+</button>
@@ -40,8 +44,12 @@ const fillPct = computed(() => {
 })
 
 const rootStyle = computed(() => ({
-  background: `linear-gradient(to right, color-mix(in srgb, ${cssColor.value} 20%, transparent) ${fillPct.value}%, transparent ${fillPct.value}%)`,
+  '--uist-color': cssColor.value,
   borderColor: cssColor.value
+}))
+
+const fillStyle = computed(() => ({
+  width: `${fillPct.value}%`
 }))
 
 function parseNum(v) {
@@ -58,6 +66,8 @@ function change(delta) {
 }
 
 const isDragging = ref(false)
+const isPointerDown = ref(false)
+const isRepeating = ref(false)
 
 function clientXToValue(cx) {
   if (!rootRef.value) return props.modelValue
@@ -69,7 +79,6 @@ function clientXToValue(cx) {
 }
 
 function startDrag(e) {
-  isDragging.value = true
   const target = e.target
   const isMinus = target.closest('.uist-minus')
   const isPlus  = target.closest('.uist-plus')
@@ -81,19 +90,22 @@ function startDrag(e) {
     change(1)
     startRepeat(1)
   } else {
+    isPointerDown.value = true
     const val = clientXToValue(e.clientX || e.touches?.[0]?.clientX || 0)
     if (val !== props.modelValue) emit('update:modelValue', val)
   }
 }
 
 function onDragMove(e) {
-  if (!isDragging.value) return
+  if (!isPointerDown.value) return
+  isDragging.value = true
   stopRepeat()
   const val = clientXToValue(e.clientX || e.touches?.[0]?.clientX || 0)
   if (val !== props.modelValue) emit('update:modelValue', val)
 }
 
 function onDragEnd() {
+  isPointerDown.value = false
   isDragging.value = false
   stopRepeat()
 }
@@ -105,6 +117,7 @@ const REPEAT_RATE = 60
 function startRepeat(dir) {
   stopRepeat()
   repeatTimer.value = setTimeout(() => {
+    isRepeating.value = true
     repeatTimer.value = setInterval(() => change(dir), REPEAT_RATE)
   }, REPEAT_DELAY)
 }
@@ -115,6 +128,7 @@ function stopRepeat() {
     clearInterval(repeatTimer.value)
     repeatTimer.value = null
   }
+  isRepeating.value = false
 }
 
 onMounted(() => {
@@ -141,6 +155,7 @@ const displayText = computed(() => {
 
 <style scoped>
 .uist-root {
+  position: relative;
   display: inline-flex;
   align-items: center;
   height: 26px;
@@ -152,9 +167,30 @@ const displayText = computed(() => {
   user-select: none;
   cursor: col-resize;
   transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.uist-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--uist-color) 20%, transparent);
+  pointer-events: none;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uist-dragging .uist-fill {
+  transition: none;
+}
+
+.uist-repeating .uist-fill {
+  transition: width 0.06s linear;
 }
 
 .uist-btn {
+  position: relative;
+  z-index: 1;
   width: 28px;
   height: 100%;
   border: none;
@@ -180,6 +216,8 @@ const displayText = computed(() => {
 }
 
 .uist-value {
+  position: relative;
+  z-index: 1;
   flex: 1;
   text-align: center;
   font-size: 13px;

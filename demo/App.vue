@@ -1,7 +1,7 @@
 <script setup>
 import {ref, computed, reactive, provide, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {rizui_colorpicker} from 'riz-ui'
+import {rizui_colorpicker, rizui_nav} from 'riz-ui'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,55 +38,59 @@ function cycleDemoTheme() {
 /* ── 分类 & 组件（仅用于导航） ── */
 const categories = [
   {
-    id: 'container', name: '容器样式', comps: [
-      {route: '/demo/rizui-card', zhName: '卡片', deprecated: false},
-      {route: '/demo/rizui-cfgrow', zhName: '配置行', deprecated: false},
-      {route: '/demo/rizui-infobox', zhName: '提示框', deprecated: false},
-      {route: '/demo/rizui-dialog', zhName: '对话框', deprecated: false},
-      {route: '/demo/rizui-toast', zhName: 'Toast', deprecated: false},
-      {route: '/demo/rizui-code', zhName: '代码块', deprecated: false}
+    id: 'container', name: '容器样式', icon: 'fa-solid fa-box-archive', comps: [
+      {route: '/demo/rizui-card', zhName: '卡片', icon: 'fa-solid fa-square', deprecated: false},
+      {route: '/demo/rizui-cfgrow', zhName: '配置行', icon: 'fa-solid fa-list', deprecated: false},
+      {route: '/demo/rizui-infobox', zhName: '提示框', icon: 'fa-solid fa-circle-info', deprecated: false},
+      {route: '/demo/rizui-dialog', zhName: '对话框', icon: 'fa-solid fa-window-maximize', deprecated: false},
+      {route: '/demo/rizui-toast', zhName: 'Toast', icon: 'fa-solid fa-bell', deprecated: false},
+      {route: '/demo/rizui-code', zhName: '代码块', icon: 'fa-solid fa-code', deprecated: false},
+      {route: '/demo/rizui-nav', zhName: '导航栏', icon: 'fa-solid fa-bars-staggered', deprecated: false}
     ]
   },
   {
-    id: 'ioput', name: '开关控制', comps: [
-      {route: '/demo/rizui-switch', zhName: '开关', deprecated: false},
-      {route: '/demo/rizui-slider', zhName: '滑条', deprecated: false},
-      {route: '/demo/rizui-dropdown', zhName: '下拉', deprecated: false},
-      {route: '/demo/rizui-colorpicker', zhName: '取色器', deprecated: false},
-      {route: '/demo/rizui-timeline', zhName: '时间轴', deprecated: false},
-      {route: '/demo/rizui-button', zhName: '按钮', deprecated: false},
-      {route: '/demo/rizui-checkbox', zhName: '复选框', deprecated: false},
-      {route: '/demo/rizui-progress', zhName: '进度条', deprecated: false}
+    id: 'ioput', name: '开关控制', icon: 'fa-solid fa-sliders', comps: [
+      {route: '/demo/rizui-switch', zhName: '开关', icon: 'fa-solid fa-toggle-on', deprecated: false},
+      {route: '/demo/rizui-slider', zhName: '滑条', icon: 'fa-solid fa-sliders', deprecated: false},
+      {route: '/demo/rizui-dropdown', zhName: '下拉', icon: 'fa-solid fa-square-caret-down', deprecated: false},
+      {route: '/demo/rizui-colorpicker', zhName: '取色器', icon: 'fa-solid fa-palette', deprecated: false},
+      {route: '/demo/rizui-timeline', zhName: '时间轴', icon: 'fa-solid fa-timeline', deprecated: false},
+      {route: '/demo/rizui-button', zhName: '按钮', icon: 'fa-solid fa-hand-pointer', deprecated: false},
+      {route: '/demo/rizui-checkbox', zhName: '复选框', icon: 'fa-solid fa-square-check', deprecated: false},
+      {route: '/demo/rizui-progress', zhName: '进度条', icon: 'fa-solid fa-bars-progress', deprecated: false},
+      {route: '/demo/rizui-circle-progress', zhName: '环形进度条', icon: 'fa-solid fa-circle-notch', deprecated: false}
     ]
   },
   {
-    id: 'input', name: '输入组件', comps: [
-      {route: '/demo/rizui-text', zhName: '文本输入', deprecated: false},
-      {route: '/demo/rizui-mdeditor', zhName: 'MD 编辑器', deprecated: false}
+    id: 'input', name: '输入组件', icon: 'fa-solid fa-keyboard', comps: [
+      {route: '/demo/rizui-text', zhName: '文本输入', icon: 'fa-solid fa-font', deprecated: false},
+      {route: '/demo/rizui-mdeditor', zhName: 'MD 编辑器', icon: 'fa-solid fa-pen-nib', deprecated: false}
     ]
   },
   {
-    id: 'other', name: '其他控件', comps: [
-      {route: '/demo/theme-color', zhName: '主题色', deprecated: false},
-      {route: '/demo/open-url', zhName: '打开链接', deprecated: false}
+    id: 'other', name: '其他控件', icon: 'fa-solid fa-cubes', comps: [
+      {route: '/demo/theme-color', zhName: '主题色', icon: 'fa-solid fa-droplet', deprecated: false},
+      {route: '/demo/open-url', zhName: '打开链接', icon: 'fa-solid fa-arrow-up-right-from-square', deprecated: false}
     ]
   },
   {
-    id: 'old', name: '旧组件', comps: [
-      {route: '/demo/ui-card', zhName: 'UiCard', deprecated: true},
-      {route: '/demo/ui-config-row', zhName: 'UiConfigRow', deprecated: true},
-      {route: '/demo/ui-switch', zhName: 'UiSwitch', deprecated: true},
-      {route: '/demo/ui-slider', zhName: 'UiSlider', deprecated: true},
-      {route: '/demo/ui-dropdown', zhName: 'UiDropdown', deprecated: true},
-      {route: '/demo/ui-color-picker', zhName: 'UiColorPicker', deprecated: true},
-      {route: '/demo/ui-timeline', zhName: 'UiTimeline', deprecated: true},
-      {route: '/demo/ui-dialog', zhName: 'UiDialog', deprecated: true},
-      {route: '/demo/not-ready-overlay', zhName: 'NotReadyOverlay', deprecated: true}
+    id: 'old', name: '旧组件', icon: 'fa-solid fa-clock-rotate-left', comps: [
+      {route: '/demo/ui-card', zhName: 'UiCard', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-config-row', zhName: 'UiConfigRow', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-switch', zhName: 'UiSwitch', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-slider', zhName: 'UiSlider', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-dropdown', zhName: 'UiDropdown', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-color-picker', zhName: 'UiColorPicker', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-timeline', zhName: 'UiTimeline', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/ui-dialog', zhName: 'UiDialog', icon: 'fa-solid fa-cube', deprecated: true},
+      {route: '/demo/not-ready-overlay', zhName: 'NotReadyOverlay', icon: 'fa-solid fa-cube', deprecated: true}
     ]
   }
 ]
 
 const isDemoPage = computed(() => route.path.startsWith('/demo/'))
+const isSidebarCollapsed = ref(false)
+const isSidebarFloating = ref(false)
 
 function findCatId(path) {
   for (const cat of categories) {
@@ -132,7 +136,7 @@ function goPricing() {
       <span class="demo-bub b9"></span><span class="demo-bub b10"></span>
     </div>
 
-    <!-- ═══ 上顶栏（全宽） ═══ -->
+    <!-- ═══ 顶部全局导航栏（全宽贯穿，位于最上方） ═══ -->
     <header class="topbar">
       <div class="topbar-inner">
         <div class="topbar-left">
@@ -140,6 +144,19 @@ function goPricing() {
           <rizui_colorpicker v-model="themeColor"/>
         </div>
         <div class="topbar-right">
+          <!-- 浮动 / 固定模式切换开关（仅 Demo 页展示） -->
+          <button
+            v-if="isDemoPage"
+            class="theme-switch"
+            :title="`侧栏排版：${isSidebarFloating ? '浮动覆盖（不占空间）' : '固定留空（占用空间）'}`"
+            @click="isSidebarFloating = !isSidebarFloating"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            <span>{{ isSidebarFloating ? '浮动' : '固定' }}</span>
+          </button>
           <button class="theme-switch" :title="`主题模式：${themeLabel}（点击切换）`" @click="cycleDemoTheme()">
             <!-- auto：显示器图标 -->
             <svg v-if="demoTheme === 'auto'" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -173,34 +190,30 @@ function goPricing() {
       </div>
     </header>
 
-    <!-- ═══ 侧边栏（手风琴分类）+ 主内容 ═══ -->
-    <div v-if="isDemoPage" class="app-body">
-      <aside class="sidebar">
-        <div v-for="cat in categories" :key="cat.id" class="sbar-cat">
-          <button class="sbar-head" :class="{ active: expandedCats.has(cat.id) }"
-                  :style="expandedCats.has(cat.id) ? { color: themeColor } : {}"
-                  @click="toggleCat(cat.id)">
-            <span class="sbar-name">{{ cat.name }}</span>
-            <span class="sbar-caret" :class="{ open: expandedCats.has(cat.id) }">›</span>
-          </button>
-          <div class="sbar-items" :class="{ open: expandedCats.has(cat.id) }">
-            <div class="sbar-items-inner">
-              <router-link v-for="comp in cat.comps" :key="comp.route" :to="comp.route"
-                           class="sbar-item" :class="{ deprecated: comp.deprecated }"
-                           active-class="active"
-                           :style="route.path === comp.route ? { color: themeColor } : {}">
-                {{ comp.zhName }}<span v-if="comp.deprecated" class="depr-tag">旧</span>
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </aside>
+    <!-- ═══ Demo 模式：侧边栏在顶栏下方 ═══ -->
+    <div v-if="isDemoPage" class="demo-workbench">
+      <rizui_nav
+        class="demo-sidebar-nav"
+        fixed
+        :top="76"
+        :floating="isSidebarFloating"
+        :items="categories"
+        :model-value="route.path"
+        :width="236"
+        :collapsed-width="64"
+        v-model:collapsed="isSidebarCollapsed"
+        collapsible
+        title="RizUI"
+        icon="fa-solid fa-shapes"
+        @brand-click="goHome()"
+      />
       <div class="content">
         <router-view/>
       </div>
     </div>
 
-    <router-view v-else/>
+    <!-- ═══ 首页 / 独立页面：无侧边栏 ═══ -->
+    <router-view v-else />
   </div>
 </template>
 
@@ -248,7 +261,7 @@ code {
   border-bottom: 1px solid var(--rz-border);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .topbar-inner {
@@ -341,29 +354,11 @@ code {
   flex-shrink: 0;
 }
 
-/* ── 侧边栏（悬浮大胶囊）+ 主内容 ── */
-.app-body {
+/* ── Demo 模式工作区布局 ── */
+.demo-workbench {
   display: flex;
   flex: 1;
-  align-items: flex-start;
-  min-height: 0;
-  padding: 16px 20px 24px;
-  gap: 20px;
-}
-
-.sidebar {
-  position: sticky;
-  top: 88px;
-  align-self: flex-start;
-  width: 236px;
-  flex-shrink: 0;
-  height: calc(100vh - 104px);
-  overflow-y: auto;
-  border-radius: 20px;
-  background: var(--rz-bg);
-  border: 1px solid var(--rz-border);
-  box-shadow: 0 10px 32px var(--rz-shadow);
-  padding: 12px 10px 14px;
+  position: relative;
 }
 
 .sbar-cat {
